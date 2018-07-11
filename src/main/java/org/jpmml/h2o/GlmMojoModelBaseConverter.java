@@ -49,6 +49,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 		M model = getModel();
 
 		boolean meanImputation = getMeanImputation(model);
+		boolean useAllFactorLevels = getUseAllFactorLevels(model);
 
 		Schema schema = super.encodeSchema(encoder);
 
@@ -99,6 +100,9 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 					CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
 
 					List<String> values = categoricalFeature.getValues();
+					if(!useAllFactorLevels){
+						values = values.subList(1, values.size());
+					}
 
 					return values.stream()
 						.map(value -> new BinaryFeature(encoder, categoricalFeature.getName(), categoricalFeature.getDataType(), value));
@@ -150,6 +154,11 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 		return (double[])getFieldValue(GlmMojoModelBaseConverter.FIELD_NUMMEANS, model);
 	}
 
+	static
+	public boolean getUseAllFactorLevels(MojoModel model){
+		return (boolean)getFieldValue(GlmMojoModelBaseConverter.FIELD_USEALLFACTORLEVELS, model);
+	}
+
 	private static final Class<?> CLASS_GLMMOJOMODELBASE;
 
 	static {
@@ -168,6 +177,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 	private static final Field FIELD_MEANIMPUTATION;
 	private static final Field FIELD_NUMS;
 	private static final Field FIELD_NUMMEANS;
+	private static final Field FIELD_USEALLFACTORLEVELS;
 
 	static {
 
@@ -179,6 +189,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 			FIELD_MEANIMPUTATION = CLASS_GLMMOJOMODELBASE.getDeclaredField("_meanImputation");
 			FIELD_NUMS = CLASS_GLMMOJOMODELBASE.getDeclaredField("_nums");
 			FIELD_NUMMEANS = CLASS_GLMMOJOMODELBASE.getDeclaredField("_numMeans");
+			FIELD_USEALLFACTORLEVELS = CLASS_GLMMOJOMODELBASE.getDeclaredField("_useAllFactorLevels");
 		} catch(ReflectiveOperationException roe){
 			throw new RuntimeException(roe);
 		}

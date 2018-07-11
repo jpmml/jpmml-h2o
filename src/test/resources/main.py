@@ -30,7 +30,7 @@ def build_audit(df, classifier, name):
 audit_df = load_csv("Audit.csv")
 audit_df["Adjusted"] = audit_df["Adjusted"].asfactor()
 
-build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial"), "GLMAudit")
+build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", lambda_ = 0), "GLMAudit")
 
 audit_df = load_csv("AuditNA.csv")
 audit_df["Adjusted"] = audit_df["Adjusted"].asfactor()
@@ -65,7 +65,7 @@ def build_auto(df, regressor, name):
 
 auto_df = load_csv("Auto.csv")
 
-build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian"), "GLMAuto")
+build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", lambda_ = 0), "GLMAuto")
 
 auto_df = load_csv("AutoNA.csv")
 
