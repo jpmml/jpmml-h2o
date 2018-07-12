@@ -24,10 +24,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.function.Predicate;
 
+import com.google.common.base.Equivalence;
 import com.google.common.io.ByteStreams;
-import hex.genmodel.ModelMojoReader;
 import hex.genmodel.MojoModel;
-import hex.genmodel.MojoReaderBackend;
 import hex.genmodel.TmpMojoReaderBackend;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.PMML;
@@ -40,6 +39,10 @@ public class ConverterTest extends IntegrationTest {
 
 	public ConverterTest(){
 		super(new PMMLEquivalence(1e-14, 1e-14));
+	}
+
+	public ConverterTest(Equivalence<Object> equivalence){
+		super(equivalence);
 	}
 
 	@Override
@@ -62,9 +65,13 @@ public class ConverterTest extends IntegrationTest {
 						ByteStreams.copy(is, os);
 					}
 
-					MojoReaderBackend mojoReaderBackend = new TmpMojoReaderBackend(tmpZipFile);
+					TmpMojoReaderBackend mojoReaderBackend = new TmpMojoReaderBackend(tmpZipFile);
 
-					mojoModel = ModelMojoReader.readFrom(mojoReaderBackend);
+					try {
+						mojoModel = MojoModelUtil.readFrom(mojoReaderBackend);
+					} finally {
+						mojoReaderBackend.close();
+					}
 				}
 
 				ConverterFactory converterFactory = ConverterFactory.newConverterFactory();

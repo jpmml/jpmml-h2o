@@ -19,7 +19,6 @@
 package org.jpmml.h2o;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,7 +53,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 		Schema schema = super.encodeSchema(encoder);
 
 		Label label = schema.getLabel();
-		List<Feature> features = new ArrayList<>(schema.getFeatures());
+		List<? extends Feature> features = schema.getFeatures();
 
 		if(meanImputation){
 			int cats = getCats(model);

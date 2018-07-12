@@ -35,6 +35,10 @@ public class ConverterFactory {
 
 		if(model instanceof GlmMultinomialMojoModel){
 			return new GlmMultinomialMojoModelConverter((GlmMultinomialMojoModel)model);
+		} else
+
+		if(model instanceof XGBoostRawMojoModel){
+			return new XGBoostRawMojoModelConverter((XGBoostRawMojoModel)model);
 		}
 
 		throw new IllegalArgumentException("No converter for MOJO model " + model);
