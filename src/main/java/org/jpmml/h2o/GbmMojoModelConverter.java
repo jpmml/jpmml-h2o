@@ -18,13 +18,13 @@
  */
 package org.jpmml.h2o;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import hex.genmodel.algos.drf.DrfMojoModel;
+import hex.genmodel.algos.gbm.GbmMojoModel;
+import hex.genmodel.utils.DistributionFamily;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.MiningFunction;
@@ -44,23 +44,22 @@ import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.mining.MiningModelUtil;
 
-public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoModel> {
+public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoModel> {
 
-	public DrfMojoModelConverter(DrfMojoModel model){
+	public GbmMojoModelConverter(GbmMojoModel model){
 		super(model);
 	}
 
 	@Override
 	public MiningModel encodeModel(Schema schema){
-		DrfMojoModel model = getModel();
+		GbmMojoModel model = getModel();
 
-		boolean binomialDoubleTrees = getBinomialDoubleTrees(model);
 		byte[][] compressedTrees = getCompressedTrees(model);
 		Number mojoVersion = getMojoVersion(model);
 		int ntreeGroups = getNTreeGroups(model);
 		int ntreesPerGroup = getNTreesPerGroup(model);
 
-		if(mojoVersion.doubleValue() != 1.2D){
+		if(mojoVersion.doubleValue() != 1.2d){
 			throw new IllegalArgumentException();
 		}
 
@@ -71,26 +70,28 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 			.map(compressedTree -> encodeTreeModel(compressedTree, schema))
 			.collect(Collectors.toList());
 
-		if(model._nclasses == 1){
+		if((DistributionFamily.gaussian).equals(model._family)){
 			ContinuousLabel continuousLabel = (ContinuousLabel)label;
 
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
-				.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.AVERAGE, treeModels));
+				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.SUM, treeModels))
+				.setTargets(ModelUtil.createRescaleTargets(null, (double)model._init_f, continuousLabel));
 
 			return miningModel;
 		} else
 
-		if(model._nclasses == 2 && !binomialDoubleTrees){
+		if((DistributionFamily.bernoulli).equals(model._family)){
 			ContinuousLabel continuousLabel = new ContinuousLabel(null, DataType.DOUBLE);
 
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
-				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.AVERAGE, treeModels))
-				.setOutput(ModelUtil.createPredictedOutput(FieldName.create("drfValue"), OpType.CONTINUOUS, DataType.DOUBLE));
+				.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, treeModels))
+				.setTargets(ModelUtil.createRescaleTargets(null, (double)model._init_f, continuousLabel))
+				.setOutput(ModelUtil.createPredictedOutput(FieldName.create("gbmValue"), OpType.CONTINUOUS, DataType.DOUBLE));
 
-			return MiningModelUtil.createBinaryLogisticClassification(miningModel, -1d, 1d, RegressionModel.NormalizationMethod.NONE, true, schema);
+			return MiningModelUtil.createBinaryLogisticClassification(miningModel, 1d, 0d, RegressionModel.NormalizationMethod.LOGIT, true, schema);
 		} else
 
-		{
+		if((DistributionFamily.multinomial).equals(model._family)){
 			CategoricalLabel categoricalLabel = (CategoricalLabel)label;
 
 			List<Model> models = new ArrayList<>();
@@ -98,28 +99,16 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 			for(int i = 0; i < categoricalLabel.size(); i++){
 				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(null))
 					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, CMatrixUtil.getRow(treeModels, ntreesPerGroup, ntreeGroups, i)))
-					.setOutput(ModelUtil.createPredictedOutput(FieldName.create("drfValue(" + categoricalLabel.getValue(i) + ")"), OpType.CONTINUOUS, DataType.DOUBLE));
+					.setOutput(ModelUtil.createPredictedOutput(FieldName.create("gbmValue(" + categoricalLabel.getValue(i) + ")"), OpType.CONTINUOUS, DataType.DOUBLE));
 
 				models.add(miningModel);
 			}
 
-			return MiningModelUtil.createClassification(models, RegressionModel.NormalizationMethod.SIMPLEMAX, true, schema);
-		}
-	}
+			return MiningModelUtil.createClassification(models, RegressionModel.NormalizationMethod.SOFTMAX, true, schema);
+		} else
 
-	static
-	public boolean getBinomialDoubleTrees(DrfMojoModel model){
-		return (boolean)getFieldValue(FIELD_BOOLEANDOUBLETREES, model);
-	}
-
-	private static final Field FIELD_BOOLEANDOUBLETREES;
-
-	static {
-
-		try {
-			FIELD_BOOLEANDOUBLETREES = DrfMojoModel.class.getDeclaredField("_binomial_double_trees");
-		} catch(ReflectiveOperationException roe){
-			throw new RuntimeException(roe);
+		{
+			throw new IllegalArgumentException();
 		}
 	}
 }

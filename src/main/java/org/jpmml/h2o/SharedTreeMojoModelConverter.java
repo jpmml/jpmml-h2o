@@ -52,7 +52,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 	static
 	public TreeModel encodeTreeModel(byte[] compressedTree, Schema schema){
-		Label label = new ContinuousLabel(null, DataType.FLOAT);
+		Label label = new ContinuousLabel(null, DataType.DOUBLE);
 
 		Node root = new Node()
 			.setPredicate(new True());

@@ -1,3 +1,4 @@
+from h2o.estimators.gbm import H2OGradientBoostingEstimator
 from h2o.estimators.glm import H2OGeneralizedLinearEstimator
 from h2o.estimators.random_forest import H2ORandomForestEstimator
 from h2o.estimators.xgboost import H2OXGBoostEstimator
@@ -36,6 +37,7 @@ def build_audit(df, classifier, name):
 
 audit_df = load_audit("Audit.csv")
 
+build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31), "GBMAudit")
 build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", lambda_ = 0), "GLMAudit")
 build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31), "RandomForestAudit")
 build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31), "XGBoostAudit")
@@ -60,6 +62,7 @@ def build_iris(df, classifier, name):
 
 iris_df = load_iris("Iris.csv")
 
+build_iris(iris_df, H2OGradientBoostingEstimator(ntrees = 11), "GBMIris")
 build_iris(iris_df, H2OGeneralizedLinearEstimator(family = "multinomial"), "GLMIris")
 build_iris(iris_df, H2ORandomForestEstimator(ntrees = 11), "RandomForestIris")
 build_iris(iris_df, H2OXGBoostEstimator(ntrees = 11), "XGBoostIris")
@@ -83,6 +86,7 @@ def build_auto(df, regressor, name):
 
 auto_df = load_auto("Auto.csv")
 
+build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17), "GBMAuto")
 build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", lambda_ = 0), "GLMAuto")
 build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17), "RandomForestAuto")
 build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17), "XGBoostAuto")
