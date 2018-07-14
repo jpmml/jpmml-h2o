@@ -19,6 +19,7 @@
 package org.jpmml.h2o;
 
 import hex.genmodel.MojoModel;
+import hex.genmodel.algos.drf.DrfMojoModel;
 import hex.genmodel.algos.glm.GlmMojoModel;
 import hex.genmodel.algos.glm.GlmMultinomialMojoModel;
 
@@ -35,6 +36,10 @@ public class ConverterFactory {
 
 		if(model instanceof GlmMultinomialMojoModel){
 			return new GlmMultinomialMojoModelConverter((GlmMultinomialMojoModel)model);
+		} else
+
+		if(model instanceof DrfMojoModel){
+			return new DrfMojoModelConverter((DrfMojoModel)model);
 		} else
 
 		if(model instanceof XGBoostRawMojoModel){

@@ -6,6 +6,7 @@ Java library and command-line application for converting [H2O.ai](https://www.h2
 # Features #
 
 * Supported MOJO types:
+  * [`DrfMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/drf/DrfMojoModel.html)
   * [`GlmMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMojoModel.html)
   * [`GlmMultinomialMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMultinomialMojoModel.html)
   * `XGBoostJavaMojoModel`
