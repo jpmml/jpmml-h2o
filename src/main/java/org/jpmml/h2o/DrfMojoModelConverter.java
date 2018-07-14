@@ -41,6 +41,7 @@ import org.jpmml.converter.ContinuousLabel;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
+import org.jpmml.converter.PredicateManager;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.mining.MiningModelUtil;
 
@@ -67,8 +68,10 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 		Label label = schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
 
+		PredicateManager predicateManager = new PredicateManager();
+
 		List<TreeModel> treeModels = Stream.of(compressedTrees)
-			.map(compressedTree -> encodeTreeModel(compressedTree, schema))
+			.map(compressedTree -> encodeTreeModel(compressedTree, predicateManager, schema))
 			.collect(Collectors.toList());
 
 		if(model._nclasses == 1){

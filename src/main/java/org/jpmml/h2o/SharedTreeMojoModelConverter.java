@@ -26,20 +26,21 @@ import hex.genmodel.algos.tree.SharedTreeMojoModel;
 import hex.genmodel.utils.ByteBufferWrapper;
 import hex.genmodel.utils.GenmodelBitSet;
 import org.dmg.pmml.DataType;
+import org.dmg.pmml.FieldName;
 import org.dmg.pmml.MiningFunction;
 import org.dmg.pmml.Predicate;
 import org.dmg.pmml.SimplePredicate;
-import org.dmg.pmml.SimpleSetPredicate;
 import org.dmg.pmml.True;
 import org.dmg.pmml.tree.Node;
 import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.CategoricalFeature;
+import org.jpmml.converter.CategoryManager;
 import org.jpmml.converter.ContinuousFeature;
 import org.jpmml.converter.ContinuousLabel;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
-import org.jpmml.converter.PMMLUtil;
+import org.jpmml.converter.PredicateManager;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.ValueUtil;
 
@@ -51,7 +52,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	}
 
 	static
-	public TreeModel encodeTreeModel(byte[] compressedTree, Schema schema){
+	public TreeModel encodeTreeModel(byte[] compressedTree, PredicateManager predicateManager, Schema schema){
 		Label label = new ContinuousLabel(null, DataType.DOUBLE);
 
 		Node root = new Node()
@@ -59,13 +60,13 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 		ByteBufferWrapper buffer = new ByteBufferWrapper(compressedTree);
 
-		encodeNode(root, compressedTree, buffer, schema);
+		encodeNode(root, compressedTree, buffer, predicateManager, new CategoryManager(), schema);
 
 		return new TreeModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(label), root);
 	}
 
 	static
-	public void encodeNode(Node node, byte[] compressedTree, ByteBufferWrapper byteBuffer, Schema schema){
+	public void encodeNode(Node node, byte[] compressedTree, ByteBufferWrapper byteBuffer, PredicateManager predicateManager, CategoryManager categoryManager, Schema schema){
 		int nodeType = byteBuffer.get1U();
 
 		int lmask = (nodeType & 51);
@@ -81,6 +82,9 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		int naSplitDir = byteBuffer.get1U();
 
 		Feature feature = schema.getFeature(colId);
+
+		CategoryManager leftCategoryManager = categoryManager;
+		CategoryManager rightCategoryManager = categoryManager;
 
 		Predicate leftPredicate;
 		Predicate rightPredicate;
@@ -102,13 +106,20 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 				throw new IllegalArgumentException();
 			}
 
+			FieldName name = categoricalFeature.getName();
 			List<String> values = categoricalFeature.getValues();
+
+			java.util.function.Predicate<String> valueFilter = categoryManager.getValueFilter(name);
 
 			List<String> leftValues = new ArrayList<>();
 			List<String> rightValues = new ArrayList<>();
 
 			for(int i = 0; i < values.size(); i++){
 				String value = values.get(i);
+
+				if(!valueFilter.test(value)){
+					continue;
+				} // End if
 
 				if(!bitSet.contains(i)){
 					leftValues.add(value);
@@ -119,8 +130,11 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 				}
 			}
 
-			leftPredicate = new SimpleSetPredicate(categoricalFeature.getName(), SimpleSetPredicate.BooleanOperator.IS_IN, PMMLUtil.createStringArray(leftValues));
-			rightPredicate = new SimpleSetPredicate(categoricalFeature.getName(), SimpleSetPredicate.BooleanOperator.IS_IN, PMMLUtil.createStringArray(rightValues));
+			leftCategoryManager = leftCategoryManager.fork(name, leftValues);
+			rightCategoryManager = rightCategoryManager.fork(name, rightValues);
+
+			leftPredicate = predicateManager.createSimpleSetPredicate(categoricalFeature, leftValues);
+			rightPredicate = predicateManager.createSimpleSetPredicate(categoricalFeature, rightValues);
 		} else
 
 		{
@@ -130,11 +144,8 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 			String value = ValueUtil.formatValue(splitVal);
 
-			leftPredicate = new SimplePredicate(continuousFeature.getName(), SimplePredicate.Operator.LESS_THAN)
-				.setValue(value);
-
-			rightPredicate = new SimplePredicate(continuousFeature.getName(), SimplePredicate.Operator.GREATER_OR_EQUAL)
-				.setValue(value);
+			leftPredicate = predicateManager.createSimplePredicate(continuousFeature, SimplePredicate.Operator.LESS_THAN, value);
+			rightPredicate = predicateManager.createSimplePredicate(continuousFeature, SimplePredicate.Operator.GREATER_OR_EQUAL, value);
 		}
 
 		Node leftChild = new Node()
@@ -154,7 +165,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} else
 
 		{
-			encodeNode(leftChild, compressedTree, leftByteBuffer, schema);
+			encodeNode(leftChild, compressedTree, leftByteBuffer, predicateManager, leftCategoryManager, schema);
 		}
 
 		Node rightChild = new Node()
@@ -190,7 +201,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} else
 
 		{
-			encodeNode(rightChild, compressedTree, rightByteBuffer, schema);
+			encodeNode(rightChild, compressedTree, rightByteBuffer, predicateManager, rightCategoryManager, schema);
 		}
 
 		node.addNodes(leftChild, rightChild);
