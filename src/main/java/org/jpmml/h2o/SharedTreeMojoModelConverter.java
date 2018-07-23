@@ -21,7 +21,9 @@ package org.jpmml.h2o;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import hex.genmodel.algos.tree.NaSplitDir;
 import hex.genmodel.algos.tree.SharedTreeMojoModel;
 import hex.genmodel.utils.ByteBufferWrapper;
 import hex.genmodel.utils.GenmodelBitSet;
@@ -55,18 +57,24 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	public TreeModel encodeTreeModel(byte[] compressedTree, PredicateManager predicateManager, Schema schema){
 		Label label = new ContinuousLabel(null, DataType.DOUBLE);
 
+		AtomicInteger id = new AtomicInteger(1);
+
 		Node root = new Node()
+			.setId(Integer.toString(id.getAndIncrement()))
 			.setPredicate(new True());
 
 		ByteBufferWrapper buffer = new ByteBufferWrapper(compressedTree);
 
-		encodeNode(root, compressedTree, buffer, predicateManager, new CategoryManager(), schema);
+		encodeNode(root, id, compressedTree, buffer, predicateManager, new CategoryManager(), schema);
 
-		return new TreeModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(label), root);
+		TreeModel treeModel = new TreeModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(label), root)
+			.setMissingValueStrategy(TreeModel.MissingValueStrategy.DEFAULT_CHILD);
+
+		return treeModel;
 	}
 
 	static
-	public void encodeNode(Node node, byte[] compressedTree, ByteBufferWrapper byteBuffer, PredicateManager predicateManager, CategoryManager categoryManager, Schema schema){
+	public void encodeNode(Node node, AtomicInteger id, byte[] compressedTree, ByteBufferWrapper byteBuffer, PredicateManager predicateManager, CategoryManager categoryManager, Schema schema){
 		int nodeType = byteBuffer.get1U();
 
 		int lmask = (nodeType & 51);
@@ -81,6 +89,9 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 		int naSplitDir = byteBuffer.get1U();
 
+		boolean naVsRest = (naSplitDir == NaSplitDir.NAvsREST.value());
+		boolean leftward = (naSplitDir == NaSplitDir.NALeft.value()) || (naSplitDir == NaSplitDir.Left.value());
+
 		Feature feature = schema.getFeature(colId);
 
 		CategoryManager leftCategoryManager = categoryManager;
@@ -89,66 +100,74 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		Predicate leftPredicate;
 		Predicate rightPredicate;
 
-		if(equal != 0){
-			CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
-
-			GenmodelBitSet bitSet = new GenmodelBitSet(0);
-
-			if(equal == 8){
-				bitSet.fill2(compressedTree, byteBuffer);
-			} else
-
-			if(equal == 12){
-				bitSet.fill3(compressedTree, byteBuffer);
-			} else
-
-			{
-				throw new IllegalArgumentException();
-			}
-
-			FieldName name = categoricalFeature.getName();
-			List<String> values = categoricalFeature.getValues();
-
-			java.util.function.Predicate<String> valueFilter = categoryManager.getValueFilter(name);
-
-			List<String> leftValues = new ArrayList<>();
-			List<String> rightValues = new ArrayList<>();
-
-			for(int i = 0; i < values.size(); i++){
-				String value = values.get(i);
-
-				if(!valueFilter.test(value)){
-					continue;
-				} // End if
-
-				if(!bitSet.contains(i)){
-					leftValues.add(value);
-				} else
-
-				{
-					rightValues.add(value);
-				}
-			}
-
-			leftCategoryManager = leftCategoryManager.fork(name, leftValues);
-			rightCategoryManager = rightCategoryManager.fork(name, rightValues);
-
-			leftPredicate = predicateManager.createSimpleSetPredicate(categoricalFeature, leftValues);
-			rightPredicate = predicateManager.createSimpleSetPredicate(categoricalFeature, rightValues);
+		if(naVsRest){
+			leftPredicate = predicateManager.createSimplePredicate(feature, SimplePredicate.Operator.IS_NOT_MISSING, null);
+			rightPredicate = predicateManager.createSimplePredicate(feature, SimplePredicate.Operator.IS_MISSING, null);
 		} else
 
 		{
-			ContinuousFeature continuousFeature = feature.toContinuousFeature();
+			if(equal != 0){
+				CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
 
-			double splitVal = byteBuffer.get4f();
+				GenmodelBitSet bitSet = new GenmodelBitSet(0);
 
-			String value = ValueUtil.formatValue(splitVal);
+				if(equal == 8){
+					bitSet.fill2(compressedTree, byteBuffer);
+				} else
 
-			leftPredicate = predicateManager.createSimplePredicate(continuousFeature, SimplePredicate.Operator.LESS_THAN, value);
-			rightPredicate = predicateManager.createSimplePredicate(continuousFeature, SimplePredicate.Operator.GREATER_OR_EQUAL, value);
+				if(equal == 12){
+					bitSet.fill3(compressedTree, byteBuffer);
+				} else
+
+				{
+					throw new IllegalArgumentException();
+				}
+
+				FieldName name = categoricalFeature.getName();
+				List<String> values = categoricalFeature.getValues();
+
+				java.util.function.Predicate<String> valueFilter = categoryManager.getValueFilter(name);
+
+				List<String> leftValues = new ArrayList<>();
+				List<String> rightValues = new ArrayList<>();
+
+				for(int i = 0; i < values.size(); i++){
+					String value = values.get(i);
+
+					if(!valueFilter.test(value)){
+						continue;
+					} // End if
+
+					if(!bitSet.contains(i)){
+						leftValues.add(value);
+					} else
+
+					{
+						rightValues.add(value);
+					}
+				}
+
+				leftCategoryManager = leftCategoryManager.fork(name, leftValues);
+				rightCategoryManager = rightCategoryManager.fork(name, rightValues);
+
+				leftPredicate = predicateManager.createSimpleSetPredicate(categoricalFeature, leftValues);
+				rightPredicate = predicateManager.createSimpleSetPredicate(categoricalFeature, rightValues);
+			} else
+
+			{
+				ContinuousFeature continuousFeature = feature.toContinuousFeature();
+
+				double splitVal = byteBuffer.get4f();
+
+				String value = ValueUtil.formatValue(splitVal);
+
+				leftPredicate = predicateManager.createSimplePredicate(continuousFeature, SimplePredicate.Operator.LESS_THAN, value);
+				rightPredicate = predicateManager.createSimplePredicate(continuousFeature, SimplePredicate.Operator.GREATER_OR_EQUAL, value);
+			}
 		}
 
 		Node leftChild = new Node()
+			.setId(String.valueOf(id.getAndIncrement()))
 			.setPredicate(leftPredicate);
 
 		ByteBufferWrapper leftByteBuffer = new ByteBufferWrapper(compressedTree);
@@ -165,10 +184,11 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} else
 
 		{
-			encodeNode(leftChild, compressedTree, leftByteBuffer, predicateManager, leftCategoryManager, schema);
+			encodeNode(leftChild, id, compressedTree, leftByteBuffer, predicateManager, leftCategoryManager, schema);
 		}
 
 		Node rightChild = new Node()
+			.setId(String.valueOf(id.getAndIncrement()))
 			.setPredicate(rightPredicate);
 
 		ByteBufferWrapper rightByteBuffer = new ByteBufferWrapper(compressedTree);
@@ -201,10 +221,12 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} else
 
 		{
-			encodeNode(rightChild, compressedTree, rightByteBuffer, predicateManager, rightCategoryManager, schema);
+			encodeNode(rightChild, id, compressedTree, rightByteBuffer, predicateManager, rightCategoryManager, schema);
 		}
 
-		node.addNodes(leftChild, rightChild);
+		node
+			.addNodes(leftChild, rightChild)
+			.setDefaultChild(leftward ? leftChild.getId() : rightChild.getId());
 	}
 
 	static

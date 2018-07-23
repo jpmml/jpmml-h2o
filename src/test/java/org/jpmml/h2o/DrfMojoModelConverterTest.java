@@ -31,8 +31,20 @@ public class DrfMojoModelConverterTest extends ConverterTest {
 	}
 
 	@Test
+	public void evaluateAuditNA() throws Exception {
+		FieldName[] targetFields = {FieldName.create("Adjusted")};
+
+		evaluate("RandomForest", "AuditNA", excludeFields(targetFields));
+	}
+
+	@Test
 	public void evaluateAuto() throws Exception {
 		evaluate("RandomForest", "Auto");
+	}
+
+	@Test
+	public void evaluateAutoNA() throws Exception {
+		evaluate("RandomForest", "AutoNA");
 	}
 
 	@Test

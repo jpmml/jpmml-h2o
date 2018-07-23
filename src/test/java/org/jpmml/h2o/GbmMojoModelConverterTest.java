@@ -31,8 +31,20 @@ public class GbmMojoModelConverterTest extends ConverterTest {
 	}
 
 	@Test
+	public void evaluateAuditNA() throws Exception {
+		FieldName[] targetFields = {FieldName.create("Adjusted")};
+
+		evaluate("GBM", "AuditNA", excludeFields(targetFields));
+	}
+
+	@Test
 	public void evaluateAuto() throws Exception {
 		evaluate("GBM", "Auto");
+	}
+
+	@Test
+	public void evaluateAutoNA() throws Exception {
+		evaluate("GBM", "AutoNA");
 	}
 
 	@Test
