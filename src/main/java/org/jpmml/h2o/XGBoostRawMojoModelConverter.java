@@ -95,7 +95,7 @@ public class XGBoostRawMojoModelConverter extends Converter<XGBoostRawMojoModel>
 		}
 
 		Map<String, Object> options = new LinkedHashMap<>();
-		options.put(HasXGBoostOptions.OPTION_COMPACT, true);
+		options.put(HasXGBoostOptions.OPTION_COMPACT, Boolean.TRUE);
 
 		Schema xgbSchema = XGBoostUtil.toXGBoostSchema(schema);
 
