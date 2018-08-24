@@ -25,19 +25,31 @@ import org.junit.Test;
 public class XGBoostRawMojoModelConverterTest extends ConverterTest {
 
 	public XGBoostRawMojoModelConverterTest(){
-		super(new PMMLEquivalence(1e-5, 1e-5));
+		super(new PMMLEquivalence(1e-6, 1e-6));
 	}
 
 	@Test
 	public void evaluateAudit() throws Exception {
 		FieldName[] targetFields = {FieldName.create("Adjusted")};
 
-		evaluate("XGBoost", "Audit", excludeFields(targetFields));
+		evaluate("XGBoost", "Audit", excludeFields(targetFields), new PMMLEquivalence(3e-6, 3e-6));
+	}
+
+	@Test
+	public void evaluateAuditNA() throws Exception {
+		FieldName[] targetFields = {FieldName.create("Adjusted")};
+
+		evaluate("XGBoost", "AuditNA", excludeFields(targetFields), new PMMLEquivalence(3e-6, 3e-6));
 	}
 
 	@Test
 	public void evaluateAuto() throws Exception {
 		evaluate("XGBoost", "Auto");
+	}
+
+	@Test
+	public void evaluateAutoNA() throws Exception {
+		evaluate("XGBoost", "AutoNA");
 	}
 
 	@Test

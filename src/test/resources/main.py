@@ -47,6 +47,7 @@ audit_df = load_audit("AuditNA.csv")
 build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31), "GBMAuditNA")
 build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial"), "GLMAuditNA")
 build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31), "RandomForestAuditNA")
+build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31), "XGBoostAuditNA")
 
 #
 # Multi-class classification
@@ -98,3 +99,4 @@ auto_df = load_auto("AutoNA.csv")
 build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17), "GBMAutoNA")
 build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian"), "GLMAutoNA")
 build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17), "RandomForestAutoNA")
+build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17), "XGBoostAutoNA")

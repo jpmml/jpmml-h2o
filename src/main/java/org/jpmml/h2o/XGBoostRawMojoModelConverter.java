@@ -29,12 +29,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.dmg.pmml.DataField;
+import org.dmg.pmml.FieldName;
+import org.dmg.pmml.MissingValueTreatmentMethod;
 import org.dmg.pmml.mining.MiningModel;
 import org.jpmml.converter.BinaryFeature;
 import org.jpmml.converter.CategoricalFeature;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
-import org.jpmml.converter.PMMLEncoder;
+import org.jpmml.converter.MissingValueDecorator;
+import org.jpmml.converter.ModelEncoder;
 import org.jpmml.converter.Schema;
 import org.jpmml.xgboost.HasXGBoostOptions;
 import org.jpmml.xgboost.Learner;
@@ -57,13 +61,26 @@ public class XGBoostRawMojoModelConverter extends Converter<XGBoostRawMojoModel>
 
 			@Override
 			public Stream<Feature> apply(Feature feature){
-				PMMLEncoder encoder = feature.getEncoder();
+				ModelEncoder encoder = (ModelEncoder)feature.getEncoder();
 
 				if(feature instanceof CategoricalFeature){
 					CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
 
+					FieldName name = categoricalFeature.getName();
+
+					DataField dataField = encoder.getDataField(name);
+					if(dataField == null){
+						throw new IllegalArgumentException();
+					}
+
 					List<String> values = new ArrayList<>(categoricalFeature.getValues());
 					values.add("missing(NA)");
+
+					MissingValueDecorator missingValueDecorator = new MissingValueDecorator()
+						.setMissingValueReplacement("missing(NA)")
+						.setMissingValueTreatment(MissingValueTreatmentMethod.AS_VALUE);
+
+					encoder.addDecorator(name, missingValueDecorator);
 
 					return values.stream()
 						.map(value -> new BinaryFeature(encoder, categoricalFeature.getName(), categoricalFeature.getDataType(), value));
