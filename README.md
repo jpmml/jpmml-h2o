@@ -15,7 +15,7 @@ Java library and command-line application for converting [H2O.ai](https://www.h2
 
 # Prerequisites #
 
-* H2O 3.18.0 or newer
+* H2O 3.20.0 or newer
 * Java 1.8 or newer
 
 # Installation #
