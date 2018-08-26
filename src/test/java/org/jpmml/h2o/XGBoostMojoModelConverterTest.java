@@ -22,9 +22,9 @@ import org.dmg.pmml.FieldName;
 import org.jpmml.evaluator.PMMLEquivalence;
 import org.junit.Test;
 
-public class XGBoostRawMojoModelConverterTest extends ConverterTest {
+public class XGBoostMojoModelConverterTest extends ConverterTest {
 
-	public XGBoostRawMojoModelConverterTest(){
+	public XGBoostMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-6, 1e-6));
 	}
 

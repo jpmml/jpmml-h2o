@@ -18,29 +18,31 @@
  */
 package org.jpmml.h2o;
 
-import hex.genmodel.algos.xgboost.XGBoostMojoModel;
+import java.io.IOException;
 
-public class XGBoostRawMojoModel extends XGBoostMojoModel {
+import hex.genmodel.ModelMojoReader;
 
-	private byte[] boosterBytes = null;
+public class XGBoostMojoReader extends ModelMojoReader<XGBoostMojoModel> {
 
-
-	public XGBoostRawMojoModel(String[] columns, String[][] domains, String responseColumn, byte[] boosterBytes){
-		super(columns, domains, responseColumn);
-
-		setBoosterBytes(boosterBytes);
+	@Override
+	public String getModelName(){
+		return "XGBoost";
 	}
 
 	@Override
-	public void close(){
-		setBoosterBytes(null);
+	protected void readModelData() throws IOException {
 	}
 
-	public byte[] getBoosterBytes(){
-		return this.boosterBytes;
-	}
+	@Override
+	protected XGBoostMojoModel makeModel(String[] columns, String[][] domains, String responseColumn){
+		byte[] boosterBytes;
 
-	private void setBoosterBytes(byte[] boosterBytes){
-		this.boosterBytes = boosterBytes;
+		try {
+			boosterBytes = readblob("boosterBytes");
+		} catch(IOException ioe){
+			throw new IllegalStateException(ioe);
+		}
+
+		return new XGBoostMojoModel(columns, domains, responseColumn, boosterBytes);
 	}
 }

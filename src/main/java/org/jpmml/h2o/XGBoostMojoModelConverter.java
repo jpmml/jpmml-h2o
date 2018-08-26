@@ -44,9 +44,9 @@ import org.jpmml.xgboost.HasXGBoostOptions;
 import org.jpmml.xgboost.Learner;
 import org.jpmml.xgboost.XGBoostUtil;
 
-public class XGBoostRawMojoModelConverter extends Converter<XGBoostRawMojoModel> {
+public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 
-	public XGBoostRawMojoModelConverter(XGBoostRawMojoModel model){
+	public XGBoostMojoModelConverter(XGBoostMojoModel model){
 		super(model);
 	}
 
@@ -99,7 +99,7 @@ public class XGBoostRawMojoModelConverter extends Converter<XGBoostRawMojoModel>
 
 	@Override
 	public MiningModel encodeModel(Schema schema){
-		XGBoostRawMojoModel model = getModel();
+		XGBoostMojoModel model = getModel();
 
 		byte[] boosterBytes = model.getBoosterBytes();
 

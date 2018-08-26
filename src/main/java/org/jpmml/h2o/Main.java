@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import hex.genmodel.ModelMojoReader;
 import hex.genmodel.MojoModel;
 import hex.genmodel.MojoReaderBackend;
 import hex.genmodel.TmpMojoReaderBackend;
@@ -102,7 +103,7 @@ public class Main {
 				}
 			};
 
-			mojoModel = MojoModelUtil.readFrom(mojoReaderBackend);
+			mojoModel = ModelMojoReader.readFrom(mojoReaderBackend);
 		} catch(Exception e){
 			throw e;
 		}

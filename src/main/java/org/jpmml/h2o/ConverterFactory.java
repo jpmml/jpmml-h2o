@@ -47,8 +47,8 @@ public class ConverterFactory {
 			return new DrfMojoModelConverter((DrfMojoModel)model);
 		} else
 
-		if(model instanceof XGBoostRawMojoModel){
-			return new XGBoostRawMojoModelConverter((XGBoostRawMojoModel)model);
+		if(model instanceof XGBoostMojoModel){
+			return new XGBoostMojoModelConverter((XGBoostMojoModel)model);
 		}
 
 		throw new IllegalArgumentException("No converter for MOJO model " + model);

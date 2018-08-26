@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 
 import com.google.common.base.Equivalence;
 import com.google.common.io.ByteStreams;
+import hex.genmodel.ModelMojoReader;
 import hex.genmodel.MojoModel;
 import hex.genmodel.TmpMojoReaderBackend;
 import org.dmg.pmml.FieldName;
@@ -68,7 +69,7 @@ public class ConverterTest extends IntegrationTest {
 					TmpMojoReaderBackend mojoReaderBackend = new TmpMojoReaderBackend(tmpZipFile);
 
 					try {
-						mojoModel = MojoModelUtil.readFrom(mojoReaderBackend);
+						mojoModel = ModelMojoReader.readFrom(mojoReaderBackend);
 					} finally {
 						mojoReaderBackend.close();
 					}
