@@ -18,17 +18,11 @@
  */
 package org.jpmml.h2o;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.function.Predicate;
 
 import com.google.common.base.Equivalence;
-import com.google.common.io.ByteStreams;
-import hex.genmodel.ModelMojoReader;
 import hex.genmodel.MojoModel;
-import hex.genmodel.TmpMojoReaderBackend;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.ArchiveBatch;
@@ -60,19 +54,7 @@ public class ConverterTest extends IntegrationTest {
 				MojoModel mojoModel;
 
 				try(InputStream is = open("/mojo/" + getName() + getDataset() + ".zip")){
-					File tmpZipFile = File.createTempFile(getName() + getDataset(), ".zip");
-
-					try(OutputStream os = new FileOutputStream(tmpZipFile)){
-						ByteStreams.copy(is, os);
-					}
-
-					TmpMojoReaderBackend mojoReaderBackend = new TmpMojoReaderBackend(tmpZipFile);
-
-					try {
-						mojoModel = ModelMojoReader.readFrom(mojoReaderBackend);
-					} finally {
-						mojoReaderBackend.close();
-					}
+					mojoModel = MojoModelUtil.readFrom(is);
 				}
 
 				ConverterFactory converterFactory = ConverterFactory.newConverterFactory();
