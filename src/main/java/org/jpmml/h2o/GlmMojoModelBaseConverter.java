@@ -32,6 +32,7 @@ import org.jpmml.converter.ContinuousFeature;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.MissingValueDecorator;
+import org.jpmml.converter.ModelEncoder;
 import org.jpmml.converter.PMMLEncoder;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.ValueUtil;
@@ -44,13 +45,11 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 	}
 
 	@Override
-	public Schema encodeSchema(H2OEncoder encoder){
+	public Schema toMojoModelSchema(Schema schema){
 		M model = getModel();
 
 		boolean meanImputation = getMeanImputation(model);
 		boolean useAllFactorLevels = getUseAllFactorLevels(model);
-
-		Schema schema = super.encodeSchema(encoder);
 
 		Label label = schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
@@ -75,6 +74,8 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 					.setMissingValueReplacement(values.get(catModes[i]))
 					.setMissingValueTreatment(MissingValueTreatmentMethod.AS_MODE);
 
+				ModelEncoder encoder = (ModelEncoder)categoricalFeature.getEncoder();
+
 				encoder.addDecorator(categoricalFeature.getName(), missingValueDecorator);
 			} // End for
 
@@ -84,6 +85,8 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 				MissingValueDecorator missingValueDecorator = new MissingValueDecorator()
 					.setMissingValueReplacement(ValueUtil.formatValue(numMeans[i]))
 					.setMissingValueTreatment(MissingValueTreatmentMethod.AS_MEAN);
+
+				ModelEncoder encoder = (ModelEncoder)continuousFeature.getEncoder();
 
 				encoder.addDecorator(continuousFeature.getName(), missingValueDecorator);
 			}

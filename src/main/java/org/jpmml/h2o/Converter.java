@@ -63,10 +63,16 @@ public class Converter<M extends MojoModel> {
 		return encoder.createSchema();
 	}
 
+	public Schema toMojoModelSchema(Schema schema){
+		return schema;
+	}
+
 	public PMML encodePMML(){
 		H2OEncoder encoder = new H2OEncoder();
 
 		Schema schema = encodeSchema(encoder);
+
+		schema = toMojoModelSchema(schema);
 
 		Model model = encodeModel(schema);
 

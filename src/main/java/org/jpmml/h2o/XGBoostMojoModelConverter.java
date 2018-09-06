@@ -51,9 +51,7 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 	}
 
 	@Override
-	public Schema encodeSchema(H2OEncoder encoder){
-		Schema schema = super.encodeSchema(encoder);
-
+	public Schema toMojoModelSchema(Schema schema){
 		Label label = schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
 
