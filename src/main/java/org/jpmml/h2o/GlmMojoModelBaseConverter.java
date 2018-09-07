@@ -31,11 +31,8 @@ import org.jpmml.converter.CategoricalFeature;
 import org.jpmml.converter.ContinuousFeature;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
-import org.jpmml.converter.MissingValueDecorator;
-import org.jpmml.converter.ModelEncoder;
 import org.jpmml.converter.PMMLEncoder;
 import org.jpmml.converter.Schema;
-import org.jpmml.converter.ValueUtil;
 
 abstract
 public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M> {
@@ -70,25 +67,13 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 
 				List<String> values = categoricalFeature.getValues();
 
-				MissingValueDecorator missingValueDecorator = new MissingValueDecorator()
-					.setMissingValueReplacement(values.get(catModes[i]))
-					.setMissingValueTreatment(MissingValueTreatmentMethod.AS_MODE);
-
-				ModelEncoder encoder = (ModelEncoder)categoricalFeature.getEncoder();
-
-				encoder.addDecorator(categoricalFeature.getName(), missingValueDecorator);
+				ImputerUtil.encodeFeature(categoricalFeature, values.get(catModes[i]), MissingValueTreatmentMethod.AS_MODE);
 			} // End for
 
 			for(int i = 0; i < nums; i++){
 				ContinuousFeature continuousFeature = (ContinuousFeature)features.get(cats + i);
 
-				MissingValueDecorator missingValueDecorator = new MissingValueDecorator()
-					.setMissingValueReplacement(ValueUtil.formatValue(numMeans[i]))
-					.setMissingValueTreatment(MissingValueTreatmentMethod.AS_MEAN);
-
-				ModelEncoder encoder = (ModelEncoder)continuousFeature.getEncoder();
-
-				encoder.addDecorator(continuousFeature.getName(), missingValueDecorator);
+				ImputerUtil.encodeFeature(continuousFeature, numMeans[i], MissingValueTreatmentMethod.AS_MEAN);
 			}
 		}
 
