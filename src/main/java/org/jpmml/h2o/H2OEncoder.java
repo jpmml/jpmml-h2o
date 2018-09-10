@@ -42,14 +42,14 @@ public class H2OEncoder extends ModelEncoder {
 	private List<Feature> features = new ArrayList<>();
 
 
-	public DataField createDataField(String name, String[] categories){
+	public DataField createDataField(FieldName name, String[] categories){
 
 		if(categories != null){
-			return createDataField(FieldName.create(name), OpType.CATEGORICAL, DataType.STRING, Arrays.asList(categories));
+			return createDataField(name, OpType.CATEGORICAL, DataType.STRING, Arrays.asList(categories));
 		} else
 
 		{
-			return createDataField(FieldName.create(name), OpType.CONTINUOUS, DataType.DOUBLE);
+			return createDataField(name, OpType.CONTINUOUS, DataType.DOUBLE);
 		}
 	}
 

@@ -1,6 +1,7 @@
 from h2o.estimators.gbm import H2OGradientBoostingEstimator
 from h2o.estimators.glm import H2OGeneralizedLinearEstimator
 from h2o.estimators.random_forest import H2ORandomForestEstimator
+from h2o.estimators.stackedensemble import H2OStackedEnsembleEstimator
 from h2o.estimators.xgboost import H2OXGBoostEstimator
 
 import h2o
@@ -18,6 +19,13 @@ def store_mojo(model, name):
 	model.download_mojo(path = "mojo/" + name)
 
 h2o.connect()
+
+def train_stack(df, ntrees):
+	gbm = H2OGradientBoostingEstimator(ntrees = ntrees, nfolds = 3, fold_assignment = "Modulo", keep_cross_validation_predictions = True)
+	gbm.train(*split_columns(df), training_frame = df)
+	drf = H2ORandomForestEstimator(ntrees = ntrees, nfolds = 3, fold_assignment = "Modulo", keep_cross_validation_predictions = True)
+	drf.train(*split_columns(df), training_frame = df)
+	return [gbm, drf]
 
 #
 # Binary classification
@@ -47,6 +55,7 @@ audit_df = load_audit("AuditNA.csv")
 build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31), "GBMAuditNA")
 build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial"), "GLMAuditNA")
 build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31), "RandomForestAuditNA")
+build_audit(audit_df, H2OStackedEnsembleEstimator(base_models = train_stack(audit_df, 11)), "StackedEnsembleAuditNA")
 build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31), "XGBoostAuditNA")
 
 #
@@ -68,6 +77,7 @@ iris_df = load_iris("Iris.csv")
 build_iris(iris_df, H2OGradientBoostingEstimator(ntrees = 11), "GBMIris")
 build_iris(iris_df, H2OGeneralizedLinearEstimator(family = "multinomial"), "GLMIris")
 build_iris(iris_df, H2ORandomForestEstimator(ntrees = 11), "RandomForestIris")
+build_iris(iris_df, H2OStackedEnsembleEstimator(base_models = train_stack(iris_df, 5)), "StackedEnsembleIris")
 build_iris(iris_df, H2OXGBoostEstimator(ntrees = 11), "XGBoostIris")
 
 #
@@ -99,4 +109,5 @@ auto_df = load_auto("AutoNA.csv")
 build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17), "GBMAutoNA")
 build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian"), "GLMAutoNA")
 build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17), "RandomForestAutoNA")
+build_auto(auto_df, H2OStackedEnsembleEstimator(base_models = train_stack(auto_df, 7)), "StackedEnsembleAutoNA")
 build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17), "XGBoostAutoNA")
