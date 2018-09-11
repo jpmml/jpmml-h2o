@@ -19,6 +19,7 @@
 package org.jpmml.h2o;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -45,25 +46,55 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 	public Schema toMojoModelSchema(Schema schema){
 		M model = getModel();
 
+		int cats = getCats(model);
+		int[] catOffsets = getCatOffsets(model);
+		int nums = getNums(model);
+
 		boolean meanImputation = getMeanImputation(model);
 		boolean useAllFactorLevels = getUseAllFactorLevels(model);
 
 		Label label = schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
 
-		if(meanImputation){
-			int cats = getCats(model);
-			int[] catModes = getCatModes(model);
+		List<? extends Feature> categoricalFeatures = features.stream()
+			.filter(feature -> (feature instanceof CategoricalFeature))
+			.collect(Collectors.toList());
 
-			int nums = getNums(model);
+		List<? extends Feature> continuousFeatures = features.stream()
+			.filter(feature -> !(feature instanceof CategoricalFeature))
+			.map(feature -> feature.toContinuousFeature())
+			.collect(Collectors.toList());
+
+		if(categoricalFeatures.size() != cats || continuousFeatures.size() != nums){
+			throw new IllegalArgumentException();
+		}
+
+		for(int i = 0; i < cats; i++){
+			CategoricalFeature categoricalFeature = (CategoricalFeature)categoricalFeatures.get(i);
+
+			List<String> values = categoricalFeature.getValues();
+
+			if(values.size() != (catOffsets[i + 1] - catOffsets[i]) + (useAllFactorLevels ? 0 : 1)){
+				throw new IllegalArgumentException();
+			}
+		}
+
+		List<Feature> reorderedFeatures = new ArrayList<>();
+		reorderedFeatures.addAll(categoricalFeatures);
+		reorderedFeatures.addAll(continuousFeatures);
+
+		features = reorderedFeatures;
+
+		if(meanImputation){
+			int[] catModes = getCatModes(model);
 			double[] numMeans = getNumMeans(model);
 
-			if(features.size() != (cats + nums) || (cats != catModes.length) || (nums != numMeans.length)){
+			if(cats != catModes.length || nums != numMeans.length){
 				throw new IllegalArgumentException();
 			}
 
 			for(int i = 0; i < cats; i++){
-				CategoricalFeature categoricalFeature = (CategoricalFeature)features.get(i);
+				CategoricalFeature categoricalFeature = (CategoricalFeature)categoricalFeatures.get(i);
 
 				List<String> values = categoricalFeature.getValues();
 
@@ -71,7 +102,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 			} // End for
 
 			for(int i = 0; i < nums; i++){
-				ContinuousFeature continuousFeature = (ContinuousFeature)features.get(cats + i);
+				ContinuousFeature continuousFeature = (ContinuousFeature)continuousFeatures.get(i);
 
 				ImputerUtil.encodeFeature(continuousFeature, numMeans[i], MissingValueTreatmentMethod.AS_MEAN);
 			}
@@ -122,6 +153,11 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 	}
 
 	static
+	public int[] getCatOffsets(MojoModel model){
+		return (int[])getFieldValue(GlmMojoModelBaseConverter.FIELD_CATOFFSETS, model);
+	}
+
+	static
 	public String getFamily(MojoModel model){
 		return (String)getFieldValue(GlmMojoModelBaseConverter.FIELD_FAMILY, model);
 	}
@@ -160,6 +196,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 	private static final Field FIELD_BETA;
 	private static final Field FIELD_CATS;
 	private static final Field FIELD_CATMODES;
+	private static final Field FIELD_CATOFFSETS;
 	private static final Field FIELD_FAMILY;
 	private static final Field FIELD_MEANIMPUTATION;
 	private static final Field FIELD_NUMS;
@@ -172,6 +209,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 			FIELD_BETA = CLASS_GLMMOJOMODELBASE.getDeclaredField("_beta");
 			FIELD_CATS = CLASS_GLMMOJOMODELBASE.getDeclaredField("_cats");
 			FIELD_CATMODES = CLASS_GLMMOJOMODELBASE.getDeclaredField("_catModes");
+			FIELD_CATOFFSETS = CLASS_GLMMOJOMODELBASE.getDeclaredField("_catOffsets");
 			FIELD_FAMILY = CLASS_GLMMOJOMODELBASE.getDeclaredField("_family");
 			FIELD_MEANIMPUTATION = CLASS_GLMMOJOMODELBASE.getDeclaredField("_meanImputation");
 			FIELD_NUMS = CLASS_GLMMOJOMODELBASE.getDeclaredField("_nums");
