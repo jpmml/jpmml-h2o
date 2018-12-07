@@ -235,11 +235,6 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	}
 
 	static
-	public Number getMojoVersion(SharedTreeMojoModel model){
-		return (Number)getFieldValue(FIELD_MOJOVERSION, model);
-	}
-
-	static
 	public int getNTreeGroups(SharedTreeMojoModel model){
 		return (int)getFieldValue(FIELD_NTREEGROUPS, model);
 	}
@@ -250,7 +245,6 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	}
 
 	private static final Field FIELD_COMPRESSEDTREES;
-	private static final Field FIELD_MOJOVERSION;
 	private static final Field FIELD_NTREEGROUPS;
 	private static final Field FIELD_NTREESPERGROUP;
 
@@ -258,7 +252,6 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 		try {
 			FIELD_COMPRESSEDTREES = SharedTreeMojoModel.class.getDeclaredField("_compressed_trees");
-			FIELD_MOJOVERSION = SharedTreeMojoModel.class.getDeclaredField("_mojo_version");
 			FIELD_NTREEGROUPS = SharedTreeMojoModel.class.getDeclaredField("_ntree_groups");
 			FIELD_NTREESPERGROUP = SharedTreeMojoModel.class.getDeclaredField("_ntrees_per_group");
 		} catch(ReflectiveOperationException roe){

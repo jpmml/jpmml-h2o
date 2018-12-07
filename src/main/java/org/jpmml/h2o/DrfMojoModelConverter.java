@@ -57,11 +57,10 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 
 		boolean binomialDoubleTrees = getBinomialDoubleTrees(model);
 		byte[][] compressedTrees = getCompressedTrees(model);
-		Number mojoVersion = getMojoVersion(model);
 		int ntreeGroups = getNTreeGroups(model);
 		int ntreesPerGroup = getNTreesPerGroup(model);
 
-		if(mojoVersion.doubleValue() != 1.2D){
+		if(model._mojo_version < 1.2d){
 			throw new IllegalArgumentException();
 		}
 

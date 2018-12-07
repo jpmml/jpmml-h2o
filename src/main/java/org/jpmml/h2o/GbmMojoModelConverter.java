@@ -56,11 +56,10 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 		GbmMojoModel model = getModel();
 
 		byte[][] compressedTrees = getCompressedTrees(model);
-		Number mojoVersion = getMojoVersion(model);
 		int ntreeGroups = getNTreeGroups(model);
 		int ntreesPerGroup = getNTreesPerGroup(model);
 
-		if(mojoVersion.doubleValue() != 1.2d){
+		if(model._mojo_version < 1.2d){
 			throw new IllegalArgumentException();
 		}
 

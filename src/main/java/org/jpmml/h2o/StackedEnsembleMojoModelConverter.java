@@ -61,16 +61,19 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 
 		H2OEncoder encoder = new H2OEncoder();
 
-		MojoModel[] baseModels = getBaseModels(model);
+		Object[] baseModels = getBaseModels(model);
 		for(int i = 0; i < baseModels.length; i++){
-			MojoModel baseModel = baseModels[i];
+			Object baseModel = baseModels[i];
+
+			MojoModel mojoModel = getMojoModel(baseModel);
+			double[] mapping = getMapping(baseModel);
 
 			// XXX
-			if(!(baseModel instanceof SharedTreeMojoModel)){
+			if(!(mojoModel instanceof SharedTreeMojoModel) || (mapping != null)){
 				throw new IllegalArgumentException();
 			}
 
-			Converter<?> converter = converterFactory.newConverter(baseModel);
+			Converter<?> converter = converterFactory.newConverter(mojoModel);
 
 			Schema baseModelSchema = converter.toMojoModelSchema(segmentSchema);
 
@@ -137,12 +140,23 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 	}
 
 	static
-	public MojoModel[] getBaseModels(StackedEnsembleMojoModel model){
-		return (MojoModel[])getFieldValue(StackedEnsembleMojoModelConverter.FIELD_BASEMODELS, model);
+	public Object[] getBaseModels(StackedEnsembleMojoModel model){
+		return (Object[])getFieldValue(StackedEnsembleMojoModelConverter.FIELD_BASEMODELS, model);
 	}
 
+	static
 	public MojoModel getMetaLearner(StackedEnsembleMojoModel model){
 		return (MojoModel)getFieldValue(StackedEnsembleMojoModelConverter.FIELD_METALEARNER, model);
+	}
+
+	static
+	public MojoModel getMojoModel(Object baseModel){
+		return (MojoModel)getFieldValue(StackedEnsembleMojoModelConverter.FIELD_MOJOMODEL, baseModel);
+	}
+
+	static
+	public double[] getMapping(Object baseModel){
+		return (double[])getFieldValue(StackedEnsembleMojoModelConverter.FIELD_MAPPING, baseModel);
 	}
 
 	private static final Field FIELD_BASEMODELS;
@@ -153,6 +167,30 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 		try {
 			FIELD_BASEMODELS = StackedEnsembleMojoModel.class.getDeclaredField("_baseModels");
 			FIELD_METALEARNER = StackedEnsembleMojoModel.class.getDeclaredField("_metaLearner");
+		} catch(ReflectiveOperationException roe){
+			throw new RuntimeException(roe);
+		}
+	}
+
+	private static final Class<?> CLASS_STACKEDENSEMBLESUBMODEL;
+
+	static {
+
+		try {
+			CLASS_STACKEDENSEMBLESUBMODEL = getDeclaredClass(StackedEnsembleMojoModel.class, "StackedEnsembleMojoSubModel");
+		} catch(ReflectiveOperationException roe){
+			throw new RuntimeException(roe);
+		}
+	}
+
+	private static final Field FIELD_MOJOMODEL;
+	private static final Field FIELD_MAPPING;
+
+	static {
+
+		try {
+			FIELD_MOJOMODEL = CLASS_STACKEDENSEMBLESUBMODEL.getDeclaredField("_mojoModel");
+			FIELD_MAPPING = CLASS_STACKEDENSEMBLESUBMODEL.getDeclaredField("_mapping");
 		} catch(ReflectiveOperationException roe){
 			throw new RuntimeException(roe);
 		}

@@ -94,14 +94,34 @@ public class Converter<M extends MojoModel> {
 	}
 
 	static
+	protected Class<?> getDeclaredClass(Class<?> clazz, String name) throws ReflectiveOperationException {
+		String subclassName = clazz.getName() + "$" + name;
+
+		Class<?>[] declaredClazzes = clazz.getDeclaredClasses();
+		for(Class<?> declaredClazz : declaredClazzes){
+
+			if((subclassName).equals(declaredClazz.getName())){
+				return declaredClazz;
+			}
+		}
+
+		throw new ClassNotFoundException(subclassName);
+	}
+
+	static
 	protected <M extends MojoModel> Object getFieldValue(Field field, M model){
+		return getFieldValue(field, (Object)model);
+	}
+
+	static
+	protected Object getFieldValue(Field field, Object object){
 
 		try {
 			if(!field.isAccessible()){
 				field.setAccessible(true);
 			}
 
-			return field.get(model);
+			return field.get(object);
 		} catch(ReflectiveOperationException roe){
 			throw new RuntimeException(roe);
 		}

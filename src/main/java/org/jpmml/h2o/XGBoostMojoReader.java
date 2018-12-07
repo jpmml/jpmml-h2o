@@ -45,4 +45,9 @@ public class XGBoostMojoReader extends ModelMojoReader<XGBoostMojoModel> {
 
 		return new XGBoostMojoModel(columns, domains, responseColumn, boosterBytes);
 	}
+
+	@Override
+	public String mojoVersion(){
+		return "1.00";
+	}
 }

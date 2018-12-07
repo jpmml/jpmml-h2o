@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>ai.h2o</groupId>
 			<artifactId>h2o-genmodel</artifactId>
-			<version>[3.16.0.1,)</version>
+			<version>[3.22.0.1,)</version>
 			<exclusions>
 				<exclusion>
 					<groupId>ai.h2o</groupId>
