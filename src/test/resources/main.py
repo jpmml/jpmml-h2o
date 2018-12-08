@@ -47,14 +47,14 @@ audit_df = load_audit("Audit.csv")
 
 build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31), "GBMAudit")
 build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", lambda_ = 0), "GLMAudit")
-build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31), "RandomForestAudit")
+build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31, binomial_double_trees = True), "RandomForestAudit")
 build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31), "XGBoostAudit")
 
 audit_df = load_audit("AuditNA.csv")
 
 build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31), "GBMAuditNA")
 build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial"), "GLMAuditNA")
-build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31), "RandomForestAuditNA")
+build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31, binomial_double_trees = False), "RandomForestAuditNA")
 build_audit(audit_df, H2OStackedEnsembleEstimator(base_models = train_stack(audit_df, 11)), "StackedEnsembleAuditNA")
 build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31), "XGBoostAuditNA")
 
