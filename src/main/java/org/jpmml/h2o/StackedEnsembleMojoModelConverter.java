@@ -136,7 +136,7 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 			models.add(segmentModel);
 		}
 
-		return MiningModelUtil.createModelChain(models, schema);
+		return MiningModelUtil.createModelChain(models);
 	}
 
 	static

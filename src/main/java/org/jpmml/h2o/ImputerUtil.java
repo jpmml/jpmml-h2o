@@ -44,7 +44,7 @@ public class ImputerUtil {
 	public Feature encodeFeature(Feature feature, Object replacementValue, MissingValueTreatmentMethod missingValueTreatmentMethod){
 		ModelEncoder encoder = (ModelEncoder)feature.getEncoder();
 
-		Field<?> field = encoder.getField(feature.getName());
+		Field<?> field = feature.getField();
 
 		if(field instanceof DataField){
 			MissingValueDecorator missingValueDecorator = new MissingValueDecorator()
