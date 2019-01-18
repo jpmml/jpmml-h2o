@@ -33,7 +33,8 @@ import org.dmg.pmml.MiningFunction;
 import org.dmg.pmml.Predicate;
 import org.dmg.pmml.SimplePredicate;
 import org.dmg.pmml.True;
-import org.dmg.pmml.tree.ComplexNode;
+import org.dmg.pmml.tree.BranchNode;
+import org.dmg.pmml.tree.LeafNode;
 import org.dmg.pmml.tree.Node;
 import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.CategoricalFeature;
@@ -58,15 +59,11 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	public TreeModel encodeTreeModel(byte[] compressedTree, PredicateManager predicateManager, Schema schema){
 		Label label = new ContinuousLabel(null, DataType.DOUBLE);
 
-		AtomicInteger id = new AtomicInteger(1);
-
-		Node root = new ComplexNode()
-			.setId(Integer.toString(id.getAndIncrement()))
-			.setPredicate(new True());
+		AtomicInteger idSequence = new AtomicInteger(1);
 
 		ByteBufferWrapper buffer = new ByteBufferWrapper(compressedTree);
 
-		encodeNode(root, id, compressedTree, buffer, predicateManager, new CategoryManager(), schema);
+		Node root = encodeNode(new True(), idSequence, compressedTree, buffer, predicateManager, new CategoryManager(), schema);
 
 		TreeModel treeModel = new TreeModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(label), root)
 			.setMissingValueStrategy(TreeModel.MissingValueStrategy.DEFAULT_CHILD);
@@ -75,7 +72,9 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	}
 
 	static
-	public void encodeNode(Node node, AtomicInteger id, byte[] compressedTree, ByteBufferWrapper byteBuffer, PredicateManager predicateManager, CategoryManager categoryManager, Schema schema){
+	public Node encodeNode(Predicate predicate, AtomicInteger idSequence, byte[] compressedTree, ByteBufferWrapper byteBuffer, PredicateManager predicateManager, CategoryManager categoryManager, Schema schema){
+		String id = nextId(idSequence);
+
 		int nodeType = byteBuffer.get1U();
 
 		int lmask = (nodeType & 51);
@@ -167,9 +166,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 			}
 		}
 
-		Node leftChild = new ComplexNode()
-			.setId(String.valueOf(id.getAndIncrement()))
-			.setPredicate(leftPredicate);
+		Node leftChild;
 
 		ByteBufferWrapper leftByteBuffer = new ByteBufferWrapper(compressedTree);
 		leftByteBuffer.skip(byteBuffer.position());
@@ -181,16 +178,17 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		if((lmask & 16) != 0){
 			double score = leftByteBuffer.get4f();
 
-			leftChild.setScore(ValueUtil.formatValue(score));
+			leftChild = new LeafNode()
+				.setId(nextId(idSequence))
+				.setScore(score)
+				.setPredicate(leftPredicate);
 		} else
 
 		{
-			encodeNode(leftChild, id, compressedTree, leftByteBuffer, predicateManager, leftCategoryManager, schema);
+			leftChild = encodeNode(leftPredicate, idSequence, compressedTree, leftByteBuffer, predicateManager, leftCategoryManager, schema);
 		}
 
-		Node rightChild = new ComplexNode()
-			.setId(String.valueOf(id.getAndIncrement()))
-			.setPredicate(rightPredicate);
+		Node rightChild;
 
 		ByteBufferWrapper rightByteBuffer = new ByteBufferWrapper(compressedTree);
 		rightByteBuffer.skip(byteBuffer.position());
@@ -218,16 +216,23 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		if((lmask2 & 16) != 0){
 			double score = rightByteBuffer.get4f();
 
-			rightChild.setScore(ValueUtil.formatValue(score));
+			rightChild = new LeafNode()
+				.setId(nextId(idSequence))
+				.setScore(score)
+				.setPredicate(rightPredicate);
 		} else
 
 		{
-			encodeNode(rightChild, id, compressedTree, rightByteBuffer, predicateManager, rightCategoryManager, schema);
+			rightChild = encodeNode(rightPredicate, idSequence, compressedTree, rightByteBuffer, predicateManager, rightCategoryManager, schema);
 		}
 
-		node
-			.addNodes(leftChild, rightChild)
-			.setDefaultChild(leftward ? leftChild.getId() : rightChild.getId());
+		Node result = new BranchNode()
+			.setId(id)
+			.setDefaultChild(leftward ? leftChild.getId() : rightChild.getId())
+			.setPredicate(predicate)
+			.addNodes(leftChild, rightChild);
+
+		return result;
 	}
 
 	static
@@ -243,6 +248,11 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	static
 	public int getNTreesPerGroup(SharedTreeMojoModel model){
 		return (int)getFieldValue(FIELD_NTREESPERGROUP, model);
+	}
+
+	static
+	private String nextId(AtomicInteger id){
+		return String.valueOf(id.getAndIncrement());
 	}
 
 	private static final Field FIELD_COMPRESSEDTREES;
