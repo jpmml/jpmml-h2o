@@ -33,6 +33,7 @@ import org.dmg.pmml.MiningFunction;
 import org.dmg.pmml.Predicate;
 import org.dmg.pmml.SimplePredicate;
 import org.dmg.pmml.True;
+import org.dmg.pmml.tree.ComplexNode;
 import org.dmg.pmml.tree.Node;
 import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.CategoricalFeature;
@@ -59,7 +60,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 		AtomicInteger id = new AtomicInteger(1);
 
-		Node root = new Node()
+		Node root = new ComplexNode()
 			.setId(Integer.toString(id.getAndIncrement()))
 			.setPredicate(new True());
 
@@ -166,7 +167,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 			}
 		}
 
-		Node leftChild = new Node()
+		Node leftChild = new ComplexNode()
 			.setId(String.valueOf(id.getAndIncrement()))
 			.setPredicate(leftPredicate);
 
@@ -187,7 +188,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 			encodeNode(leftChild, id, compressedTree, leftByteBuffer, predicateManager, leftCategoryManager, schema);
 		}
 
-		Node rightChild = new Node()
+		Node rightChild = new ComplexNode()
 			.setId(String.valueOf(id.getAndIncrement()))
 			.setPredicate(rightPredicate);
 

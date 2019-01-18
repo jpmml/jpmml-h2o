@@ -19,20 +19,11 @@
 package org.jpmml.h2o;
 
 import org.dmg.pmml.DataField;
-import org.dmg.pmml.DataType;
-import org.dmg.pmml.DerivedField;
-import org.dmg.pmml.Expression;
 import org.dmg.pmml.Field;
-import org.dmg.pmml.FieldRef;
 import org.dmg.pmml.MissingValueTreatmentMethod;
-import org.jpmml.converter.ContinuousFeature;
 import org.jpmml.converter.Feature;
-import org.jpmml.converter.FeatureUtil;
 import org.jpmml.converter.MissingValueDecorator;
 import org.jpmml.converter.ModelEncoder;
-import org.jpmml.converter.ObjectFeature;
-import org.jpmml.converter.PMMLUtil;
-import org.jpmml.converter.StringFeature;
 import org.jpmml.converter.ValueUtil;
 
 public class ImputerUtil {
@@ -54,26 +45,6 @@ public class ImputerUtil {
 			encoder.addDecorator(feature.getName(), missingValueDecorator);
 
 			return feature;
-		} else
-
-		if(field instanceof DerivedField){
-			FieldRef fieldRef = feature.ref();
-
-			Expression expression = PMMLUtil.createApply("if", PMMLUtil.createApply("isMissing", fieldRef), PMMLUtil.createConstant(replacementValue, feature.getDataType()), fieldRef);
-
-			DerivedField derivedField = encoder.createDerivedField(FeatureUtil.createName("imputer", feature), field.getOpType(), field.getDataType(), expression);
-
-			DataType dataType = derivedField.getDataType();
-			switch(dataType){
-				case INTEGER:
-				case FLOAT:
-				case DOUBLE:
-					return new ContinuousFeature(encoder, derivedField);
-				case STRING:
-					return new StringFeature(encoder, derivedField);
-				default:
-					return new ObjectFeature(encoder, derivedField.getName(), derivedField.getDataType());
-			}
 		} else
 
 		{
