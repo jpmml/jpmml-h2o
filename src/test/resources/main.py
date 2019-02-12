@@ -6,8 +6,11 @@ from h2o.estimators.xgboost import H2OXGBoostEstimator
 
 import h2o
 
-def load_csv(name):
-	return h2o.import_file(path = "csv/" + name, header = 1, sep = ",", na_strings = ["N/A"])
+def load_csv(name, factors = []):
+	df = h2o.import_file(path = "csv/" + name, header = 1, sep = ",", na_strings = ["N/A"])
+	for factor in factors:
+		df[factor] = df[factor].asfactor()
+	return df
 
 def store_csv(df, name):
 	df.as_data_frame(use_pandas = True).to_csv("csv/" + name, index = False)
@@ -32,9 +35,7 @@ def train_stack(df, ntrees):
 #
 
 def load_audit(name):
-	df = load_csv(name)
-	df["Adjusted"] = df["Adjusted"].asfactor()
-	return df
+	return load_csv(name + ".csv", ["Adjusted"])
 
 def build_audit(df, classifier, name):
 	classifier.train(*split_columns(df), training_frame = df)
@@ -43,14 +44,14 @@ def build_audit(df, classifier, name):
 	adjusted.set_names(["Adjusted", "probability(0)", "probability(1)"])
 	store_csv(adjusted, name + ".csv")
 
-audit_df = load_audit("Audit.csv")
+audit_df = load_audit("Audit")
 
 build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31), "GBMAudit")
 build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", lambda_ = 0), "GLMAudit")
 build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31, binomial_double_trees = True), "RandomForestAudit")
 build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31), "XGBoostAudit")
 
-audit_df = load_audit("AuditNA.csv")
+audit_df = load_audit("AuditNA")
 
 build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31), "GBMAuditNA")
 build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial"), "GLMAuditNA")
@@ -63,7 +64,7 @@ build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31), "XGBoostAuditNA")
 #
 
 def load_iris(name):
-	return load_csv(name)
+	return load_csv(name + ".csv")
 
 def build_iris(df, classifier, name):
 	classifier.train(*split_columns(df), training_frame = df)
@@ -72,7 +73,7 @@ def build_iris(df, classifier, name):
 	species.set_names(["Species", "probability(setosa)", "probability(versicolor)", "probability(virginica)"])
 	store_csv(species, name + ".csv")
 
-iris_df = load_iris("Iris.csv")
+iris_df = load_iris("Iris")
 
 build_iris(iris_df, H2OGradientBoostingEstimator(ntrees = 11), "GBMIris")
 build_iris(iris_df, H2OGeneralizedLinearEstimator(family = "multinomial"), "GLMIris")
@@ -85,10 +86,7 @@ build_iris(iris_df, H2OXGBoostEstimator(ntrees = 11), "XGBoostIris")
 #
 
 def load_auto(name):
-	df = load_csv(name)
-	df["cylinders"] = df["cylinders"].asfactor()
-	df["origin"] = df["origin"].asfactor()
-	return df
+	return load_csv(name + ".csv", ["cylinders", "origin"])
 
 def build_auto(df, regressor, name):
 	regressor.train(*split_columns(df), training_frame = df)
@@ -97,14 +95,14 @@ def build_auto(df, regressor, name):
 	mpg.set_names(["mpg"])
 	store_csv(mpg, name + ".csv")
 
-auto_df = load_auto("Auto.csv")
+auto_df = load_auto("Auto")
 
 build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17), "GBMAuto")
 build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", lambda_ = 0), "GLMAuto")
 build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17), "RandomForestAuto")
 build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17), "XGBoostAuto")
 
-auto_df = load_auto("AutoNA.csv")
+auto_df = load_auto("AutoNA")
 
 build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17), "GBMAutoNA")
 build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian"), "GLMAutoNA")
@@ -113,13 +111,7 @@ build_auto(auto_df, H2OStackedEnsembleEstimator(base_models = train_stack(auto_d
 build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17), "XGBoostAutoNA")
 
 def load_visit(name):
-	df = load_csv(name)
-	df["edlevel"] = df["edlevel"].asfactor()
-	df["outwork"] = df["outwork"].asfactor()
-	df["female"] = df["female"].asfactor()
-	df["married"] = df["married"].asfactor()
-	df["kids"] = df["kids"].asfactor()
-	return df
+	return load_csv(name + ".csv", ["edlevel", "outwork", "female", "married", "kids"])
 
 def build_visit(df, regressor, name):
 	regressor.train(*split_columns(df), training_frame = df)
@@ -128,12 +120,12 @@ def build_visit(df, regressor, name):
 	docvis.set_names(["docvis"])
 	store_csv(docvis, name + ".csv")
 
-visit_df = load_visit("Visit.csv")
+visit_df = load_visit("Visit")
 
 build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "poisson"), "GBMPoissonVisit")
 build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "tweedie"), "GBMTweedieVisit")
 
-visit_df = load_visit("VisitNA.csv")
+visit_df = load_visit("VisitNA")
 
 build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "poisson"), "GBMPoissonVisitNA")
 build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "gamma"), "GBMGammaVisitNA")
