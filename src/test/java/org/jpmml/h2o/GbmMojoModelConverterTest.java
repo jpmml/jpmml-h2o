@@ -51,4 +51,24 @@ public class GbmMojoModelConverterTest extends ConverterTest {
 	public void evaluateIris() throws Exception {
 		evaluate("GBM", "Iris");
 	}
+
+	@Test
+	public void evaluatePoissonVisit() throws Exception {
+		evaluate("GBMPoisson", "Visit");
+	}
+
+	@Test
+	public void evaluateTweedieVisit() throws Exception {
+		evaluate("GBMTweedie", "Visit");
+	}
+
+	@Test
+	public void evaluatePoissonVisitNA() throws Exception {
+		evaluate("GBMPoisson", "VisitNA");
+	}
+
+	@Test
+	public void evaluateGammaVisitNA() throws Exception {
+		evaluate("GBMGamma", "VisitNA");
+	}
 }

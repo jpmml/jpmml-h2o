@@ -111,3 +111,29 @@ build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian"), "GLMAuto
 build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17), "RandomForestAutoNA")
 build_auto(auto_df, H2OStackedEnsembleEstimator(base_models = train_stack(auto_df, 7)), "StackedEnsembleAutoNA")
 build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17), "XGBoostAutoNA")
+
+def load_visit(name):
+	df = load_csv(name)
+	df["edlevel"] = df["edlevel"].asfactor()
+	df["outwork"] = df["outwork"].asfactor()
+	df["female"] = df["female"].asfactor()
+	df["married"] = df["married"].asfactor()
+	df["kids"] = df["kids"].asfactor()
+	return df
+
+def build_visit(df, regressor, name):
+	regressor.train(*split_columns(df), training_frame = df)
+	store_mojo(regressor, name + ".zip")
+	docvis = regressor.predict(df)
+	docvis.set_names(["docvis"])
+	store_csv(docvis, name + ".csv")
+
+visit_df = load_visit("Visit.csv")
+
+build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "poisson"), "GBMPoissonVisit")
+build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "tweedie"), "GBMTweedieVisit")
+
+visit_df = load_visit("VisitNA.csv")
+
+build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "poisson"), "GBMPoissonVisitNA")
+build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "gamma"), "GBMGammaVisitNA")

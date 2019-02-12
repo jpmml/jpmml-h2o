@@ -82,6 +82,17 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 			return miningModel;
 		} else
 
+		if((DistributionFamily.poisson).equals(model._family) || (DistributionFamily.gamma).equals(model._family) || (DistributionFamily.tweedie).equals(model._family)){
+			ContinuousLabel continuousLabel = new ContinuousLabel(null, DataType.DOUBLE);
+
+			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
+				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.SUM, treeModels))
+				.setTargets(ModelUtil.createRescaleTargets(null, (double)model._init_f, continuousLabel))
+				.setOutput(ModelUtil.createPredictedOutput(FieldName.create("gbmValue"), OpType.CONTINUOUS, DataType.DOUBLE));
+
+			return MiningModelUtil.createRegression(miningModel, RegressionModel.NormalizationMethod.EXP, schema);
+		} else
+
 		if((DistributionFamily.bernoulli).equals(model._family)){
 			ContinuousLabel continuousLabel = new ContinuousLabel(null, DataType.DOUBLE);
 
