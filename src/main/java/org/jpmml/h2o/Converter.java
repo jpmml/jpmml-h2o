@@ -19,6 +19,7 @@
 package org.jpmml.h2o;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 import hex.genmodel.MojoModel;
 import org.dmg.pmml.DataField;
@@ -85,12 +86,7 @@ public class Converter<M extends MojoModel> {
 	}
 
 	private void setModel(M model){
-
-		if(model == null){
-			throw new IllegalArgumentException();
-		}
-
-		this.model = model;
+		this.model = Objects.requireNonNull(model);
 	}
 
 	static
