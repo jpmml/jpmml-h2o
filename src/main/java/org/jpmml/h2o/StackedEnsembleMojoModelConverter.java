@@ -69,9 +69,12 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 			MojoModel mojoModel = getMojoModel(baseModel);
 			double[] mapping = getMapping(baseModel);
 
-			// XXX
-			if(!(mojoModel instanceof SharedTreeMojoModel) || (mapping != null)){
-				throw new IllegalArgumentException();
+			if(!(mojoModel instanceof SharedTreeMojoModel)){
+				throw new IllegalArgumentException("Stacking of models other than decision tree models is not supported");
+			} // End if
+
+			if(mapping != null){
+				throw new IllegalArgumentException("Feature re-indexing is not supported");
 			}
 
 			Converter<?> converter = converterFactory.newConverter(mojoModel);

@@ -68,7 +68,7 @@ public class H2OEncoder extends ModelEncoder {
 				setLabel(new CategoricalLabel(dataField));
 				break;
 			default:
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Expected categorical or continuous operational type, got " + opType.value() + " operational type");
 		}
 	}
 
@@ -83,7 +83,7 @@ public class H2OEncoder extends ModelEncoder {
 				addFeature(new CategoricalFeature(this, dataField));
 				break;
 			default:
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Expected categorical or continuous operational type, got " + opType.value() + " operational type");
 		}
 	}
 

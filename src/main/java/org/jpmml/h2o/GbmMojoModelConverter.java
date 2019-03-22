@@ -59,7 +59,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 		int ntreesPerGroup = getNTreesPerGroup(model);
 
 		if(model._mojo_version < 1.2d){
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Version " + model._mojo_version + " is not supported");
 		}
 
 		Label label = schema.getLabel();
@@ -119,7 +119,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 		} else
 
 		{
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Distribution family " + model._family + " is not supported");
 		}
 	}
 }

@@ -83,7 +83,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 		int colId = byteBuffer.get2();
 		if(colId == 65535){
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Feature index 65535 is not supported");
 		}
 
 		int naSplitDir = byteBuffer.get1U();
@@ -119,7 +119,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 				} else
 
 				{
-					throw new IllegalArgumentException();
+					throw new IllegalArgumentException("Node type " + equal + " is not supported");
 				}
 
 				FieldName name = categoricalFeature.getName();
@@ -207,7 +207,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 				rightByteBuffer.skip(4);
 				break;
 			default:
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Node type " + lmask + " is not supported");
 		}
 
 		if((lmask2 & 16) != 0){

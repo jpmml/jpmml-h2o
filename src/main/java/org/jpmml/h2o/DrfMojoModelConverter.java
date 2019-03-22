@@ -60,7 +60,7 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 		int ntreesPerGroup = getNTreesPerGroup(model);
 
 		if(model._mojo_version < 1.2d){
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Version " + model._mojo_version + " is not supported");
 		}
 
 		Label label = schema.getLabel();
