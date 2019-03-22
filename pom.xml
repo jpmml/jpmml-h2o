@@ -10,7 +10,7 @@
 
 	<groupId>org.jpmml</groupId>
 	<artifactId>jpmml-h2o</artifactId>
-	<version>1.0.5</version>
+	<version>1.0-SNAPSHOT</version>
 
 	<name>JPMML-H2O</name>
 	<description>Java library and command-line application for converting H2O.ai models to PMML</description>
@@ -35,7 +35,7 @@
 		<connection>scm:git:git@github.com:jpmml/jpmml-h2o.git</connection>
 		<developerConnection>scm:git:git@github.com:jpmml/jpmml-h2o.git</developerConnection>
 		<url>git://github.com/jpmml/jpmml-h2o.git</url>
-		<tag>1.0.5</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<issueManagement>
 		<system>GitHub</system>
