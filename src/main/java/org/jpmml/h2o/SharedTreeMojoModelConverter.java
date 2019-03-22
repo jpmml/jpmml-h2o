@@ -46,7 +46,6 @@ import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.PredicateManager;
 import org.jpmml.converter.Schema;
-import org.jpmml.converter.ValueUtil;
 
 abstract
 public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends Converter<M> {
@@ -73,7 +72,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 	static
 	public Node encodeNode(Predicate predicate, AtomicInteger idSequence, byte[] compressedTree, ByteBufferWrapper byteBuffer, PredicateManager predicateManager, CategoryManager categoryManager, Schema schema){
-		String id = nextId(idSequence);
+		Integer id = nextId(idSequence);
 
 		int nodeType = byteBuffer.get1U();
 
@@ -124,15 +123,15 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 				}
 
 				FieldName name = categoricalFeature.getName();
-				List<String> values = categoricalFeature.getValues();
+				List<?> values = categoricalFeature.getValues();
 
-				java.util.function.Predicate<String> valueFilter = categoryManager.getValueFilter(name);
+				java.util.function.Predicate<Object> valueFilter = categoryManager.getValueFilter(name);
 
-				List<String> leftValues = new ArrayList<>();
-				List<String> rightValues = new ArrayList<>();
+				List<Object> leftValues = new ArrayList<>();
+				List<Object> rightValues = new ArrayList<>();
 
 				for(int i = 0; i < values.size(); i++){
-					String value = values.get(i);
+					Object value = values.get(i);
 
 					if(!valueFilter.test(value)){
 						continue;
@@ -157,12 +156,10 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 			{
 				ContinuousFeature continuousFeature = feature.toContinuousFeature();
 
-				double splitVal = byteBuffer.get4f();
+				Double splitVal = (double)byteBuffer.get4f();
 
-				String value = ValueUtil.formatValue(splitVal);
-
-				leftPredicate = predicateManager.createSimplePredicate(continuousFeature, SimplePredicate.Operator.LESS_THAN, value);
-				rightPredicate = predicateManager.createSimplePredicate(continuousFeature, SimplePredicate.Operator.GREATER_OR_EQUAL, value);
+				leftPredicate = predicateManager.createSimplePredicate(continuousFeature, SimplePredicate.Operator.LESS_THAN, splitVal);
+				rightPredicate = predicateManager.createSimplePredicate(continuousFeature, SimplePredicate.Operator.GREATER_OR_EQUAL, splitVal);
 			}
 		}
 
@@ -251,8 +248,8 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	}
 
 	static
-	private String nextId(AtomicInteger id){
-		return String.valueOf(id.getAndIncrement());
+	private Integer nextId(AtomicInteger id){
+		return Integer.valueOf(id.getAndIncrement());
 	}
 
 	private static final Field FIELD_COMPRESSEDTREES;

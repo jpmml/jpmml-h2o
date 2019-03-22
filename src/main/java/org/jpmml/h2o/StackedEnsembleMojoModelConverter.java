@@ -38,6 +38,7 @@ import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.Schema;
+import org.jpmml.converter.SchemaUtil;
 import org.jpmml.converter.mining.MiningModelUtil;
 
 public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsembleMojoModel> {
@@ -90,25 +91,23 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 				outputFields.add(predictedField);
 			} else
 
-			if(model._nclasses >= 2){
+			{
 				CategoricalLabel categoricalLabel = (CategoricalLabel)label;
 
-				List<String> values = categoricalLabel.getValues();
+				SchemaUtil.checkSize(model._nclasses, categoricalLabel);
+
+				List<?> values = categoricalLabel.getValues();
 
 				if(model._nclasses == 2){
 					values = values.subList(1, 2);
 				}
 
-				for(String value : values){
+				for(Object value : values){
 					OutputField probabilityField = ModelUtil.createProbabilityField(FieldName.create("stack(" + i +", " + value + ")"), DataType.DOUBLE, value)
 						.setFinalResult(false);
 
 					outputFields.add(probabilityField);
 				}
-			} else
-
-			{
-				throw new IllegalArgumentException();
 			}
 
 			Output segmentOutput = ModelUtil.ensureOutput(segmentModel);

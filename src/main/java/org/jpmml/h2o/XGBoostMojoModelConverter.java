@@ -61,7 +61,7 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 				if(feature instanceof CategoricalFeature){
 					CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
 
-					List<String> values = new ArrayList<>(categoricalFeature.getValues());
+					List<Object> values = new ArrayList<>(categoricalFeature.getValues());
 					values.add("missing(NA)");
 
 					ImputerUtil.encodeFeature(categoricalFeature, "missing(NA)", MissingValueTreatmentMethod.AS_VALUE);

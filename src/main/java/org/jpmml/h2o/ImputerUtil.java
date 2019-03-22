@@ -24,7 +24,6 @@ import org.dmg.pmml.MissingValueTreatmentMethod;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.MissingValueDecorator;
 import org.jpmml.converter.ModelEncoder;
-import org.jpmml.converter.ValueUtil;
 
 public class ImputerUtil {
 
@@ -39,7 +38,7 @@ public class ImputerUtil {
 
 		if(field instanceof DataField){
 			MissingValueDecorator missingValueDecorator = new MissingValueDecorator()
-				.setMissingValueReplacement(ValueUtil.formatValue(replacementValue))
+				.setMissingValueReplacement(replacementValue)
 				.setMissingValueTreatment(missingValueTreatmentMethod);
 
 			encoder.addDecorator(feature.getName(), missingValueDecorator);

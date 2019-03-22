@@ -38,7 +38,6 @@ import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.CMatrixUtil;
 import org.jpmml.converter.CategoricalLabel;
 import org.jpmml.converter.ContinuousLabel;
-import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.PredicateManager;
@@ -65,7 +64,6 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 		}
 
 		Label label = schema.getLabel();
-		List<? extends Feature> features = schema.getFeatures();
 
 		PredicateManager predicateManager = new PredicateManager();
 

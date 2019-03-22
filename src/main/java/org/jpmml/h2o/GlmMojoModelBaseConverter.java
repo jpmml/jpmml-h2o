@@ -34,6 +34,7 @@ import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.PMMLEncoder;
 import org.jpmml.converter.Schema;
+import org.jpmml.converter.SchemaUtil;
 
 abstract
 public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M> {
@@ -60,24 +61,20 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 			.filter(feature -> (feature instanceof CategoricalFeature))
 			.collect(Collectors.toList());
 
+		SchemaUtil.checkSize(cats, categoricalFeatures);
+
+		for(int i = 0; i < cats; i++){
+			CategoricalFeature categoricalFeature = (CategoricalFeature)categoricalFeatures.get(i);
+
+			SchemaUtil.checkSize((catOffsets[i + 1] - catOffsets[i]) + (useAllFactorLevels ? 0 : 1), categoricalFeature);
+		}
+
 		List<? extends Feature> continuousFeatures = features.stream()
 			.filter(feature -> !(feature instanceof CategoricalFeature))
 			.map(feature -> feature.toContinuousFeature())
 			.collect(Collectors.toList());
 
-		if(categoricalFeatures.size() != cats || continuousFeatures.size() != nums){
-			throw new IllegalArgumentException();
-		}
-
-		for(int i = 0; i < cats; i++){
-			CategoricalFeature categoricalFeature = (CategoricalFeature)categoricalFeatures.get(i);
-
-			List<String> values = categoricalFeature.getValues();
-
-			if(values.size() != (catOffsets[i + 1] - catOffsets[i]) + (useAllFactorLevels ? 0 : 1)){
-				throw new IllegalArgumentException();
-			}
-		}
+		SchemaUtil.checkSize(nums, continuousFeatures);
 
 		List<Feature> reorderedFeatures = new ArrayList<>();
 		reorderedFeatures.addAll(categoricalFeatures);
@@ -96,7 +93,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 			for(int i = 0; i < cats; i++){
 				CategoricalFeature categoricalFeature = (CategoricalFeature)categoricalFeatures.get(i);
 
-				List<String> values = categoricalFeature.getValues();
+				List<?> values = categoricalFeature.getValues();
 
 				ImputerUtil.encodeFeature(categoricalFeature, values.get(catModes[i]), MissingValueTreatmentMethod.AS_MODE);
 			} // End for
@@ -117,7 +114,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 				if(feature instanceof CategoricalFeature){
 					CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
 
-					List<String> values = categoricalFeature.getValues();
+					List<?> values = categoricalFeature.getValues();
 					if(!useAllFactorLevels){
 						values = values.subList(1, values.size());
 					}

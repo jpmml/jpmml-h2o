@@ -31,6 +31,7 @@ import org.jpmml.converter.CategoricalLabel;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.Schema;
+import org.jpmml.converter.SchemaUtil;
 import org.jpmml.converter.regression.RegressionModelUtil;
 
 public class GlmMultinomialMojoModelConverter extends GlmMojoModelBaseConverter<GlmMultinomialMojoModel> {
@@ -48,9 +49,7 @@ public class GlmMultinomialMojoModelConverter extends GlmMojoModelBaseConverter<
 
 		List<Double> beta = Doubles.asList(getBeta(model));
 
-		if(beta.size() != categoricalLabel.size() * (features.size() + 1)){
-			throw new IllegalArgumentException();
-		}
+		SchemaUtil.checkSize(beta.size() - categoricalLabel.size(), categoricalLabel, features);
 
 		List<RegressionTable> regressionTables = new ArrayList<>();
 

@@ -27,6 +27,7 @@ import org.dmg.pmml.regression.RegressionModel;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.Schema;
+import org.jpmml.converter.SchemaUtil;
 import org.jpmml.converter.regression.RegressionModelUtil;
 
 public class GlmMojoModelConverter extends GlmMojoModelBaseConverter<GlmMojoModel> {
@@ -44,9 +45,7 @@ public class GlmMojoModelConverter extends GlmMojoModelBaseConverter<GlmMojoMode
 
 		List<Double> beta = Doubles.asList(getBeta(model));
 
-		if(beta.size() != (features.size() + 1)){
-			throw new IllegalArgumentException();
-		}
+		SchemaUtil.checkSize(beta.size() - 1, features);
 
 		List<Double> coefficients = beta.subList(0, beta.size() - 1);
 		Double intercept = beta.get(beta.size() - 1);
