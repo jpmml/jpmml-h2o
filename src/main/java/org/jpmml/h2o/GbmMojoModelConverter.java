@@ -75,7 +75,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
 				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.SUM, treeModels))
-				.setTargets(ModelUtil.createRescaleTargets(null, (double)model._init_f, continuousLabel));
+				.setTargets(ModelUtil.createRescaleTargets(null, model._init_f, continuousLabel));
 
 			return miningModel;
 		} else
@@ -85,7 +85,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
 				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.SUM, treeModels))
-				.setTargets(ModelUtil.createRescaleTargets(null, (double)model._init_f, continuousLabel))
+				.setTargets(ModelUtil.createRescaleTargets(null, model._init_f, continuousLabel))
 				.setOutput(ModelUtil.createPredictedOutput(FieldName.create("gbmValue"), OpType.CONTINUOUS, DataType.DOUBLE));
 
 			return MiningModelUtil.createRegression(miningModel, RegressionModel.NormalizationMethod.EXP, schema);
@@ -96,7 +96,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
 				.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, treeModels))
-				.setTargets(ModelUtil.createRescaleTargets(null, (double)model._init_f, continuousLabel))
+				.setTargets(ModelUtil.createRescaleTargets(null, model._init_f, continuousLabel))
 				.setOutput(ModelUtil.createPredictedOutput(FieldName.create("gbmValue"), OpType.CONTINUOUS, DataType.DOUBLE));
 
 			return MiningModelUtil.createBinaryLogisticClassification(miningModel, 1d, 0d, RegressionModel.NormalizationMethod.LOGIT, true, schema);
