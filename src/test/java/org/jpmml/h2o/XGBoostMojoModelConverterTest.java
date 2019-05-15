@@ -32,7 +32,7 @@ public class XGBoostMojoModelConverterTest extends ConverterTest {
 	public void evaluateAudit() throws Exception {
 		FieldName[] targetFields = {FieldName.create("Adjusted")};
 
-		evaluate("XGBoost", "Audit", excludeFields(targetFields), new PMMLEquivalence(3e-6, 3e-6));
+		evaluate("XGBoost", "Audit", excludeFields(targetFields), new PMMLEquivalence(6e-6, 6e-6));
 	}
 
 	@Test
