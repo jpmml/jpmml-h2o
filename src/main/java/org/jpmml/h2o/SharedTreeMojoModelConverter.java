@@ -62,7 +62,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 		ByteBufferWrapper buffer = new ByteBufferWrapper(compressedTree);
 
-		Node root = encodeNode(new True(), idSequence, compressedTree, buffer, predicateManager, new CategoryManager(), schema);
+		Node root = encodeNode(True.INSTANCE, idSequence, compressedTree, buffer, predicateManager, new CategoryManager(), schema);
 
 		TreeModel treeModel = new TreeModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(label), root)
 			.setMissingValueStrategy(TreeModel.MissingValueStrategy.DEFAULT_CHILD);
@@ -175,10 +175,8 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		if((lmask & 16) != 0){
 			double score = leftByteBuffer.get4f();
 
-			leftChild = new LeafNode()
-				.setId(nextId(idSequence))
-				.setScore(score)
-				.setPredicate(leftPredicate);
+			leftChild = new LeafNode(score, leftPredicate)
+				.setId(nextId(idSequence));
 		} else
 
 		{
@@ -213,20 +211,17 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		if((lmask2 & 16) != 0){
 			double score = rightByteBuffer.get4f();
 
-			rightChild = new LeafNode()
-				.setId(nextId(idSequence))
-				.setScore(score)
-				.setPredicate(rightPredicate);
+			rightChild = new LeafNode(score, rightPredicate)
+				.setId(nextId(idSequence));
 		} else
 
 		{
 			rightChild = encodeNode(rightPredicate, idSequence, compressedTree, rightByteBuffer, predicateManager, rightCategoryManager, schema);
 		}
 
-		Node result = new BranchNode()
+		Node result = new BranchNode(null, predicate)
 			.setId(id)
 			.setDefaultChild(leftward ? leftChild.getId() : rightChild.getId())
-			.setPredicate(predicate)
 			.addNodes(leftChild, rightChild);
 
 		return result;

@@ -88,7 +88,7 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 			if(model._nclasses == 1){
 				ContinuousLabel continuousLabel = (ContinuousLabel)label;
 
-				OutputField predictedField = ModelUtil.createPredictedField(FieldName.create("stack(" + i + ")"), DataType.DOUBLE, OpType.CONTINUOUS)
+				OutputField predictedField = ModelUtil.createPredictedField(FieldName.create("stack(" + i + ")"), OpType.CONTINUOUS, DataType.DOUBLE)
 					.setFinalResult(false);
 
 				outputFields.add(predictedField);
