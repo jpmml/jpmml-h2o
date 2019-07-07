@@ -29,17 +29,16 @@ import org.dmg.pmml.DataType;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.OpType;
-import org.dmg.pmml.Output;
 import org.dmg.pmml.OutputField;
 import org.jpmml.converter.CategoricalLabel;
 import org.jpmml.converter.ContinuousFeature;
 import org.jpmml.converter.ContinuousLabel;
+import org.jpmml.converter.DerivedOutputField;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.SchemaUtil;
-import org.jpmml.converter.mining.MiningModelUtil;
 
 public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsembleMojoModel> {
 
@@ -48,19 +47,17 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 	}
 
 	@Override
-	public Model encodeModel(Schema schema){
+	public Schema encodeSchema(H2OEncoder encoder){
 		StackedEnsembleMojoModel model = getModel();
 
 		ConverterFactory converterFactory = ConverterFactory.newConverterFactory();
 
+		Schema schema = super.encodeSchema(encoder);
+
 		Label label = schema.getLabel();
 		List<Feature> features = new ArrayList<>();
 
-		List<Model> models = new ArrayList<>();
-
 		Schema segmentSchema = schema.toAnonymousSchema();
-
-		H2OEncoder encoder = new H2OEncoder();
 
 		Object[] baseModels = getBaseModels(model);
 		for(int i = 0; i < baseModels.length; i++){
@@ -83,15 +80,15 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 
 			Model segmentModel = converter.encodeModel(baseModelSchema);
 
-			List<OutputField> outputFields = new ArrayList<>();
-
 			if(model._nclasses == 1){
 				ContinuousLabel continuousLabel = (ContinuousLabel)label;
 
-				OutputField predictedField = ModelUtil.createPredictedField(FieldName.create("stack(" + i + ")"), OpType.CONTINUOUS, DataType.DOUBLE)
+				OutputField predictedOutputField = ModelUtil.createPredictedField(FieldName.create("stack(" + i + ")"), OpType.CONTINUOUS, DataType.DOUBLE)
 					.setFinalResult(false);
 
-				outputFields.add(predictedField);
+				DerivedOutputField predictedField = encoder.createDerivedField(segmentModel, predictedOutputField, false);
+
+				features.add(new ContinuousFeature(encoder, predictedField));
 			} else
 
 			{
@@ -106,39 +103,37 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 				}
 
 				for(Object value : values){
-					OutputField probabilityField = ModelUtil.createProbabilityField(FieldName.create("stack(" + i +", " + value + ")"), DataType.DOUBLE, value)
+					OutputField probabilityOutputField = ModelUtil.createProbabilityField(FieldName.create("stack(" + i +", " + value + ")"), DataType.DOUBLE, value)
 						.setFinalResult(false);
 
-					outputFields.add(probabilityField);
+					DerivedOutputField probabilityField = encoder.createDerivedField(segmentModel, probabilityOutputField, false);
+
+					features.add(new ContinuousFeature(encoder, probabilityField));
 				}
 			}
 
-			Output segmentOutput = ModelUtil.ensureOutput(segmentModel);
-
-			for(OutputField outputField : outputFields){
-				segmentOutput.addOutputFields(outputField);
-
-				features.add(new ContinuousFeature(encoder, outputField));
-
-				// XXX
-				encoder.createDataField(outputField.getName(), null);
-			}
-
-			models.add(segmentModel);
+			encoder.addTransformer(segmentModel);
 		}
+
+		return new Schema(label, features);
+	}
+
+	@Override
+	public Model encodeModel(Schema schema){
+		StackedEnsembleMojoModel model = getModel();
+
+		ConverterFactory converterFactory = ConverterFactory.newConverterFactory();
 
 		MojoModel metaLearner = getMetaLearner(model);
-		if(metaLearner != null){
-			Converter<?> converter = converterFactory.newConverter(metaLearner);
-
-			Schema metaLearnerSchema = converter.toMojoModelSchema(new Schema(label, features));
-
-			Model segmentModel = converter.encodeModel(metaLearnerSchema);
-
-			models.add(segmentModel);
+		if(metaLearner == null){
+			throw new IllegalArgumentException();
 		}
 
-		return MiningModelUtil.createModelChain(models);
+		Converter<?> converter = converterFactory.newConverter(metaLearner);
+
+		Schema metaLearnerSchema = converter.toMojoModelSchema(schema);
+
+		return converter.encodeModel(metaLearnerSchema);
 	}
 
 	static
