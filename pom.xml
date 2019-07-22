@@ -59,10 +59,6 @@
 					<artifactId>deepwater-backend-api</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>com.google.code.gson</groupId>
-					<artifactId>gson</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>net.sf.opencsv</groupId>
 					<artifactId>opencsv</artifactId>
 				</exclusion>
