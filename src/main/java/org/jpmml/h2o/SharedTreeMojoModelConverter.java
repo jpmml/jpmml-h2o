@@ -83,7 +83,12 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 		int colId = byteBuffer.get2();
 		if(colId == 65535){
-			throw new IllegalArgumentException("Feature index 65535 is not supported");
+			double score = byteBuffer.get4f();
+
+			Node result = new LeafNode(score, predicate)
+				.setId(id);
+
+			return result;
 		}
 
 		int naSplitDir = byteBuffer.get1U();
