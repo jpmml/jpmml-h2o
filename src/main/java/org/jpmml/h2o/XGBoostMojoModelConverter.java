@@ -98,7 +98,7 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 		Map<String, Object> options = new LinkedHashMap<>();
 		options.put(HasXGBoostOptions.OPTION_COMPACT, Boolean.TRUE);
 
-		Schema xgbSchema = XGBoostUtil.toXGBoostSchema(schema);
+		Schema xgbSchema = learner.toXGBoostSchema(schema);
 
 		return learner.encodeMiningModel(options, xgbSchema);
 	}
