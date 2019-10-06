@@ -20,8 +20,6 @@ package org.jpmml.h2o;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import hex.genmodel.algos.gbm.GbmMojoModel;
 import hex.genmodel.utils.DistributionFamily;
@@ -40,7 +38,6 @@ import org.jpmml.converter.CategoricalLabel;
 import org.jpmml.converter.ContinuousLabel;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
-import org.jpmml.converter.PredicateManager;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.mining.MiningModelUtil;
 
@@ -54,21 +51,12 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 	public MiningModel encodeModel(Schema schema){
 		GbmMojoModel model = getModel();
 
-		byte[][] compressedTrees = getCompressedTrees(model);
 		int ntreeGroups = getNTreeGroups(model);
 		int ntreesPerGroup = getNTreesPerGroup(model);
 
-		if(model._mojo_version < 1.2d){
-			throw new IllegalArgumentException("Version " + model._mojo_version + " is not supported");
-		}
-
 		Label label = schema.getLabel();
 
-		PredicateManager predicateManager = new PredicateManager();
-
-		List<TreeModel> treeModels = Stream.of(compressedTrees)
-			.map(compressedTree -> encodeTreeModel(compressedTree, predicateManager, schema))
-			.collect(Collectors.toList());
+		List<TreeModel> treeModels = encodeTreeModels(schema);
 
 		if((DistributionFamily.gaussian).equals(model._family)){
 			ContinuousLabel continuousLabel = (ContinuousLabel)label;

@@ -22,6 +22,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import hex.genmodel.algos.tree.NaSplitDir;
 import hex.genmodel.algos.tree.SharedTreeMojoModel;
@@ -52,6 +54,24 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 	public SharedTreeMojoModelConverter(M model){
 		super(model);
+	}
+
+	public List<TreeModel> encodeTreeModels(Schema schema){
+		SharedTreeMojoModel model = getModel();
+
+		if(model._mojo_version < 1.2d){
+			throw new IllegalArgumentException("Version " + model._mojo_version + " is not supported");
+		}
+
+		byte[][] compressedTrees = getCompressedTrees(model);
+
+		PredicateManager predicateManager = new PredicateManager();
+
+		List<TreeModel> result = Stream.of(compressedTrees)
+			.map(compressedTree -> encodeTreeModel(compressedTree, predicateManager, schema))
+			.collect(Collectors.toList());
+
+		return result;
 	}
 
 	static

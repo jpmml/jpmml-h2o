@@ -20,8 +20,6 @@ package org.jpmml.h2o;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import hex.genmodel.algos.isofor.IsolationForestMojoModel;
 import org.dmg.pmml.DataType;
@@ -37,7 +35,6 @@ import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.AbstractTransformation;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.PMMLUtil;
-import org.jpmml.converter.PredicateManager;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.Transformation;
 import org.jpmml.converter.mining.MiningModelUtil;
@@ -52,29 +49,16 @@ public class IsolationForestMojoModelConverter extends SharedTreeMojoModelConver
 	public MiningModel encodeModel(Schema schema){
 		IsolationForestMojoModel model = getModel();
 
-		byte[][] compressedTrees = getCompressedTrees(model);
+		int minPathLength = getMinPathLength(model);
+		int maxPathLength = getMaxPathLength(model);
 
-		if(model._mojo_version < 1.2d){
-			throw new IllegalArgumentException("Version " + model._mojo_version + " is not supported");
+		if(minPathLength >= maxPathLength){
+			throw new IllegalArgumentException();
 		}
 
-		PredicateManager predicateManager = new PredicateManager();
-
-		List<TreeModel> treeModels = Stream.of(compressedTrees)
-			.map(compressedTree -> encodeTreeModel(compressedTree, predicateManager, schema))
-			.collect(Collectors.toList());
+		List<TreeModel> treeModels = encodeTreeModels(schema);
 
 		Transformation anomalyScore = new AbstractTransformation(){
-
-			private int minPathLength = getMinPathLength(model);
-			private int maxPathLength = getMaxPathLength(model);
-
-
-			{
-				if(this.minPathLength >= this.maxPathLength){
-					throw new IllegalArgumentException();
-				}
-			}
 
 			@Override
 			public FieldName getName(FieldName name){
@@ -88,7 +72,7 @@ public class IsolationForestMojoModelConverter extends SharedTreeMojoModelConver
 
 			@Override
 			public Expression createExpression(FieldRef fieldRef){
-				return PMMLUtil.createApply(PMMLFunctions.DIVIDE, PMMLUtil.createApply(PMMLFunctions.SUBTRACT, PMMLUtil.createConstant(this.maxPathLength / (double)treeModels.size()), fieldRef), PMMLUtil.createConstant((this.maxPathLength - this.minPathLength) / (double)treeModels.size()));
+				return PMMLUtil.createApply(PMMLFunctions.DIVIDE, PMMLUtil.createApply(PMMLFunctions.SUBTRACT, PMMLUtil.createConstant(maxPathLength / (double)treeModels.size()), fieldRef), PMMLUtil.createConstant((maxPathLength - minPathLength) / (double)treeModels.size()));
 			}
 		};
 
