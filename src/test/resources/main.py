@@ -1,5 +1,6 @@
 from h2o.estimators.gbm import H2OGradientBoostingEstimator
 from h2o.estimators.glm import H2OGeneralizedLinearEstimator
+from h2o.estimators.isolation_forest import H2OIsolationForestEstimator
 from h2o.estimators.random_forest import H2ORandomForestEstimator
 from h2o.estimators.stackedensemble import H2OStackedEnsembleEstimator
 from h2o.estimators.xgboost import H2OXGBoostEstimator
@@ -129,3 +130,21 @@ visit_df = load_visit("VisitNA")
 
 build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "poisson", seed = 42), "GBMPoissonVisitNA")
 build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "gamma", seed = 42), "GBMGammaVisitNA")
+
+#
+# Anomaly detection
+#
+
+def load_housing(name):
+	return load_csv(name + ".csv")
+
+def build_housing(df, estimator, name):
+	estimator.train(*split_columns(df), training_frame = df)
+	store_mojo(estimator, name + ".zip")
+	score = estimator.predict(df)
+	score.set_names(["anomalyScore", "meanPathLength"])
+	store_csv(score, name + ".csv")
+
+housing_df = load_housing("Housing")
+
+build_housing(housing_df, H2OIsolationForestEstimator(ntrees = 17, max_depth = 11, seed = 42), "IsolationForestHousing")

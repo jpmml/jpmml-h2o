@@ -45,7 +45,11 @@ public class Converter<M extends MojoModel> {
 		M model = getModel();
 
 		String[] names = model.getNames();
-		int responseIdx = model.getResponseIdx();
+		int responseIdx = -1;
+
+		if(model.isSupervised()){
+			responseIdx = model.getResponseIdx();
+		}
 
 		for(int i = 0; i < names.length; i++){
 			String name = names[i];

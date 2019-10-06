@@ -10,6 +10,7 @@ Java library and command-line application for converting [H2O.ai](https://www.h2
   * [`GbmMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/gbm/GbmMojoModel.html)
   * [`GlmMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMojoModel.html)
   * [`GlmMultinomialMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMultinomialMojoModel.html)
+  * [`IsolationForestMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/isofor/IsolationForestMojoModel.html)
   * [`StackedEnsembleMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/ensemble/StackedEnsembleMojoModel.html)
   * `XGBoostJavaMojoModel`
   * `XGBoostNativeMojoModel`
