@@ -23,12 +23,12 @@ import java.util.function.Predicate;
 
 import com.google.common.base.Equivalence;
 import hex.genmodel.MojoModel;
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.PMML;
-import org.jpmml.evaluator.ArchiveBatch;
-import org.jpmml.evaluator.IntegrationTest;
-import org.jpmml.evaluator.IntegrationTestBatch;
-import org.jpmml.evaluator.PMMLEquivalence;
+import org.jpmml.evaluator.ResultField;
+import org.jpmml.evaluator.testing.ArchiveBatch;
+import org.jpmml.evaluator.testing.IntegrationTest;
+import org.jpmml.evaluator.testing.IntegrationTestBatch;
+import org.jpmml.evaluator.testing.PMMLEquivalence;
 
 public class ConverterTest extends IntegrationTest {
 
@@ -41,8 +41,8 @@ public class ConverterTest extends IntegrationTest {
 	}
 
 	@Override
-	protected ArchiveBatch createBatch(String name, String dataset, Predicate<FieldName> predicate){
-		ArchiveBatch result = new IntegrationTestBatch(name, dataset, predicate){
+	protected ArchiveBatch createBatch(String name, String dataset, Predicate<ResultField> predicate, Equivalence<Object> equivalence){
+		ArchiveBatch result = new IntegrationTestBatch(name, dataset, predicate, equivalence){
 
 			@Override
 			public IntegrationTest getIntegrationTest(){
@@ -63,7 +63,7 @@ public class ConverterTest extends IntegrationTest {
 
 				PMML pmml = converter.encodePMML();
 
-				ensureValidity(pmml);
+				validatePMML(pmml);
 
 				return pmml;
 			}

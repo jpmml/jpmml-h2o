@@ -19,7 +19,7 @@
 package org.jpmml.h2o;
 
 import org.dmg.pmml.FieldName;
-import org.jpmml.evaluator.PMMLEquivalence;
+import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
 public class XGBoostMojoModelConverterTest extends ConverterTest {
