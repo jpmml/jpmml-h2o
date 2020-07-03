@@ -174,8 +174,8 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 				leftCategoryManager = leftCategoryManager.fork(name, leftValues);
 				rightCategoryManager = rightCategoryManager.fork(name, rightValues);
 
-				leftPredicate = predicateManager.createSimpleSetPredicate(categoricalFeature, leftValues);
-				rightPredicate = predicateManager.createSimpleSetPredicate(categoricalFeature, rightValues);
+				leftPredicate = predicateManager.createPredicate(categoricalFeature, leftValues);
+				rightPredicate = predicateManager.createPredicate(categoricalFeature, rightValues);
 			} else
 
 			{
