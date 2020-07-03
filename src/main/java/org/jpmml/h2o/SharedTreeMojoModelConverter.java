@@ -78,11 +78,11 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	public TreeModel encodeTreeModel(byte[] compressedTree, PredicateManager predicateManager, Schema schema){
 		Label label = new ContinuousLabel(null, DataType.DOUBLE);
 
+		ByteBufferWrapper byteBuffer = new ByteBufferWrapper(compressedTree);
+
 		AtomicInteger idSequence = new AtomicInteger(1);
 
-		ByteBufferWrapper buffer = new ByteBufferWrapper(compressedTree);
-
-		Node root = encodeNode(True.INSTANCE, idSequence, compressedTree, buffer, predicateManager, new CategoryManager(), schema);
+		Node root = encodeNode(byteBuffer, True.INSTANCE, compressedTree, idSequence, new CategoryManager(), predicateManager, schema);
 
 		TreeModel treeModel = new TreeModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(label), root)
 			.setMissingValueStrategy(TreeModel.MissingValueStrategy.DEFAULT_CHILD);
@@ -91,7 +91,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	}
 
 	static
-	public Node encodeNode(Predicate predicate, AtomicInteger idSequence, byte[] compressedTree, ByteBufferWrapper byteBuffer, PredicateManager predicateManager, CategoryManager categoryManager, Schema schema){
+	public Node encodeNode(ByteBufferWrapper byteBuffer, Predicate predicate, byte[] compressedTree, AtomicInteger idSequence, CategoryManager categoryManager, PredicateManager predicateManager, Schema schema){
 		Integer id = nextId(idSequence);
 
 		int nodeType = byteBuffer.get1U();
@@ -205,7 +205,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} else
 
 		{
-			leftChild = encodeNode(leftPredicate, idSequence, compressedTree, leftByteBuffer, predicateManager, leftCategoryManager, schema);
+			leftChild = encodeNode(leftByteBuffer, leftPredicate, compressedTree, idSequence, leftCategoryManager, predicateManager, schema);
 		}
 
 		Node rightChild;
@@ -241,7 +241,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} else
 
 		{
-			rightChild = encodeNode(rightPredicate, idSequence, compressedTree, rightByteBuffer, predicateManager, rightCategoryManager, schema);
+			rightChild = encodeNode(rightByteBuffer, rightPredicate, compressedTree, idSequence, rightCategoryManager, predicateManager, schema);
 		}
 
 		Node result = new BranchNode(null, predicate)
