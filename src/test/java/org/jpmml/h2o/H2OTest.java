@@ -18,16 +18,12 @@
  */
 package org.jpmml.h2o;
 
-import java.io.InputStream;
 import java.util.function.Predicate;
 
 import com.google.common.base.Equivalence;
-import hex.genmodel.MojoModel;
-import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.ResultField;
 import org.jpmml.evaluator.testing.ArchiveBatch;
 import org.jpmml.evaluator.testing.IntegrationTest;
-import org.jpmml.evaluator.testing.IntegrationTestBatch;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 
 public class H2OTest extends IntegrationTest {
@@ -42,30 +38,11 @@ public class H2OTest extends IntegrationTest {
 
 	@Override
 	protected ArchiveBatch createBatch(String name, String dataset, Predicate<ResultField> predicate, Equivalence<Object> equivalence){
-		ArchiveBatch result = new IntegrationTestBatch(name, dataset, predicate, equivalence){
+		ArchiveBatch result = new H2OTestBatch(name, dataset, predicate, equivalence){
 
 			@Override
-			public IntegrationTest getIntegrationTest(){
+			public H2OTest getIntegrationTest(){
 				return H2OTest.this;
-			}
-
-			@Override
-			public PMML getPMML() throws Exception {
-				MojoModel mojoModel;
-
-				try(InputStream is = open("/mojo/" + getName() + getDataset() + ".zip")){
-					mojoModel = MojoModelUtil.readFrom(is);
-				}
-
-				ConverterFactory converterFactory = ConverterFactory.newConverterFactory();
-
-				Converter<?> converter = converterFactory.newConverter(mojoModel);
-
-				PMML pmml = converter.encodePMML();
-
-				validatePMML(pmml);
-
-				return pmml;
 			}
 		};
 
