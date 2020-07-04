@@ -22,7 +22,7 @@ import org.dmg.pmml.FieldName;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
-public class XGBoostMojoModelConverterTest extends ConverterTest {
+public class XGBoostMojoModelConverterTest extends H2OTest {
 
 	public XGBoostMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-6, 1e-6));

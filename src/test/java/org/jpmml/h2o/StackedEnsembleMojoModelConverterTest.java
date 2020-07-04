@@ -21,7 +21,7 @@ package org.jpmml.h2o;
 import org.dmg.pmml.FieldName;
 import org.junit.Test;
 
-public class StackedEnsembleMojoModelConverterTest extends ConverterTest {
+public class StackedEnsembleMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateAuditNA() throws Exception {

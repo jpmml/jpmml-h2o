@@ -20,7 +20,7 @@ package org.jpmml.h2o;
 
 import org.junit.Test;
 
-public class GlmMultinomialMojoModelConverterTest extends ConverterTest {
+public class GlmMultinomialMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateIris() throws Exception {

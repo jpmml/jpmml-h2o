@@ -30,13 +30,13 @@ import org.jpmml.evaluator.testing.IntegrationTest;
 import org.jpmml.evaluator.testing.IntegrationTestBatch;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 
-public class ConverterTest extends IntegrationTest {
+public class H2OTest extends IntegrationTest {
 
-	public ConverterTest(){
+	public H2OTest(){
 		super(new PMMLEquivalence(1e-14, 1e-14));
 	}
 
-	public ConverterTest(Equivalence<Object> equivalence){
+	public H2OTest(Equivalence<Object> equivalence){
 		super(equivalence);
 	}
 
@@ -46,7 +46,7 @@ public class ConverterTest extends IntegrationTest {
 
 			@Override
 			public IntegrationTest getIntegrationTest(){
-				return ConverterTest.this;
+				return H2OTest.this;
 			}
 
 			@Override

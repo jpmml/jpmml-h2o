@@ -21,7 +21,7 @@ package org.jpmml.h2o;
 import org.dmg.pmml.FieldName;
 import org.junit.Test;
 
-public class IsolationForestMojoModelConverterTest extends ConverterTest {
+public class IsolationForestMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateHousing() throws Exception {

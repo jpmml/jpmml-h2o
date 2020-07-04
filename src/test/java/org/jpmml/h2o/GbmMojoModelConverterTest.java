@@ -21,7 +21,7 @@ package org.jpmml.h2o;
 import org.dmg.pmml.FieldName;
 import org.junit.Test;
 
-public class GbmMojoModelConverterTest extends ConverterTest {
+public class GbmMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateAudit() throws Exception {
