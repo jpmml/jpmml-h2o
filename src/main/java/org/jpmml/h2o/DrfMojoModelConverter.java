@@ -36,6 +36,7 @@ import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.CMatrixUtil;
 import org.jpmml.converter.CategoricalLabel;
 import org.jpmml.converter.ContinuousLabel;
+import org.jpmml.converter.FieldNameUtil;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.Schema;
@@ -86,7 +87,7 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 			for(int i = 0; i < categoricalLabel.size(); i++){
 				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(null))
 					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, CMatrixUtil.getRow(treeModels, ntreesPerGroup, ntreeGroups, i)))
-					.setOutput(ModelUtil.createPredictedOutput(FieldName.create("drfValue(" + categoricalLabel.getValue(i) + ")"), OpType.CONTINUOUS, DataType.DOUBLE));
+					.setOutput(ModelUtil.createPredictedOutput(FieldNameUtil.create("drfValue", categoricalLabel.getValue(i)), OpType.CONTINUOUS, DataType.DOUBLE));
 
 				models.add(miningModel);
 			}

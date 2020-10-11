@@ -54,6 +54,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 		boolean meanImputation = getMeanImputation(model);
 		boolean useAllFactorLevels = getUseAllFactorLevels(model);
 
+		PMMLEncoder encoder = schema.getEncoder();
 		Label label = schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
 
@@ -113,7 +114,6 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 
 			@Override
 			public Stream<Feature> apply(Feature feature){
-				PMMLEncoder encoder = feature.getEncoder();
 
 				if(feature instanceof CategoricalFeature){
 					CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
@@ -124,7 +124,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 					}
 
 					return values.stream()
-						.map(value -> new BinaryFeature(encoder, categoricalFeature.getName(), categoricalFeature.getDataType(), value));
+						.map(value -> new BinaryFeature(encoder, categoricalFeature, value));
 				}
 
 				return Stream.of(feature);
@@ -135,7 +135,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 			.flatMap(function)
 			.collect(Collectors.toList());
 
-		return new Schema(label, features);
+		return new Schema(encoder, label, features);
 	}
 
 	static

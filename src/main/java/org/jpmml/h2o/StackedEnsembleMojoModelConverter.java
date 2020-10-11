@@ -35,6 +35,7 @@ import org.jpmml.converter.ContinuousFeature;
 import org.jpmml.converter.ContinuousLabel;
 import org.jpmml.converter.DerivedOutputField;
 import org.jpmml.converter.Feature;
+import org.jpmml.converter.FieldNameUtil;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.Schema;
@@ -83,7 +84,7 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 			if(model._nclasses == 1){
 				ContinuousLabel continuousLabel = (ContinuousLabel)label;
 
-				OutputField predictedOutputField = ModelUtil.createPredictedField(FieldName.create("stack(" + i + ")"), OpType.CONTINUOUS, DataType.DOUBLE)
+				OutputField predictedOutputField = ModelUtil.createPredictedField(FieldNameUtil.create("stack", i), OpType.CONTINUOUS, DataType.DOUBLE)
 					.setFinalResult(false);
 
 				DerivedOutputField predictedField = encoder.createDerivedField(segmentModel, predictedOutputField, false);
@@ -115,7 +116,7 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 			encoder.addTransformer(segmentModel);
 		}
 
-		return new Schema(label, features);
+		return new Schema(encoder, label, features);
 	}
 
 	@Override

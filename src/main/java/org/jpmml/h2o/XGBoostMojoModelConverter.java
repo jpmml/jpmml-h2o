@@ -35,7 +35,7 @@ import org.jpmml.converter.BinaryFeature;
 import org.jpmml.converter.CategoricalFeature;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
-import org.jpmml.converter.ModelEncoder;
+import org.jpmml.converter.PMMLEncoder;
 import org.jpmml.converter.Schema;
 import org.jpmml.xgboost.HasXGBoostOptions;
 import org.jpmml.xgboost.Learner;
@@ -49,6 +49,7 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 
 	@Override
 	public Schema toMojoModelSchema(Schema schema){
+		PMMLEncoder encoder = schema.getEncoder();
 		Label label = schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
 
@@ -56,7 +57,6 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 
 			@Override
 			public Stream<Feature> apply(Feature feature){
-				ModelEncoder encoder = (ModelEncoder)feature.getEncoder();
 
 				if(feature instanceof CategoricalFeature){
 					CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
@@ -67,7 +67,7 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 					ImputerUtil.encodeFeature(categoricalFeature, "missing(NA)", MissingValueTreatmentMethod.AS_VALUE);
 
 					return values.stream()
-						.map(value -> new BinaryFeature(encoder, categoricalFeature.getName(), categoricalFeature.getDataType(), value));
+						.map(value -> new BinaryFeature(encoder, categoricalFeature, value));
 				}
 
 				return Stream.of(feature);
@@ -78,7 +78,7 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 			.flatMap(function)
 			.collect(Collectors.toList());
 
-		return new Schema(label, features);
+		return new Schema(encoder, label, features);
 	}
 
 	@Override

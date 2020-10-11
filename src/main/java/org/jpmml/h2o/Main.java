@@ -28,6 +28,8 @@ import com.beust.jcommander.ParameterException;
 import hex.genmodel.MojoModel;
 import org.dmg.pmml.PMML;
 import org.jpmml.model.metro.MetroJAXBUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
 
@@ -92,27 +94,53 @@ public class Main {
 		MojoModel mojoModel;
 
 		try {
+			logger.info("Loading MOJO..");
+
+			long begin = System.currentTimeMillis();
 			mojoModel = MojoModelUtil.readFrom(this.input, false);
+			long end = System.currentTimeMillis();
+
+			logger.info("Loaded MOJO in {} ms.", (end - begin));
 		} catch(Exception e){
+			logger.error("Failed to load MOJO", e);
+
 			throw e;
 		}
 
 		PMML pmml;
 
 		try {
+			logger.info("Converting MOJO to PMML..");
+
 			ConverterFactory converterFactory = ConverterFactory.newConverterFactory();
 
 			Converter<?> converter = converterFactory.newConverter(mojoModel);
 
+			long begin = System.currentTimeMillis();
 			pmml = converter.encodePMML();
+			long end = System.currentTimeMillis();
+
+			logger.info("Converted MOJO to PMML in {} ms.", (end - begin));
 		} catch(Exception e){
+			logger.error("Failed to convert MOJO to PMML", e);
+
 			throw e;
 		}
 
 		try(OutputStream os = new FileOutputStream(this.output)){
+			logger.info("Marshalling PMML..");
+
+			long begin = System.currentTimeMillis();
 			MetroJAXBUtil.marshalPMML(pmml, os);
+			long end = System.currentTimeMillis();
+
+			logger.info("Marshalled PMML in {} ms.", (end - begin));
 		} catch(Exception e){
+			logger.error("Failed to marshal PMML", e);
+
 			throw e;
 		}
 	}
+
+	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 }
