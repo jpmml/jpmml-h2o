@@ -21,7 +21,6 @@ package org.jpmml.h2o;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +28,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.dmg.pmml.MissingValueTreatmentMethod;
 import org.dmg.pmml.mining.MiningModel;
 import org.jpmml.converter.BinaryFeature;
 import org.jpmml.converter.CategoricalFeature;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
+import org.jpmml.converter.MissingValueFeature;
 import org.jpmml.converter.PMMLEncoder;
 import org.jpmml.converter.Schema;
 import org.jpmml.xgboost.HasXGBoostOptions;
@@ -61,13 +60,14 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 				if(feature instanceof CategoricalFeature){
 					CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
 
-					List<Object> values = new ArrayList<>(categoricalFeature.getValues());
-					values.add("missing(NA)");
+					List<?> values = categoricalFeature.getValues();
 
-					ImputerUtil.encodeFeature(categoricalFeature, "missing(NA)", MissingValueTreatmentMethod.AS_VALUE);
-
-					return values.stream()
+					Stream<Feature> binaryFeaturesStream = values.stream()
 						.map(value -> new BinaryFeature(encoder, categoricalFeature, value));
+
+					Stream<Feature> missingValueFeatureStream = Stream.of(new MissingValueFeature(encoder, categoricalFeature));
+
+					return Stream.concat(binaryFeaturesStream, missingValueFeatureStream);
 				}
 
 				return Stream.of(feature);
