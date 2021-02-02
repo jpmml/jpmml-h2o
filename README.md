@@ -1,4 +1,4 @@
-JPMML-H2O
+JPMML-H2O [![Build Status](https://github.com/jpmml/jpmml-h2o/workflows/maven/badge.svg)](https://github.com/jpmml/jpmml-h2o/actions?query=workflow%3A%22maven%22)
 =========
 
 Java library and command-line application for converting [H2O.ai](https://www.h2o.ai/) models to PMML.
