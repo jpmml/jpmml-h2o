@@ -65,13 +65,13 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 			Object baseModel = baseModels[i];
 
 			MojoModel mojoModel = getMojoModel(baseModel);
-			double[] mapping = getMapping(baseModel);
+			int[] mapping = getMapping(baseModel);
 
 			if(!(mojoModel instanceof SharedTreeMojoModel)){
 				throw new IllegalArgumentException("Stacking of models other than decision tree models is not supported");
 			} // End if
 
-			if(mapping != null){
+			if(mapping != null && !isSequential(mapping)){
 				throw new IllegalArgumentException("Feature re-indexing is not supported");
 			}
 
@@ -153,8 +153,21 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 	}
 
 	static
-	public double[] getMapping(Object baseModel){
-		return (double[])getFieldValue(StackedEnsembleMojoModelConverter.FIELD_MAPPING, baseModel);
+	public int[] getMapping(Object baseModel){
+		return (int[])getFieldValue(StackedEnsembleMojoModelConverter.FIELD_MAPPING, baseModel);
+	}
+
+	static
+	private boolean isSequential(int[] values){
+
+		for(int i = 0; i < values.length; i++){
+
+			if(values[i] != i){
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private static final Field FIELD_BASEMODELS;
