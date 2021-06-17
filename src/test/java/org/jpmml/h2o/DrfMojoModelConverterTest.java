@@ -19,9 +19,14 @@
 package org.jpmml.h2o;
 
 import org.dmg.pmml.FieldName;
+import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
 public class DrfMojoModelConverterTest extends H2OTest {
+
+	public DrfMojoModelConverterTest(){
+		super(new PMMLEquivalence(1e-13, 1e-13));
+	}
 
 	@Test
 	public void evaluateAudit() throws Exception {

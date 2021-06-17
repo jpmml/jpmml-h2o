@@ -29,7 +29,7 @@ import org.jpmml.evaluator.testing.PMMLEquivalence;
 public class H2OTest extends IntegrationTest {
 
 	public H2OTest(){
-		super(new PMMLEquivalence(1e-14, 1e-14));
+		this(new PMMLEquivalence(1e-14, 1e-14));
 	}
 
 	public H2OTest(Equivalence<Object> equivalence){

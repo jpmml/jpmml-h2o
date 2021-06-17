@@ -19,6 +19,7 @@
 package org.jpmml.h2o;
 
 import org.dmg.pmml.FieldName;
+import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
 public class StackedEnsembleMojoModelConverterTest extends H2OTest {
@@ -37,6 +38,6 @@ public class StackedEnsembleMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("StackedEnsemble", "Iris");
+		evaluate("StackedEnsemble", "Iris", new PMMLEquivalence(1e-13, 1e-13));
 	}
 }

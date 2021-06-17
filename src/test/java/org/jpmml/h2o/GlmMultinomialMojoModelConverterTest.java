@@ -18,9 +18,14 @@
  */
 package org.jpmml.h2o;
 
+import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
 public class GlmMultinomialMojoModelConverterTest extends H2OTest {
+
+	public GlmMultinomialMojoModelConverterTest(){
+		super(new PMMLEquivalence(1e-13, 1e-13));
+	}
 
 	@Test
 	public void evaluateIris() throws Exception {

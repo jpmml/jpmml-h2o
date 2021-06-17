@@ -19,9 +19,14 @@
 package org.jpmml.h2o;
 
 import org.dmg.pmml.FieldName;
+import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
 public class GlmMojoModelConverterTest extends H2OTest {
+
+	public GlmMojoModelConverterTest(){
+		super(new PMMLEquivalence(1e-13, 1e-13));
+	}
 
 	@Test
 	public void evaluateAudit() throws Exception {
@@ -46,5 +51,4 @@ public class GlmMojoModelConverterTest extends H2OTest {
 	public void evaluateAutoNA() throws Exception {
 		evaluate("GLM", "AutoNA");
 	}
-
 }
