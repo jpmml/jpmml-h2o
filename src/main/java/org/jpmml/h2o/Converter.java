@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.util.Objects;
 
 import hex.genmodel.MojoModel;
+import hex.genmodel.descriptor.ModelDescriptor;
 import org.dmg.pmml.DataField;
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.Model;
@@ -74,15 +75,29 @@ public class Converter<M extends MojoModel> {
 	}
 
 	public PMML encodePMML(){
+		M model = getModel();
+
+		ModelDescriptor modelDescriptor = getModelDescriptor(model);
+
 		H2OEncoder encoder = new H2OEncoder();
 
 		Schema schema = encodeSchema(encoder);
 
 		schema = toMojoModelSchema(schema);
 
-		Model model = encodeModel(schema);
+		Model pmmlModel = encodeModel(schema);
 
-		return encoder.encodePMML(model);
+		if(modelDescriptor != null){
+			String algorithmName = pmmlModel.getAlgorithmName();
+
+			if(algorithmName == null){
+				String algoFullName = modelDescriptor.algoFullName();
+
+				pmmlModel.setAlgorithmName(algoFullName);
+			}
+		}
+
+		return encoder.encodePMML(pmmlModel);
 	}
 
 	public M getModel(){
@@ -91,6 +106,11 @@ public class Converter<M extends MojoModel> {
 
 	private void setModel(M model){
 		this.model = Objects.requireNonNull(model);
+	}
+
+	static
+	public ModelDescriptor getModelDescriptor(MojoModel model){
+		return (ModelDescriptor)getFieldValue(Converter.FIELD_MODEL_DESCRIPTOR, model);
 	}
 
 	static
@@ -122,6 +142,17 @@ public class Converter<M extends MojoModel> {
 			}
 
 			return field.get(object);
+		} catch(ReflectiveOperationException roe){
+			throw new RuntimeException(roe);
+		}
+	}
+
+	private static final Field FIELD_MODEL_DESCRIPTOR;
+
+	static {
+
+		try {
+			FIELD_MODEL_DESCRIPTOR = MojoModel.class.getDeclaredField("_modelDescriptor");
 		} catch(ReflectiveOperationException roe){
 			throw new RuntimeException(roe);
 		}

@@ -73,7 +73,7 @@ public class MojoModelUtil {
 		};
 
 		try {
-			return ModelMojoReader.readFrom(mojoReaderBackend);
+			return ModelMojoReader.readFrom(mojoReaderBackend, true);
 		} finally {
 			mojoReaderBackend.close();
 		}
