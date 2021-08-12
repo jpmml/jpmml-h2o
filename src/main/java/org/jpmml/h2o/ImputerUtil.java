@@ -38,7 +38,7 @@ public class ImputerUtil {
 		Field<?> field = feature.getField();
 
 		if((field instanceof DataField) || (field instanceof DerivedOutputField)){
-			encoder.addDecorator(field.getName(), new MissingValueDecorator(missingValueTreatmentMethod, replacementValue));
+			encoder.addDecorator(field, new MissingValueDecorator(missingValueTreatmentMethod, replacementValue));
 
 			return feature;
 		} else

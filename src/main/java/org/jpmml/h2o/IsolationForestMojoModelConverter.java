@@ -32,7 +32,6 @@ import org.dmg.pmml.PMMLFunctions;
 import org.dmg.pmml.mining.MiningModel;
 import org.dmg.pmml.mining.Segmentation;
 import org.dmg.pmml.tree.TreeModel;
-import org.jpmml.converter.AbstractTransformation;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.PMMLUtil;
 import org.jpmml.converter.Schema;
@@ -58,7 +57,7 @@ public class IsolationForestMojoModelConverter extends SharedTreeMojoModelConver
 
 		List<TreeModel> treeModels = encodeTreeModels(schema);
 
-		Transformation anomalyScore = new AbstractTransformation(){
+		Transformation anomalyScore = new Transformation(){
 
 			@Override
 			public FieldName getName(FieldName name){
