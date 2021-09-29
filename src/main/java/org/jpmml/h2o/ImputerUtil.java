@@ -18,10 +18,9 @@
  */
 package org.jpmml.h2o;
 
-import org.dmg.pmml.DataField;
+import org.dmg.pmml.Decorable;
 import org.dmg.pmml.Field;
 import org.dmg.pmml.MissingValueTreatmentMethod;
-import org.jpmml.converter.DerivedOutputField;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.MissingValueDecorator;
 import org.jpmml.converter.ModelEncoder;
@@ -37,7 +36,7 @@ public class ImputerUtil {
 
 		Field<?> field = feature.getField();
 
-		if((field instanceof DataField) || (field instanceof DerivedOutputField)){
+		if(field instanceof Decorable){
 			encoder.addDecorator(field, new MissingValueDecorator(missingValueTreatmentMethod, replacementValue));
 
 			return feature;

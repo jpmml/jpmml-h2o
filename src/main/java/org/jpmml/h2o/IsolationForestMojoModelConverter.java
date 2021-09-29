@@ -37,6 +37,7 @@ import org.jpmml.converter.PMMLUtil;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.Transformation;
 import org.jpmml.converter.mining.MiningModelUtil;
+import org.jpmml.converter.transformations.AbstractTransformation;
 
 public class IsolationForestMojoModelConverter extends SharedTreeMojoModelConverter<IsolationForestMojoModel> {
 
@@ -57,7 +58,7 @@ public class IsolationForestMojoModelConverter extends SharedTreeMojoModelConver
 
 		List<TreeModel> treeModels = encodeTreeModels(schema);
 
-		Transformation anomalyScore = new Transformation(){
+		Transformation anomalyScore = new AbstractTransformation(){
 
 			@Override
 			public FieldName getName(FieldName name){
