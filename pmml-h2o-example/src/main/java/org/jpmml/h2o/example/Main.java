@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with JPMML-H2O.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.jpmml.h2o;
+package org.jpmml.h2o.example;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +27,9 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import hex.genmodel.MojoModel;
 import org.dmg.pmml.PMML;
+import org.jpmml.h2o.Converter;
+import org.jpmml.h2o.ConverterFactory;
+import org.jpmml.h2o.MojoModelUtil;
 import org.jpmml.model.metro.MetroJAXBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

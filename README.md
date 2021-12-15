@@ -68,12 +68,12 @@ glm.download_mojo(path = "mojo.zip")
 
 Converting the MOJO file `mojo.zip` to a PMML file `mojo.pmml`:
 ```
-java -jar target/jpmml-h2o-executable-1.2-SNAPSHOT.jar --mojo-input mojo.zip --pmml-output mojo.pmml
+java -jar pmml-h2o-example/target/pmml-h2o-example-executable-1.2-SNAPSHOT.jar --mojo-input mojo.zip --pmml-output mojo.pmml
 ```
 
 Getting help:
 ```
-java -jar target/jpmml-h2o-executable-1.2-SNAPSHOT.jar --help
+java -jar pmml-h2o-example/target/pmml-h2o-example-executable-1.2-SNAPSHOT.jar --help
 ```
 
 # License #
