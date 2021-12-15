@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Villu Ruusmann
+ * Copyright (c) 2019 Villu Ruusmann
  *
  * This file is part of JPMML-H2O
  *
@@ -16,19 +16,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with JPMML-H2O.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.jpmml.h2o;
+package org.jpmml.h2o.testing;
 
-import org.jpmml.evaluator.testing.PMMLEquivalence;
+import org.jpmml.h2o.testing.H2OTest;
 import org.junit.Test;
 
-public class GlmMultinomialMojoModelConverterTest extends H2OTest {
-
-	public GlmMultinomialMojoModelConverterTest(){
-		super(new PMMLEquivalence(1e-13, 1e-13));
-	}
+public class IsolationForestMojoModelConverterTest extends H2OTest {
 
 	@Test
-	public void evaluateIris() throws Exception {
-		evaluate("GLM", "Iris");
+	public void evaluateHousing() throws Exception {
+		evaluate("IsolationForest", "Housing", excludeFields("meanPathLength"));
 	}
 }

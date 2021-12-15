@@ -16,39 +16,55 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with JPMML-H2O.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.jpmml.h2o;
+package org.jpmml.h2o.testing;
 
-import org.jpmml.evaluator.testing.PMMLEquivalence;
+import org.jpmml.h2o.testing.H2OTest;
 import org.junit.Test;
 
-public class DrfMojoModelConverterTest extends H2OTest {
-
-	public DrfMojoModelConverterTest(){
-		super(new PMMLEquivalence(1e-13, 1e-13));
-	}
+public class GbmMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("RandomForest", "Audit", excludeFields("Adjusted"));
+		evaluate("GBM", "Audit", excludeFields("Adjusted"));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("RandomForest", "AuditNA", excludeFields("Adjusted"));
+		evaluate("GBM", "AuditNA", excludeFields("Adjusted"));
 	}
 
 	@Test
 	public void evaluateAuto() throws Exception {
-		evaluate("RandomForest", "Auto");
+		evaluate("GBM", "Auto");
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("RandomForest", "AutoNA");
+		evaluate("GBM", "AutoNA");
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("RandomForest", "Iris");
+		evaluate("GBM", "Iris");
+	}
+
+	@Test
+	public void evaluatePoissonVisit() throws Exception {
+		evaluate("GBMPoisson", "Visit");
+	}
+
+	@Test
+	public void evaluateTweedieVisit() throws Exception {
+		evaluate("GBMTweedie", "Visit");
+	}
+
+	@Test
+	public void evaluatePoissonVisitNA() throws Exception {
+		evaluate("GBMPoisson", "VisitNA");
+	}
+
+	@Test
+	public void evaluateGammaVisitNA() throws Exception {
+		evaluate("GBMGamma", "VisitNA");
 	}
 }

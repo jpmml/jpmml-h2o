@@ -11,11 +11,12 @@
 	<groupId>org.jpmml</groupId>
 	<artifactId>jpmml-h2o</artifactId>
 	<version>1.2-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
 	<name>JPMML-H2O</name>
 	<description>Java library and command-line application for converting H2O.ai models to PMML</description>
 	<url>https://github.com/jpmml/jpmml-h2o</url>
-	
+
 	<licenses>
 		<license>
 			<name>GNU Affero General Public License (AGPL) version 3.0</name>
@@ -23,14 +24,19 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	
+
 	<developers>
 		<developer>
 			<id>villu.ruusmann</id>
 			<name>Villu Ruusmann</name>
 		</developer>
 	</developers>
-	
+
+	<modules>
+		<module>pmml-h2o</module>
+		<module>pmml-h2o-testing</module>
+	</modules>
+
 	<scm>
 		<connection>scm:git:git@github.com:jpmml/jpmml-h2o.git</connection>
 		<developerConnection>scm:git:git@github.com:jpmml/jpmml-h2o.git</developerConnection>
@@ -42,56 +48,67 @@
 		<url>https://github.com/jpmml/jpmml-h2o/issues</url>
 	</issueManagement>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.jpmml</groupId>
-			<artifactId>pmml-converter</artifactId>
-			<version>1.5.0</version>
-		</dependency>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-h2o</artifactId>
+				<version>1.2-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-h2o-testing</artifactId>
+				<version>1.2-SNAPSHOT</version>
+			</dependency>
 
-		<dependency>
-			<groupId>org.jpmml</groupId>
-			<artifactId>pmml-xgboost</artifactId>
-			<version>1.6.0</version>
-		</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-converter</artifactId>
+				<version>1.5.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-converter-testing</artifactId>
+				<version>1.5.0</version>
+			</dependency>
 
-		<dependency>
-			<groupId>com.beust</groupId>
-			<artifactId>jcommander</artifactId>
-			<version>1.72</version>
-		</dependency>
+			<dependency>
+				<groupId>org.jpmml</groupId>
+				<artifactId>pmml-xgboost</artifactId>
+				<version>1.6.0</version>
+			</dependency>
 
-		<dependency>
-			<groupId>ai.h2o</groupId>
-			<artifactId>h2o-genmodel</artifactId>
-			<version>[3.30.0.2,)</version>
-			<exclusions>
-				<exclusion>
-					<groupId>ai.h2o</groupId>
-					<artifactId>deepwater-backend-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.sf.opencsv</groupId>
-					<artifactId>opencsv</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+			<dependency>
+				<groupId>com.beust</groupId>
+				<artifactId>jcommander</artifactId>
+				<version>1.72</version>
+			</dependency>
 
-		<dependency>
-			<groupId>org.jpmml</groupId>
-			<artifactId>pmml-converter-testing</artifactId>
-			<version>1.5.0</version>
-			<scope>test</scope>
-		</dependency>
+			<dependency>
+				<groupId>ai.h2o</groupId>
+				<artifactId>h2o-genmodel</artifactId>
+				<version>[3.30.0.2,)</version>
+				<exclusions>
+					<exclusion>
+						<groupId>ai.h2o</groupId>
+						<artifactId>deepwater-backend-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>net.sf.opencsv</groupId>
+						<artifactId>opencsv</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.13.2</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -105,54 +122,13 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-					<javadocVersion>1.8</javadocVersion>
-					<sourcepath>${basedir}/src/main/java</sourcepath>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.5.3</version>
 				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<localCheckout>true</localCheckout>
 					<pushChanges>false</pushChanges>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.4</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<finalName>${project.artifactId}-executable-${project.version}</finalName>
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.jpmml.h2o.Main</mainClass>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -185,7 +161,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.6</version>
+				<version>0.8.7</version>
 				<executions>
 					<execution>
 						<id>pre-unit-test</id>

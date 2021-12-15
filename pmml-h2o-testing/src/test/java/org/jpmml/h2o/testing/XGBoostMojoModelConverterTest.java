@@ -16,25 +16,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with JPMML-H2O.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.jpmml.h2o;
+package org.jpmml.h2o.testing;
 
 import org.jpmml.evaluator.testing.PMMLEquivalence;
+import org.jpmml.h2o.testing.H2OTest;
 import org.junit.Test;
 
-public class StackedEnsembleMojoModelConverterTest extends H2OTest {
+public class XGBoostMojoModelConverterTest extends H2OTest {
+
+	public XGBoostMojoModelConverterTest(){
+		super(new PMMLEquivalence(1e-6, 1e-6));
+	}
+
+	@Test
+	public void evaluateAudit() throws Exception {
+		evaluate("XGBoost", "Audit", excludeFields("Adjusted"), new PMMLEquivalence(6e-6, 6e-6));
+	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("StackedEnsemble", "AuditNA", excludeFields("Adjusted"));
+		evaluate("XGBoost", "AuditNA", excludeFields("Adjusted"), new PMMLEquivalence(3e-6, 3e-6));
+	}
+
+	@Test
+	public void evaluateAuto() throws Exception {
+		evaluate("XGBoost", "Auto");
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("StackedEnsemble", "AutoNA");
+		evaluate("XGBoost", "AutoNA");
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("StackedEnsemble", "Iris", new PMMLEquivalence(1e-13, 1e-13));
+		evaluate("XGBoost", "Iris");
 	}
 }

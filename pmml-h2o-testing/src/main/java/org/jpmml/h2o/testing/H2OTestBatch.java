@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with JPMML-H2O.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.jpmml.h2o;
+package org.jpmml.h2o.testing;
 
 import java.io.InputStream;
 import java.util.function.Predicate;
@@ -26,6 +26,9 @@ import hex.genmodel.MojoModel;
 import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.ResultField;
 import org.jpmml.evaluator.testing.IntegrationTestBatch;
+import org.jpmml.h2o.Converter;
+import org.jpmml.h2o.ConverterFactory;
+import org.jpmml.h2o.MojoModelUtil;
 
 abstract
 public class H2OTestBatch extends IntegrationTestBatch {
