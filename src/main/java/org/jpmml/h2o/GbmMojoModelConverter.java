@@ -24,7 +24,6 @@ import java.util.List;
 import hex.genmodel.algos.gbm.GbmMojoModel;
 import hex.genmodel.utils.DistributionFamily;
 import org.dmg.pmml.DataType;
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.MiningFunction;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.OpType;
@@ -75,7 +74,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
 				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.SUM, treeModels))
 				.setTargets(ModelUtil.createRescaleTargets(null, model._init_f, continuousLabel))
-				.setOutput(ModelUtil.createPredictedOutput(FieldName.create("gbmValue"), OpType.CONTINUOUS, DataType.DOUBLE));
+				.setOutput(ModelUtil.createPredictedOutput("gbmValue", OpType.CONTINUOUS, DataType.DOUBLE));
 
 			return MiningModelUtil.createRegression(miningModel, RegressionModel.NormalizationMethod.EXP, schema);
 		} else
@@ -86,7 +85,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
 				.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, treeModels))
 				.setTargets(ModelUtil.createRescaleTargets(null, model._init_f, continuousLabel))
-				.setOutput(ModelUtil.createPredictedOutput(FieldName.create("gbmValue"), OpType.CONTINUOUS, DataType.DOUBLE));
+				.setOutput(ModelUtil.createPredictedOutput("gbmValue", OpType.CONTINUOUS, DataType.DOUBLE));
 
 			return MiningModelUtil.createBinaryLogisticClassification(miningModel, 1d, 0d, RegressionModel.NormalizationMethod.LOGIT, true, schema);
 		} else

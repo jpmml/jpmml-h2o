@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.dmg.pmml.DataField;
 import org.dmg.pmml.DataType;
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.OpType;
 import org.jpmml.converter.CategoricalFeature;
 import org.jpmml.converter.CategoricalLabel;
@@ -42,7 +41,7 @@ public class H2OEncoder extends ModelEncoder {
 	private List<Feature> features = new ArrayList<>();
 
 
-	public DataField createDataField(FieldName name, String[] categories){
+	public DataField createDataField(String name, String[] categories){
 
 		if(categories != null){
 			return createDataField(name, OpType.CATEGORICAL, DataType.STRING, Arrays.asList(categories));

@@ -26,7 +26,6 @@ import hex.genmodel.MojoModel;
 import hex.genmodel.algos.ensemble.StackedEnsembleMojoModel;
 import hex.genmodel.algos.tree.SharedTreeMojoModel;
 import org.dmg.pmml.DataType;
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.OpType;
 import org.dmg.pmml.OutputField;
@@ -104,7 +103,7 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 				}
 
 				for(Object value : values){
-					OutputField probabilityOutputField = ModelUtil.createProbabilityField(FieldName.create("stack(" + i +", " + value + ")"), DataType.DOUBLE, value)
+					OutputField probabilityOutputField = ModelUtil.createProbabilityField(FieldNameUtil.create("stack", i, value), DataType.DOUBLE, value)
 						.setFinalResult(false);
 
 					DerivedOutputField probabilityField = encoder.createDerivedField(segmentModel, probabilityOutputField, false);

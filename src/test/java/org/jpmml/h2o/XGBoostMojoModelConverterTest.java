@@ -18,7 +18,6 @@
  */
 package org.jpmml.h2o;
 
-import org.dmg.pmml.FieldName;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
@@ -30,16 +29,12 @@ public class XGBoostMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		FieldName[] targetFields = {FieldName.create("Adjusted")};
-
-		evaluate("XGBoost", "Audit", excludeFields(targetFields), new PMMLEquivalence(6e-6, 6e-6));
+		evaluate("XGBoost", "Audit", excludeFields("Adjusted"), new PMMLEquivalence(6e-6, 6e-6));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		FieldName[] targetFields = {FieldName.create("Adjusted")};
-
-		evaluate("XGBoost", "AuditNA", excludeFields(targetFields), new PMMLEquivalence(3e-6, 3e-6));
+		evaluate("XGBoost", "AuditNA", excludeFields("Adjusted"), new PMMLEquivalence(3e-6, 3e-6));
 	}
 
 	@Test

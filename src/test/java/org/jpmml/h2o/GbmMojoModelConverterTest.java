@@ -18,23 +18,18 @@
  */
 package org.jpmml.h2o;
 
-import org.dmg.pmml.FieldName;
 import org.junit.Test;
 
 public class GbmMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		FieldName[] targetFields = {FieldName.create("Adjusted")};
-
-		evaluate("GBM", "Audit", excludeFields(targetFields));
+		evaluate("GBM", "Audit", excludeFields("Adjusted"));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		FieldName[] targetFields = {FieldName.create("Adjusted")};
-
-		evaluate("GBM", "AuditNA", excludeFields(targetFields));
+		evaluate("GBM", "AuditNA", excludeFields("Adjusted"));
 	}
 
 	@Test

@@ -24,7 +24,6 @@ import java.util.List;
 import hex.genmodel.algos.isofor.IsolationForestMojoModel;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.Expression;
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.FieldRef;
 import org.dmg.pmml.MiningFunction;
 import org.dmg.pmml.OpType;
@@ -61,8 +60,8 @@ public class IsolationForestMojoModelConverter extends SharedTreeMojoModelConver
 		Transformation anomalyScore = new AbstractTransformation(){
 
 			@Override
-			public FieldName getName(FieldName name){
-				return FieldName.create("anomalyScore");
+			public String getName(String name){
+				return "anomalyScore";
 			}
 
 			@Override
@@ -78,7 +77,7 @@ public class IsolationForestMojoModelConverter extends SharedTreeMojoModelConver
 
 		MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(null))
 			.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.AVERAGE, treeModels))
-			.setOutput(ModelUtil.createPredictedOutput(FieldName.create("meanPathLength"), OpType.CONTINUOUS, DataType.DOUBLE, anomalyScore));
+			.setOutput(ModelUtil.createPredictedOutput("meanPathLength", OpType.CONTINUOUS, DataType.DOUBLE, anomalyScore));
 
 		return miningModel;
 	}

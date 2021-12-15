@@ -18,7 +18,6 @@
  */
 package org.jpmml.h2o;
 
-import org.dmg.pmml.FieldName;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
@@ -26,9 +25,7 @@ public class StackedEnsembleMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		FieldName[] targetFields = {FieldName.create("Adjusted")};
-
-		evaluate("StackedEnsemble", "AuditNA", excludeFields(targetFields));
+		evaluate("StackedEnsemble", "AuditNA", excludeFields("Adjusted"));
 	}
 
 	@Test

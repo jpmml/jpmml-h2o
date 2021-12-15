@@ -30,7 +30,6 @@ import hex.genmodel.algos.tree.SharedTreeMojoModel;
 import hex.genmodel.utils.ByteBufferWrapper;
 import hex.genmodel.utils.GenmodelBitSet;
 import org.dmg.pmml.DataType;
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.MiningFunction;
 import org.dmg.pmml.Predicate;
 import org.dmg.pmml.SimplePredicate;
@@ -147,7 +146,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 					throw new IllegalArgumentException("Node type " + equal + " is not supported");
 				}
 
-				FieldName name = categoricalFeature.getName();
+				String name = categoricalFeature.getName();
 				List<?> values = categoricalFeature.getValues();
 
 				java.util.function.Predicate<Object> valueFilter = categoryManager.getValueFilter(name);

@@ -24,7 +24,6 @@ import java.util.Objects;
 import hex.genmodel.MojoModel;
 import hex.genmodel.descriptor.ModelDescriptor;
 import org.dmg.pmml.DataField;
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.PMML;
 import org.jpmml.converter.Schema;
@@ -56,7 +55,7 @@ public class Converter<M extends MojoModel> {
 			String name = names[i];
 			String[] categories = model.getDomainValues(name);
 
-			DataField dataField = encoder.createDataField(FieldName.create(name), categories);
+			DataField dataField = encoder.createDataField(name, categories);
 
 			if(i == responseIdx){
 				encoder.setLabel(dataField);

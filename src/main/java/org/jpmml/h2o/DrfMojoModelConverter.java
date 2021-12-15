@@ -24,7 +24,6 @@ import java.util.List;
 
 import hex.genmodel.algos.drf.DrfMojoModel;
 import org.dmg.pmml.DataType;
-import org.dmg.pmml.FieldName;
 import org.dmg.pmml.MiningFunction;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.OpType;
@@ -74,7 +73,7 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
 				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.AVERAGE, treeModels))
-				.setOutput(ModelUtil.createPredictedOutput(FieldName.create("drfValue"), OpType.CONTINUOUS, DataType.DOUBLE));
+				.setOutput(ModelUtil.createPredictedOutput("drfValue", OpType.CONTINUOUS, DataType.DOUBLE));
 
 			return MiningModelUtil.createBinaryLogisticClassification(miningModel, -1d, 1d, RegressionModel.NormalizationMethod.NONE, true, schema);
 		} else

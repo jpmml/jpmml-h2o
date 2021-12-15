@@ -18,7 +18,6 @@
  */
 package org.jpmml.h2o;
 
-import org.dmg.pmml.FieldName;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
@@ -30,16 +29,12 @@ public class GlmMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		FieldName[] targetFields = {FieldName.create("Adjusted")};
-
-		evaluate("GLM", "Audit", excludeFields(targetFields));
+		evaluate("GLM", "Audit", excludeFields("Adjusted"));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		FieldName[] targetFields = {FieldName.create("Adjusted")};
-
-		evaluate("GLM", "AuditNA", excludeFields(targetFields));
+		evaluate("GLM", "AuditNA", excludeFields("Adjusted"));
 	}
 
 	@Test
