@@ -6,12 +6,12 @@ Java library and command-line application for converting [H2O.ai](https://www.h2
 # Features #
 
 * Supported MOJO types:
-  * [`DrfMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/drf/DrfMojoModel.html)
-  * [`GbmMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/gbm/GbmMojoModel.html)
-  * [`GlmMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMojoModel.html)
-  * [`GlmMultinomialMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMultinomialMojoModel.html)
-  * [`IsolationForestMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/isofor/IsolationForestMojoModel.html)
-  * [`StackedEnsembleMojoModel`](http://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/ensemble/StackedEnsembleMojoModel.html)
+  * [`DrfMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/drf/DrfMojoModel.html)
+  * [`GbmMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/gbm/GbmMojoModel.html)
+  * [`GlmMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMojoModel.html)
+  * [`GlmMultinomialMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMultinomialMojoModel.html)
+  * [`IsolationForestMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/isofor/IsolationForestMojoModel.html)
+  * [`StackedEnsembleMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/ensemble/StackedEnsembleMojoModel.html)
   * `XGBoostJavaMojoModel`
   * `XGBoostNativeMojoModel`
 
@@ -22,12 +22,12 @@ Java library and command-line application for converting [H2O.ai](https://www.h2
 
 # Installation #
 
-Enter the project root directory and build using [Apache Maven](http://maven.apache.org/):
+Enter the project root directory and build using [Apache Maven](https://maven.apache.org/):
 ```
 mvn clean install
 ```
 
-The build produces an executable uber-JAR file `target/jpmml-h2o-executable-1.2-SNAPSHOT.jar`.
+The build produces a library JAR file `pmml-h2o/target/pmml-h2o-1.2-SNAPSHOT.jar`, and an executable uber-JAR file `pmml-h2o-example/target/pmml-h2o-example-executable-1.2-SNAPSHOT.jar`.
 
 # Usage #
 
