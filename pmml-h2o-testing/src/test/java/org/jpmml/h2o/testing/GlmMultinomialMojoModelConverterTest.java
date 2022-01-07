@@ -18,11 +18,11 @@
  */
 package org.jpmml.h2o.testing;
 
+import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
-import org.jpmml.h2o.testing.H2OTest;
 import org.junit.Test;
 
-public class GlmMultinomialMojoModelConverterTest extends H2OTest {
+public class GlmMultinomialMojoModelConverterTest extends H2OTest implements Datasets {
 
 	public GlmMultinomialMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));
@@ -30,6 +30,6 @@ public class GlmMultinomialMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("GLM", "Iris");
+		evaluate("GLM", IRIS);
 	}
 }

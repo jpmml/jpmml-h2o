@@ -18,11 +18,12 @@
  */
 package org.jpmml.h2o.testing;
 
+import org.jpmml.converter.testing.Datasets;
+import org.jpmml.converter.testing.Fields;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
-import org.jpmml.h2o.testing.H2OTest;
 import org.junit.Test;
 
-public class DrfMojoModelConverterTest extends H2OTest {
+public class DrfMojoModelConverterTest extends H2OTest implements Datasets, Fields {
 
 	public DrfMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));
@@ -30,26 +31,26 @@ public class DrfMojoModelConverterTest extends H2OTest {
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("RandomForest", "Audit", excludeFields("Adjusted"));
+		evaluate("RandomForest", AUDIT, excludeFields(AUDIT_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("RandomForest", "AuditNA", excludeFields("Adjusted"));
+		evaluate("RandomForest", AUDIT_NA, excludeFields(AUDIT_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuto() throws Exception {
-		evaluate("RandomForest", "Auto");
+		evaluate("RandomForest", AUTO);
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("RandomForest", "AutoNA");
+		evaluate("RandomForest", AUTO_NA);
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("RandomForest", "Iris");
+		evaluate("RandomForest", IRIS);
 	}
 }

@@ -18,24 +18,25 @@
  */
 package org.jpmml.h2o.testing;
 
+import org.jpmml.converter.testing.Datasets;
+import org.jpmml.converter.testing.Fields;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
-import org.jpmml.h2o.testing.H2OTest;
 import org.junit.Test;
 
-public class StackedEnsembleMojoModelConverterTest extends H2OTest {
+public class StackedEnsembleMojoModelConverterTest extends H2OTest implements Datasets, Fields {
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("StackedEnsemble", "AuditNA", excludeFields("Adjusted"));
+		evaluate("StackedEnsemble", AUDIT_NA, excludeFields(AUDIT_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("StackedEnsemble", "AutoNA");
+		evaluate("StackedEnsemble", AUTO_NA);
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("StackedEnsemble", "Iris", new PMMLEquivalence(1e-13, 1e-13));
+		evaluate("StackedEnsemble", IRIS, new PMMLEquivalence(1e-13, 1e-13));
 	}
 }

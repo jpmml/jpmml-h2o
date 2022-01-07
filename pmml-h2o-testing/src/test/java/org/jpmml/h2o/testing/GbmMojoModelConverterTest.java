@@ -18,49 +18,50 @@
  */
 package org.jpmml.h2o.testing;
 
-import org.jpmml.h2o.testing.H2OTest;
+import org.jpmml.converter.testing.Datasets;
+import org.jpmml.converter.testing.Fields;
 import org.junit.Test;
 
-public class GbmMojoModelConverterTest extends H2OTest {
+public class GbmMojoModelConverterTest extends H2OTest implements Datasets, Fields {
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("GBM", "Audit", excludeFields("Adjusted"));
+		evaluate("GBM", AUDIT, excludeFields(AUDIT_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("GBM", "AuditNA", excludeFields("Adjusted"));
+		evaluate("GBM", AUDIT_NA, excludeFields(AUDIT_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuto() throws Exception {
-		evaluate("GBM", "Auto");
+		evaluate("GBM", AUTO);
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("GBM", "AutoNA");
+		evaluate("GBM", AUTO_NA);
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("GBM", "Iris");
+		evaluate("GBM", IRIS);
 	}
 
 	@Test
 	public void evaluatePoissonVisit() throws Exception {
-		evaluate("GBMPoisson", "Visit");
+		evaluate("GBMPoisson", VISIT);
 	}
 
 	@Test
 	public void evaluateTweedieVisit() throws Exception {
-		evaluate("GBMTweedie", "Visit");
+		evaluate("GBMTweedie", VISIT);
 	}
 
 	@Test
 	public void evaluatePoissonVisitNA() throws Exception {
-		evaluate("GBMPoisson", "VisitNA");
+		evaluate("GBMPoisson", VISIT_NA);
 	}
 
 	@Test

@@ -58,7 +58,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 
 		List<TreeModel> treeModels = encodeTreeModels(schema);
 
-		if((DistributionFamily.gaussian).equals(model._family)){
+		if(model._family == DistributionFamily.gaussian){
 			ContinuousLabel continuousLabel = (ContinuousLabel)label;
 
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
@@ -68,8 +68,8 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 			return miningModel;
 		} else
 
-		if((DistributionFamily.poisson).equals(model._family) || (DistributionFamily.gamma).equals(model._family) || (DistributionFamily.tweedie).equals(model._family)){
-			ContinuousLabel continuousLabel = new ContinuousLabel(null, DataType.DOUBLE);
+		if((model._family == DistributionFamily.poisson) || (model._family == DistributionFamily.gamma) || (model._family == DistributionFamily.tweedie)){
+			ContinuousLabel continuousLabel = new ContinuousLabel(DataType.DOUBLE);
 
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
 				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.SUM, treeModels))
@@ -79,8 +79,8 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 			return MiningModelUtil.createRegression(miningModel, RegressionModel.NormalizationMethod.EXP, schema);
 		} else
 
-		if((DistributionFamily.bernoulli).equals(model._family)){
-			ContinuousLabel continuousLabel = new ContinuousLabel(null, DataType.DOUBLE);
+		if(model._family == DistributionFamily.bernoulli){
+			ContinuousLabel continuousLabel = new ContinuousLabel(DataType.DOUBLE);
 
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
 				.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, treeModels))
@@ -90,7 +90,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 			return MiningModelUtil.createBinaryLogisticClassification(miningModel, 1d, 0d, RegressionModel.NormalizationMethod.LOGIT, true, schema);
 		} else
 
-		if((DistributionFamily.multinomial).equals(model._family)){
+		if(model._family == DistributionFamily.multinomial){
 			CategoricalLabel categoricalLabel = (CategoricalLabel)label;
 
 			List<Model> models = new ArrayList<>();

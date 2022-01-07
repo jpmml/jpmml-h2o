@@ -75,7 +75,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 
 	static
 	public TreeModel encodeTreeModel(byte[] compressedTree, PredicateManager predicateManager, Schema schema){
-		Label label = new ContinuousLabel(null, DataType.DOUBLE);
+		Label label = new ContinuousLabel(DataType.DOUBLE);
 
 		ByteBufferWrapper byteBuffer = new ByteBufferWrapper(compressedTree);
 

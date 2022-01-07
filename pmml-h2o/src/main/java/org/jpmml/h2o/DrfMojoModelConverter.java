@@ -69,7 +69,7 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 		} else
 
 		if(model._nclasses == 2 && !binomialDoubleTrees){
-			ContinuousLabel continuousLabel = new ContinuousLabel(null, DataType.DOUBLE);
+			ContinuousLabel continuousLabel = new ContinuousLabel(DataType.DOUBLE);
 
 			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
 				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.AVERAGE, treeModels))

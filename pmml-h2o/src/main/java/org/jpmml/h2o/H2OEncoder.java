@@ -57,7 +57,7 @@ public class H2OEncoder extends ModelEncoder {
 	}
 
 	public void setLabel(DataField dataField){
-		OpType opType = dataField.getOpType();
+		OpType opType = dataField.requireOpType();
 
 		switch(opType){
 			case CONTINUOUS:
@@ -72,7 +72,7 @@ public class H2OEncoder extends ModelEncoder {
 	}
 
 	public void addFeature(DataField dataField){
-		OpType opType = dataField.getOpType();
+		OpType opType = dataField.requireOpType();
 
 		switch(opType){
 			case CONTINUOUS:
