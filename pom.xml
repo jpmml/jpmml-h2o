@@ -35,7 +35,6 @@
 	<modules>
 		<module>pmml-h2o</module>
 		<module>pmml-h2o-example</module>
-		<module>pmml-h2o-testing</module>
 	</modules>
 
 	<scm>
@@ -61,11 +60,6 @@
 				<artifactId>pmml-h2o-example</artifactId>
 				<version>1.2-SNAPSHOT</version>
 			</dependency>
-			<dependency>
-				<groupId>org.jpmml</groupId>
-				<artifactId>pmml-h2o-testing</artifactId>
-				<version>1.2-SNAPSHOT</version>
-			</dependency>
 
 			<dependency>
 				<groupId>org.jpmml</groupId>
@@ -76,6 +70,7 @@
 				<groupId>org.jpmml</groupId>
 				<artifactId>pmml-converter-testing</artifactId>
 				<version>1.5.1</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
