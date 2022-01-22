@@ -21,12 +21,11 @@ package org.jpmml.h2o.testing;
 import java.util.function.Predicate;
 
 import com.google.common.base.Equivalence;
+import org.jpmml.converter.testing.ModelEncoderBatchTest;
 import org.jpmml.evaluator.ResultField;
-import org.jpmml.evaluator.testing.ArchiveBatch;
-import org.jpmml.evaluator.testing.IntegrationTest;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 
-public class H2OTest extends IntegrationTest {
+public class H2OTest extends ModelEncoderBatchTest {
 
 	public H2OTest(){
 		this(new PMMLEquivalence(1e-14, 1e-14));
@@ -37,11 +36,11 @@ public class H2OTest extends IntegrationTest {
 	}
 
 	@Override
-	protected ArchiveBatch createBatch(String name, String dataset, Predicate<ResultField> predicate, Equivalence<Object> equivalence){
-		ArchiveBatch result = new H2OTestBatch(name, dataset, predicate, equivalence){
+	public H2OTestBatch createBatch(String algorithm, String dataset, Predicate<ResultField> columnFilter, Equivalence<Object> equivalence){
+		H2OTestBatch result = new H2OTestBatch(algorithm, dataset, columnFilter, equivalence){
 
 			@Override
-			public H2OTest getIntegrationTest(){
+			public H2OTest getArchiveBatchTest(){
 				return H2OTest.this;
 			}
 		};

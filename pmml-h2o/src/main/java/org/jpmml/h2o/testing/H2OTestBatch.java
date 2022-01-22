@@ -24,28 +24,32 @@ import java.util.function.Predicate;
 import com.google.common.base.Equivalence;
 import hex.genmodel.MojoModel;
 import org.dmg.pmml.PMML;
+import org.jpmml.converter.testing.ModelEncoderBatch;
 import org.jpmml.evaluator.ResultField;
-import org.jpmml.evaluator.testing.IntegrationTestBatch;
 import org.jpmml.h2o.Converter;
 import org.jpmml.h2o.ConverterFactory;
 import org.jpmml.h2o.MojoModelUtil;
 
 abstract
-public class H2OTestBatch extends IntegrationTestBatch {
+public class H2OTestBatch extends ModelEncoderBatch {
 
-	public H2OTestBatch(String name, String dataset, Predicate<ResultField> predicate, Equivalence<Object> equivalence){
-		super(name, dataset, predicate, equivalence);
+	public H2OTestBatch(String algorithm, String dataset, Predicate<ResultField> columnFilter, Equivalence<Object> equivalence){
+		super(algorithm, dataset, columnFilter, equivalence);
 	}
 
 	@Override
 	abstract
-	public H2OTest getIntegrationTest();
+	public H2OTest getArchiveBatchTest();
+
+	public String getMojoPath(){
+		return "/mojo/" + (getAlgorithm() + getDataset()) + ".zip";
+	}
 
 	@Override
 	public PMML getPMML() throws Exception {
 		MojoModel mojoModel;
 
-		try(InputStream is = open("/mojo/" + getName() + getDataset() + ".zip")){
+		try(InputStream is = open(getMojoPath())){
 			mojoModel = MojoModelUtil.readFrom(is);
 		}
 
