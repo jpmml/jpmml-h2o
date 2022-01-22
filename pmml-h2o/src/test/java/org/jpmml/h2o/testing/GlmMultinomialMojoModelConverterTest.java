@@ -22,7 +22,7 @@ import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
-public class GlmMultinomialMojoModelConverterTest extends H2OTest implements Datasets {
+public class GlmMultinomialMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets {
 
 	public GlmMultinomialMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));

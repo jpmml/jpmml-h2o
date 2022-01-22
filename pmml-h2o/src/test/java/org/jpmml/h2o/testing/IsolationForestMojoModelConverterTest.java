@@ -21,7 +21,7 @@ package org.jpmml.h2o.testing;
 import org.jpmml.converter.testing.Datasets;
 import org.junit.Test;
 
-public class IsolationForestMojoModelConverterTest extends H2OTest implements Datasets {
+public class IsolationForestMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets {
 
 	@Test
 	public void evaluateHousing() throws Exception {

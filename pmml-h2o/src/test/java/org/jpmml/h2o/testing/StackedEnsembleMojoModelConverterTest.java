@@ -23,7 +23,7 @@ import org.jpmml.converter.testing.Fields;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
-public class StackedEnsembleMojoModelConverterTest extends H2OTest implements Datasets, Fields {
+public class StackedEnsembleMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, Fields {
 
 	@Test
 	public void evaluateAuditNA() throws Exception {

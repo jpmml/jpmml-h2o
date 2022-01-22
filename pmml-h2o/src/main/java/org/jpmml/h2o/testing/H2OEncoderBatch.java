@@ -31,15 +31,15 @@ import org.jpmml.h2o.ConverterFactory;
 import org.jpmml.h2o.MojoModelUtil;
 
 abstract
-public class H2OTestBatch extends ModelEncoderBatch {
+public class H2OEncoderBatch extends ModelEncoderBatch {
 
-	public H2OTestBatch(String algorithm, String dataset, Predicate<ResultField> columnFilter, Equivalence<Object> equivalence){
+	public H2OEncoderBatch(String algorithm, String dataset, Predicate<ResultField> columnFilter, Equivalence<Object> equivalence){
 		super(algorithm, dataset, columnFilter, equivalence);
 	}
 
 	@Override
 	abstract
-	public H2OTest getArchiveBatchTest();
+	public H2OEncoderBatchTest getArchiveBatchTest();
 
 	public String getMojoPath(){
 		return "/mojo/" + (getAlgorithm() + getDataset()) + ".zip";

@@ -22,7 +22,7 @@ import org.jpmml.converter.testing.Datasets;
 import org.jpmml.converter.testing.Fields;
 import org.junit.Test;
 
-public class GbmMojoModelConverterTest extends H2OTest implements Datasets, Fields {
+public class GbmMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, Fields {
 
 	@Test
 	public void evaluateAudit() throws Exception {

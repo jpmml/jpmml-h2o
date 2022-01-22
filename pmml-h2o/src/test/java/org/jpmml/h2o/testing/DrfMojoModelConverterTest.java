@@ -23,7 +23,7 @@ import org.jpmml.converter.testing.Fields;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
-public class DrfMojoModelConverterTest extends H2OTest implements Datasets, Fields {
+public class DrfMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, Fields {
 
 	public DrfMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));
