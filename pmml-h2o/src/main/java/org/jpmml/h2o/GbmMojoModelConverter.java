@@ -29,7 +29,6 @@ import org.dmg.pmml.Model;
 import org.dmg.pmml.OpType;
 import org.dmg.pmml.mining.MiningModel;
 import org.dmg.pmml.mining.Segmentation;
-import org.dmg.pmml.mining.Segmentation.MultipleModelMethod;
 import org.dmg.pmml.regression.RegressionModel;
 import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.CMatrixUtil;
@@ -48,7 +47,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 	}
 
 	@Override
-	public MiningModel encodeModel(Schema schema){
+	public Model encodeModel(Schema schema){
 		GbmMojoModel model = getModel();
 
 		int ntreeGroups = getNTreeGroups(model);
@@ -61,33 +60,50 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 		if(model._family == DistributionFamily.gaussian){
 			ContinuousLabel continuousLabel = (ContinuousLabel)label;
 
-			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
-				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.SUM, treeModels))
-				.setTargets(ModelUtil.createRescaleTargets(null, model._init_f, continuousLabel));
+			Model pmmlModel = encodeTreeEnsemble(treeModels, (List<TreeModel> ensembleTreeModels) -> {
+				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
+					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, ensembleTreeModels));
 
-			return miningModel;
+				return miningModel;
+			});
+
+			pmmlModel.setTargets(ModelUtil.createRescaleTargets(null, model._init_f, continuousLabel));
+
+			return pmmlModel;
 		} else
 
 		if((model._family == DistributionFamily.poisson) || (model._family == DistributionFamily.gamma) || (model._family == DistributionFamily.tweedie)){
 			ContinuousLabel continuousLabel = new ContinuousLabel(DataType.DOUBLE);
 
-			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
-				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.SUM, treeModels))
+			Model pmmlModel = encodeTreeEnsemble(treeModels, (List<TreeModel> ensembleTreeModels) -> {
+				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
+					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, ensembleTreeModels));
+
+				return miningModel;
+			});
+
+			pmmlModel
 				.setTargets(ModelUtil.createRescaleTargets(null, model._init_f, continuousLabel))
 				.setOutput(ModelUtil.createPredictedOutput("gbmValue", OpType.CONTINUOUS, DataType.DOUBLE));
 
-			return MiningModelUtil.createRegression(miningModel, RegressionModel.NormalizationMethod.EXP, schema);
+			return MiningModelUtil.createRegression(pmmlModel, RegressionModel.NormalizationMethod.EXP, schema);
 		} else
 
 		if(model._family == DistributionFamily.bernoulli){
 			ContinuousLabel continuousLabel = new ContinuousLabel(DataType.DOUBLE);
 
-			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
-				.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, treeModels))
+			Model pmmlModel = encodeTreeEnsemble(treeModels, (List<TreeModel> ensembleTreeModels) -> {
+				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
+					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, ensembleTreeModels));
+
+				return miningModel;
+			});
+
+			pmmlModel
 				.setTargets(ModelUtil.createRescaleTargets(null, model._init_f, continuousLabel))
 				.setOutput(ModelUtil.createPredictedOutput("gbmValue", OpType.CONTINUOUS, DataType.DOUBLE));
 
-			return MiningModelUtil.createBinaryLogisticClassification(miningModel, 1d, 0d, RegressionModel.NormalizationMethod.LOGIT, true, schema);
+			return MiningModelUtil.createBinaryLogisticClassification(pmmlModel, 1d, 0d, RegressionModel.NormalizationMethod.LOGIT, true, schema);
 		} else
 
 		if(model._family == DistributionFamily.multinomial){
@@ -96,11 +112,16 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 			List<Model> models = new ArrayList<>();
 
 			for(int i = 0; i < categoricalLabel.size(); i++){
-				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(null))
-					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, CMatrixUtil.getRow(treeModels, ntreesPerGroup, ntreeGroups, i)))
-					.setOutput(ModelUtil.createPredictedOutput(FieldNameUtil.create("gbmValue", categoricalLabel.getValue(i)), OpType.CONTINUOUS, DataType.DOUBLE));
+				Model pmmlModel = encodeTreeEnsemble(CMatrixUtil.getRow(treeModels, ntreesPerGroup, ntreeGroups, i), (List<TreeModel> ensembleTreeModels) -> {
+					MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(null))
+						.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, ensembleTreeModels));
 
-				models.add(miningModel);
+					return miningModel;
+				});
+
+				pmmlModel.setOutput(ModelUtil.createPredictedOutput(FieldNameUtil.create("gbmValue", categoricalLabel.getValue(i)), OpType.CONTINUOUS, DataType.DOUBLE));
+
+				models.add(pmmlModel);
 			}
 
 			return MiningModelUtil.createClassification(models, RegressionModel.NormalizationMethod.SOFTMAX, true, schema);

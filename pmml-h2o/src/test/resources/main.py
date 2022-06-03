@@ -49,11 +49,13 @@ audit_df = load_audit("Audit")
 
 build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31, seed = 42), "GBMAudit")
 build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", lambda_ = 0, seed = 42), "GLMAudit")
+build_audit(audit_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 6, seed = 42), "DecisionTreeAudit")
 build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31, binomial_double_trees = True, seed = 42), "RandomForestAudit")
 build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31, seed = 42), "XGBoostAudit")
 
 audit_df = load_audit("AuditNA")
 
+build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 1, sample_rate = 1, col_sample_rate = 1, max_depth = 6, seed = 42), "DecisionTreeAuditNA")
 build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31, seed = 42), "GBMAuditNA")
 build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", seed = 42), "GLMAuditNA")
 build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31, binomial_double_trees = False, seed = 42), "RandomForestAuditNA")
@@ -78,6 +80,7 @@ iris_df = load_iris("Iris")
 
 build_iris(iris_df, H2OGradientBoostingEstimator(ntrees = 11, seed = 42), "GBMIris")
 build_iris(iris_df, H2OGeneralizedLinearEstimator(family = "multinomial", seed = 42), "GLMIris")
+build_iris(iris_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 2, seed = 42), "DecisionTreeIris")
 build_iris(iris_df, H2ORandomForestEstimator(ntrees = 11, seed = 42), "RandomForestIris")
 build_iris(iris_df, H2OStackedEnsembleEstimator(base_models = train_stack(iris_df, 5), seed = 42), "StackedEnsembleIris")
 build_iris(iris_df, H2OXGBoostEstimator(ntrees = 11, seed = 42), "XGBoostIris")
@@ -100,11 +103,13 @@ auto_df = load_auto("Auto")
 
 build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17, seed = 42), "GBMAuto")
 build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", lambda_ = 0, seed = 42), "GLMAuto")
+build_auto(auto_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 4, seed = 42), "DecisionTreeAuto")
 build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, seed = 42), "RandomForestAuto")
 build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17, seed = 42), "XGBoostAuto")
 
 auto_df = load_auto("AutoNA")
 
+build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 1, sample_rate = 1, col_sample_rate = 1, max_depth = 4, seed = 42), "DecisionTreeAutoNA")
 build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17, seed = 42), "GBMAutoNA")
 build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", seed = 42), "GLMAutoNA")
 build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, seed = 42), "RandomForestAutoNA")

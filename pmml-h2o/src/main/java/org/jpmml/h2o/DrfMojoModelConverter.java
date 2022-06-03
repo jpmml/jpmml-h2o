@@ -29,7 +29,6 @@ import org.dmg.pmml.Model;
 import org.dmg.pmml.OpType;
 import org.dmg.pmml.mining.MiningModel;
 import org.dmg.pmml.mining.Segmentation;
-import org.dmg.pmml.mining.Segmentation.MultipleModelMethod;
 import org.dmg.pmml.regression.RegressionModel;
 import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.CMatrixUtil;
@@ -48,7 +47,7 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 	}
 
 	@Override
-	public MiningModel encodeModel(Schema schema){
+	public Model encodeModel(Schema schema){
 		DrfMojoModel model = getModel();
 
 		boolean binomialDoubleTrees = getBinomialDoubleTrees(model);
@@ -62,20 +61,27 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 		if(model._nclasses == 1){
 			ContinuousLabel continuousLabel = (ContinuousLabel)label;
 
-			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
-				.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.AVERAGE, treeModels));
+			return encodeTreeEnsemble(treeModels, (List<TreeModel> ensembleTreeModels) -> {
+				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
+					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.AVERAGE, ensembleTreeModels));
 
-			return miningModel;
+				return miningModel;
+			});
 		} else
 
 		if(model._nclasses == 2 && !binomialDoubleTrees){
 			ContinuousLabel continuousLabel = new ContinuousLabel(DataType.DOUBLE);
 
-			MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
-				.setSegmentation(MiningModelUtil.createSegmentation(MultipleModelMethod.AVERAGE, treeModels))
-				.setOutput(ModelUtil.createPredictedOutput("drfValue", OpType.CONTINUOUS, DataType.DOUBLE));
+			Model pmmlModel = encodeTreeEnsemble(treeModels, (List<TreeModel> ensembleTreeModels) -> {
+				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
+					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.AVERAGE, ensembleTreeModels));
 
-			return MiningModelUtil.createBinaryLogisticClassification(miningModel, -1d, 1d, RegressionModel.NormalizationMethod.NONE, true, schema);
+				return miningModel;
+			});
+
+			pmmlModel.setOutput(ModelUtil.createPredictedOutput("drfValue", OpType.CONTINUOUS, DataType.DOUBLE));
+
+			return MiningModelUtil.createBinaryLogisticClassification(pmmlModel, -1d, 1d, RegressionModel.NormalizationMethod.NONE, true, schema);
 		} else
 
 		{
@@ -84,11 +90,16 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 			List<Model> models = new ArrayList<>();
 
 			for(int i = 0; i < categoricalLabel.size(); i++){
-				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(null))
-					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, CMatrixUtil.getRow(treeModels, ntreesPerGroup, ntreeGroups, i)))
-					.setOutput(ModelUtil.createPredictedOutput(FieldNameUtil.create("drfValue", categoricalLabel.getValue(i)), OpType.CONTINUOUS, DataType.DOUBLE));
+				Model pmmlModel = encodeTreeEnsemble(CMatrixUtil.getRow(treeModels, ntreesPerGroup, ntreeGroups, i), (List<TreeModel> ensembleTreeModels) -> {
+					MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(null))
+						.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, ensembleTreeModels));
 
-				models.add(miningModel);
+					return miningModel;
+				});
+
+				pmmlModel.setOutput(ModelUtil.createPredictedOutput(FieldNameUtil.create("drfValue", categoricalLabel.getValue(i)), OpType.CONTINUOUS, DataType.DOUBLE));
+
+				models.add(pmmlModel);
 			}
 
 			return MiningModelUtil.createClassification(models, RegressionModel.NormalizationMethod.SIMPLEMAX, true, schema);

@@ -22,18 +22,22 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.common.collect.Iterables;
 import hex.genmodel.algos.tree.NaSplitDir;
 import hex.genmodel.algos.tree.SharedTreeMojoModel;
 import hex.genmodel.utils.ByteBufferWrapper;
 import hex.genmodel.utils.GenmodelBitSet;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.MiningFunction;
+import org.dmg.pmml.Model;
 import org.dmg.pmml.Predicate;
 import org.dmg.pmml.SimplePredicate;
 import org.dmg.pmml.True;
+import org.dmg.pmml.mining.MiningModel;
 import org.dmg.pmml.tree.BranchNode;
 import org.dmg.pmml.tree.LeafNode;
 import org.dmg.pmml.tree.Node;
@@ -71,6 +75,16 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 			.collect(Collectors.toList());
 
 		return result;
+	}
+
+	static
+	public Model encodeTreeEnsemble(List<TreeModel> treeModels, Function<List<TreeModel>, MiningModel> ensembleFunction){
+
+		if(treeModels.size() == 1){
+			return Iterables.getOnlyElement(treeModels);
+		}
+
+		return ensembleFunction.apply(treeModels);
 	}
 
 	static
