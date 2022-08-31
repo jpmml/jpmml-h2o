@@ -62,7 +62,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 
 			Model pmmlModel = encodeTreeEnsemble(treeModels, (List<TreeModel> ensembleTreeModels) -> {
 				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
-					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, ensembleTreeModels));
+					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, Segmentation.MissingPredictionTreatment.RETURN_MISSING, ensembleTreeModels));
 
 				return miningModel;
 			});
@@ -77,7 +77,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 
 			Model pmmlModel = encodeTreeEnsemble(treeModels, (List<TreeModel> ensembleTreeModels) -> {
 				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
-					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, ensembleTreeModels));
+					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, Segmentation.MissingPredictionTreatment.RETURN_MISSING, ensembleTreeModels));
 
 				return miningModel;
 			});
@@ -94,7 +94,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 
 			Model pmmlModel = encodeTreeEnsemble(treeModels, (List<TreeModel> ensembleTreeModels) -> {
 				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
-					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, ensembleTreeModels));
+					.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, Segmentation.MissingPredictionTreatment.RETURN_MISSING, ensembleTreeModels));
 
 				return miningModel;
 			});
@@ -114,7 +114,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 			for(int i = 0; i < categoricalLabel.size(); i++){
 				Model pmmlModel = encodeTreeEnsemble(CMatrixUtil.getRow(treeModels, ntreesPerGroup, ntreeGroups, i), (List<TreeModel> ensembleTreeModels) -> {
 					MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(null))
-						.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, ensembleTreeModels));
+						.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, Segmentation.MissingPredictionTreatment.RETURN_MISSING, ensembleTreeModels));
 
 					return miningModel;
 				});

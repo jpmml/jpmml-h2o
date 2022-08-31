@@ -23,14 +23,13 @@ import java.util.List;
 import org.dmg.pmml.VisitorAction;
 import org.dmg.pmml.mining.Segment;
 import org.dmg.pmml.mining.Segmentation;
-import org.jpmml.model.InvalidElementException;
 import org.jpmml.model.visitors.AbstractVisitor;
 
 public class SegmentationInspector extends AbstractVisitor {
 
 	@Override
 	public VisitorAction visit(Segmentation segmentation){
-		Segmentation.MultipleModelMethod multipleModelMethod = segmentation.getMultipleModelMethod();
+		Segmentation.MultipleModelMethod multipleModelMethod = segmentation.requireMultipleModelMethod();
 
 		switch(multipleModelMethod){
 			case MAJORITY_VOTE:
@@ -42,11 +41,8 @@ public class SegmentationInspector extends AbstractVisitor {
 			case SUM:
 			case WEIGHTED_SUM:
 				{
-					List<Segment> segments = segmentation.getSegments();
-
-					if(segments.size() <= 1){
-						throw new InvalidElementException(segmentation);
-					}
+					@SuppressWarnings("unused")
+					List<Segment> segments = segmentation.requireSegments();
 				}
 				break;
 			default:
