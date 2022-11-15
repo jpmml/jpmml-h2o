@@ -76,6 +76,10 @@ Getting help:
 java -jar pmml-h2o-example/target/pmml-h2o-example-executable-1.2-SNAPSHOT.jar --help
 ```
 
+# Documentation #
+
+* [Training Scikit-Learn based H2O.ai pipelines](https://openscoring.io/blog/2022/11/11/sklearn_h2o_pipeline/)
+
 # License #
 
 JPMML-H2O is licensed under the terms and conditions of the [GNU Affero General Public License, Version 3.0](https://www.gnu.org/licenses/agpl-3.0.html).
