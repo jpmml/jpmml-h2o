@@ -93,7 +93,7 @@
 			<dependency>
 				<groupId>ai.h2o</groupId>
 				<artifactId>h2o-genmodel</artifactId>
-				<version>[3.30.0.2,)</version>
+				<version>[3.34.0.1,)</version>
 				<exclusions>
 					<exclusion>
 						<groupId>ai.h2o</groupId>
