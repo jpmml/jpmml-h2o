@@ -76,7 +76,7 @@ public class Converter<M extends MojoModel> {
 	public PMML encodePMML(){
 		M model = getModel();
 
-		ModelDescriptor modelDescriptor = getModelDescriptor(model);
+		ModelDescriptor modelDescriptor = model._modelDescriptor;
 
 		H2OEncoder encoder = new H2OEncoder();
 
@@ -108,11 +108,6 @@ public class Converter<M extends MojoModel> {
 	}
 
 	static
-	public ModelDescriptor getModelDescriptor(MojoModel model){
-		return (ModelDescriptor)getFieldValue(Converter.FIELD_MODEL_DESCRIPTOR, model);
-	}
-
-	static
 	protected Class<?> getDeclaredClass(Class<?> clazz, String name) throws ReflectiveOperationException {
 		String subclassName = clazz.getName() + "$" + name;
 
@@ -141,17 +136,6 @@ public class Converter<M extends MojoModel> {
 			}
 
 			return field.get(object);
-		} catch(ReflectiveOperationException roe){
-			throw new RuntimeException(roe);
-		}
-	}
-
-	private static final Field FIELD_MODEL_DESCRIPTOR;
-
-	static {
-
-		try {
-			FIELD_MODEL_DESCRIPTOR = MojoModel.class.getDeclaredField("_modelDescriptor");
 		} catch(ReflectiveOperationException roe){
 			throw new RuntimeException(roe);
 		}
