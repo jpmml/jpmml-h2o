@@ -30,6 +30,7 @@ import org.dmg.pmml.OpType;
 import org.dmg.pmml.mining.MiningModel;
 import org.dmg.pmml.mining.Segmentation;
 import org.dmg.pmml.regression.RegressionModel;
+import org.dmg.pmml.tree.Node;
 import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.CMatrixUtil;
 import org.jpmml.converter.CategoricalLabel;
@@ -130,5 +131,10 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 		{
 			throw new IllegalArgumentException("Distribution family " + model._family + " is not supported");
 		}
+	}
+
+	@Override
+	protected void ensureScore(Node node, double score){
+		return;
 	}
 }

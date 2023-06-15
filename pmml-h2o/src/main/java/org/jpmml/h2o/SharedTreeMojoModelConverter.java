@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import com.google.common.collect.Iterables;
@@ -30,7 +31,6 @@ import hex.genmodel.algos.tree.SharedTreeMojoModel;
 import hex.genmodel.utils.ByteBufferWrapper;
 import hex.genmodel.utils.GenmodelBitSet;
 import org.dmg.pmml.DataType;
-import org.dmg.pmml.HasRecordCount;
 import org.dmg.pmml.MiningFunction;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.Predicate;
@@ -85,17 +85,6 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		return result;
 	}
 
-	static
-	public Model encodeTreeEnsemble(List<TreeModel> treeModels, Function<List<TreeModel>, MiningModel> ensembleFunction){
-
-		if(treeModels.size() == 1){
-			return Iterables.getOnlyElement(treeModels);
-		}
-
-		return ensembleFunction.apply(treeModels);
-	}
-
-	static
 	public TreeModel encodeTreeModel(byte[] compressedTree, byte[] compressedTreeAux, PredicateManager predicateManager, Schema schema){
 		Label label = new ContinuousLabel(DataType.DOUBLE);
 
@@ -111,7 +100,6 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		return treeModel;
 	}
 
-	static
 	public Node encodeNode(ByteBufferWrapper byteBuffer, Integer id, Predicate predicate, byte[] compressedTree, Map<Integer, SharedTreeMojoModel.AuxInfo> auxInfos, CategoryManager categoryManager, PredicateManager predicateManager, Schema schema){
 		SharedTreeMojoModel.AuxInfo auxInfo = auxInfos.get(id);
 		if(auxInfo == null){
@@ -272,6 +260,9 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 			rightChild = encodeNode(rightByteBuffer, rightId, rightPredicate, compressedTree, auxInfos, rightCategoryManager, predicateManager, schema);
 		}
 
+		ensureScore(leftChild, auxInfo.predL);
+		ensureScore(rightChild, auxInfo.predR);
+
 		ensureRecordCount(leftChild, auxInfo.weightL);
 		ensureRecordCount(rightChild, auxInfo.weightR);
 
@@ -281,21 +272,46 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 			.addNodes(leftChild, rightChild);
 
 		if(id == 0){
-			ensureRecordCount(result, auxInfo.weightL + auxInfo.weightR);
+			float weight = (auxInfo.weightL + auxInfo.weightR);
+
+			ensureScore(result, (auxInfo.predL * auxInfo.weightL + auxInfo.predR * auxInfo.weightR) / weight);
+			ensureRecordCount(result, weight);
 		}
 
 		return result;
 	}
 
-	static
-	private void ensureRecordCount(Node node, double recordCount){
-		HasRecordCount<?> hasRecordCount = (HasRecordCount<?>)node;
+	protected void ensureScore(Node node, double score){
 
-		if(hasRecordCount.getRecordCount() != null){
+		if(node.hasScore()){
+
+			if(!Objects.equals(node.getScore(), score)){
+				throw new IllegalArgumentException();
+			}
+		} else
+
+		{
+			node.setScore(score);
+		}
+	}
+
+	protected void ensureRecordCount(Node node, double recordCount){
+
+		if(node.getRecordCount() != null){
 			throw new IllegalArgumentException();
 		}
 
-		hasRecordCount.setRecordCount(ValueUtil.narrow(recordCount));
+		node.setRecordCount(ValueUtil.narrow(recordCount));
+	}
+
+	static
+	public Model encodeTreeEnsemble(List<TreeModel> treeModels, Function<List<TreeModel>, MiningModel> ensembleFunction){
+
+		if(treeModels.size() == 1){
+			return Iterables.getOnlyElement(treeModels);
+		}
+
+		return ensembleFunction.apply(treeModels);
 	}
 
 	static

@@ -30,6 +30,7 @@ import org.dmg.pmml.OpType;
 import org.dmg.pmml.PMMLFunctions;
 import org.dmg.pmml.mining.MiningModel;
 import org.dmg.pmml.mining.Segmentation;
+import org.dmg.pmml.tree.Node;
 import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.PMMLUtil;
@@ -80,6 +81,11 @@ public class IsolationForestMojoModelConverter extends SharedTreeMojoModelConver
 			.setOutput(ModelUtil.createPredictedOutput("meanPathLength", OpType.CONTINUOUS, DataType.DOUBLE, anomalyScore));
 
 		return miningModel;
+	}
+
+	@Override
+	protected void ensureScore(Node node, double score){
+		return;
 	}
 
 	static
