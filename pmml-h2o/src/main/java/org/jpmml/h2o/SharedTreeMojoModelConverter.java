@@ -30,14 +30,15 @@ import hex.genmodel.algos.tree.SharedTreeMojoModel;
 import hex.genmodel.utils.ByteBufferWrapper;
 import hex.genmodel.utils.GenmodelBitSet;
 import org.dmg.pmml.DataType;
+import org.dmg.pmml.HasRecordCount;
 import org.dmg.pmml.MiningFunction;
 import org.dmg.pmml.Model;
 import org.dmg.pmml.Predicate;
 import org.dmg.pmml.SimplePredicate;
 import org.dmg.pmml.True;
 import org.dmg.pmml.mining.MiningModel;
-import org.dmg.pmml.tree.BranchNode;
-import org.dmg.pmml.tree.LeafNode;
+import org.dmg.pmml.tree.CountingBranchNode;
+import org.dmg.pmml.tree.CountingLeafNode;
 import org.dmg.pmml.tree.Node;
 import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.CategoricalFeature;
@@ -49,6 +50,7 @@ import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.PredicateManager;
 import org.jpmml.converter.Schema;
+import org.jpmml.converter.ValueUtil;
 
 abstract
 public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends Converter<M> {
@@ -127,7 +129,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		if(colId == 65535){
 			double score = byteBuffer.get4f();
 
-			Node result = new LeafNode(score, predicate)
+			Node result = new CountingLeafNode(score, predicate)
 				.setId(id);
 
 			return result;
@@ -224,7 +226,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		if((lmask & 16) != 0){
 			double score = leftByteBuffer.get4f();
 
-			leftChild = new LeafNode(score, leftPredicate)
+			leftChild = new CountingLeafNode(score, leftPredicate)
 				.setId(leftId);
 		} else
 
@@ -262,7 +264,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		if((lmask2 & 16) != 0){
 			double score = rightByteBuffer.get4f();
 
-			rightChild = new LeafNode(score, rightPredicate)
+			rightChild = new CountingLeafNode(score, rightPredicate)
 				.setId(rightId);
 		} else
 
@@ -270,12 +272,30 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 			rightChild = encodeNode(rightByteBuffer, rightId, rightPredicate, compressedTree, auxInfos, rightCategoryManager, predicateManager, schema);
 		}
 
-		Node result = new BranchNode(null, predicate)
+		ensureRecordCount(leftChild, auxInfo.weightL);
+		ensureRecordCount(rightChild, auxInfo.weightR);
+
+		Node result = new CountingBranchNode(null, predicate)
 			.setId(id)
 			.setDefaultChild(leftward ? leftChild.getId() : rightChild.getId())
 			.addNodes(leftChild, rightChild);
 
+		if(id == 0){
+			ensureRecordCount(result, auxInfo.weightL + auxInfo.weightR);
+		}
+
 		return result;
+	}
+
+	static
+	private void ensureRecordCount(Node node, double recordCount){
+		HasRecordCount<?> hasRecordCount = (HasRecordCount<?>)node;
+
+		if(hasRecordCount.getRecordCount() != null){
+			throw new IllegalArgumentException();
+		}
+
+		hasRecordCount.setRecordCount(ValueUtil.narrow(recordCount));
 	}
 
 	static
