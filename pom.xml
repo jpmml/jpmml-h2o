@@ -48,6 +48,10 @@
 		<url>https://github.com/jpmml/jpmml-h2o/issues</url>
 	</issueManagement>
 
+	<properties>
+		<h2o.ai.version>[3.34.0.1,)</h2o.ai.version>
+	</properties>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -93,7 +97,7 @@
 			<dependency>
 				<groupId>ai.h2o</groupId>
 				<artifactId>h2o-genmodel</artifactId>
-				<version>[3.34.0.1,)</version>
+				<version>${h2o.ai.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>ai.h2o</groupId>
