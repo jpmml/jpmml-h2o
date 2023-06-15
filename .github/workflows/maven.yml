@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         java: [ 8, 11, 17 ]
+        h2o: [ '3.34.0.1', '3.36.0.2', '3.38.0.1', '3.40.0.1' ]
 
     steps:
     - uses: actions/checkout@v2
@@ -22,4 +23,4 @@ jobs:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
-    - run: mvn -B package --file pom.xml
+    - run: mvn -Dh2o.ai.version=${{ matrix.h2o }} -B package --file pom.xml
