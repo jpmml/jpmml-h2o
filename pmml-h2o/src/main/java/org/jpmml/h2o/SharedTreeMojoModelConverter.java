@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import com.google.common.collect.Iterables;
@@ -297,11 +296,6 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	static
 	public int getNTreesPerGroup(SharedTreeMojoModel model){
 		return (int)getFieldValue(FIELD_NTREESPERGROUP, model);
-	}
-
-	static
-	private Integer nextId(AtomicInteger id){
-		return Integer.valueOf(id.getAndIncrement());
 	}
 
 	private static final Field FIELD_COMPRESSEDTREES;
