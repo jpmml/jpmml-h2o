@@ -104,8 +104,20 @@
 						<artifactId>deepwater-backend-api</artifactId>
 					</exclusion>
 					<exclusion>
+						<groupId>commons-lang</groupId>
+						<artifactId>commons-lang</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>joda-time</groupId>
+						<artifactId>joda-time</artifactId>
+					</exclusion>
+					<exclusion>
 						<groupId>net.sf.opencsv</groupId>
 						<artifactId>opencsv</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>no.priv.garshol.duke</groupId>
+						<artifactId>duke</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
