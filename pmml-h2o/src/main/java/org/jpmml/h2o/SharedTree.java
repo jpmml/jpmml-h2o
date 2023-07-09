@@ -27,6 +27,8 @@ public interface SharedTree {
 
 	byte[] getCompressedTreeAux();
 
+	Integer nextId();
+
 	SharedTreeMojoModel.AuxInfo getAuxInfo(int id);
 
 	void encodeAuxInfo(Node node, double score, double recordCount);
