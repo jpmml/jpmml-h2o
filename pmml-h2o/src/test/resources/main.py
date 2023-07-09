@@ -6,6 +6,7 @@ from h2o.estimators.stackedensemble import H2OStackedEnsembleEstimator
 from h2o.estimators.xgboost import H2OXGBoostEstimator
 
 import h2o
+import sys
 
 def load_csv(name, factors = []):
 	df = h2o.import_file(path = "csv/" + name, header = 1, sep = ",", na_strings = ["N/A"])
@@ -24,12 +25,20 @@ def store_mojo(model, name):
 
 h2o.init(nthreads = 1)
 
-def train_stack(df, ntrees):
+def make_stacked_ensemble(df, ntrees):
 	gbm = H2OGradientBoostingEstimator(ntrees = ntrees, nfolds = 3, fold_assignment = "Modulo", keep_cross_validation_predictions = True, seed = 42)
 	gbm.train(*split_columns(df), training_frame = df)
 	drf = H2ORandomForestEstimator(ntrees = ntrees, nfolds = 3, fold_assignment = "Modulo", keep_cross_validation_predictions = True, seed = 42)
 	drf.train(*split_columns(df), training_frame = df)
-	return [gbm, drf]
+	return H2OStackedEnsembleEstimator(base_models = [gbm, drf], seed = 42)
+
+datasets = []
+
+if __name__ == "__main__":
+	if len(sys.argv) > 1:
+		datasets = (sys.argv[1]).split(",")
+	else:
+		datasets = ["Audit", "Auto", "Housing", "Iris", "Visit"]
 
 #
 # Binary classification
@@ -45,22 +54,23 @@ def build_audit(df, classifier, name):
 	adjusted.set_names(["Adjusted", "probability(0)", "probability(1)"])
 	store_csv(adjusted, name + ".csv")
 
-audit_df = load_audit("Audit")
+if "Audit" in datasets:
+	audit_df = load_audit("Audit")
 
-build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31, seed = 42), "GBMAudit")
-build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", lambda_ = 0, seed = 42), "GLMAudit")
-build_audit(audit_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 6, seed = 42), "DecisionTreeAudit")
-build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31, binomial_double_trees = True, seed = 42), "RandomForestAudit")
-build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31, seed = 42), "XGBoostAudit")
+	build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31, seed = 42), "GBMAudit")
+	build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", lambda_ = 0, seed = 42), "GLMAudit")
+	build_audit(audit_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 6, seed = 42), "DecisionTreeAudit")
+	build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31, binomial_double_trees = True, seed = 42), "RandomForestAudit")
+	build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31, seed = 42), "XGBoostAudit")
 
-audit_df = load_audit("AuditNA")
+	audit_df = load_audit("AuditNA")
 
-build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 1, sample_rate = 1, col_sample_rate = 1, max_depth = 6, seed = 42), "DecisionTreeAuditNA")
-build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31, seed = 42), "GBMAuditNA")
-build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", seed = 42), "GLMAuditNA")
-build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31, binomial_double_trees = False, seed = 42), "RandomForestAuditNA")
-build_audit(audit_df, H2OStackedEnsembleEstimator(base_models = train_stack(audit_df, 11), seed = 42), "StackedEnsembleAuditNA")
-build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31, seed = 42), "XGBoostAuditNA")
+	build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 1, sample_rate = 1, col_sample_rate = 1, max_depth = 6, seed = 42), "DecisionTreeAuditNA")
+	build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31, seed = 42), "GBMAuditNA")
+	build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", seed = 42), "GLMAuditNA")
+	build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31, binomial_double_trees = False, seed = 42), "RandomForestAuditNA")
+	build_audit(audit_df, make_stacked_ensemble(audit_df, 11), "StackedEnsembleAuditNA")
+	build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31, seed = 42), "XGBoostAuditNA")
 
 #
 # Multi-class classification
@@ -76,14 +86,15 @@ def build_iris(df, classifier, name):
 	species.set_names(["Species", "probability(setosa)", "probability(versicolor)", "probability(virginica)"])
 	store_csv(species, name + ".csv")
 
-iris_df = load_iris("Iris")
+if "Iris" in datasets:
+	iris_df = load_iris("Iris")
 
-build_iris(iris_df, H2OGradientBoostingEstimator(ntrees = 11, seed = 42), "GBMIris")
-build_iris(iris_df, H2OGeneralizedLinearEstimator(family = "multinomial", seed = 42), "GLMIris")
-build_iris(iris_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 2, seed = 42), "DecisionTreeIris")
-build_iris(iris_df, H2ORandomForestEstimator(ntrees = 11, seed = 42), "RandomForestIris")
-build_iris(iris_df, H2OStackedEnsembleEstimator(base_models = train_stack(iris_df, 5), seed = 42), "StackedEnsembleIris")
-build_iris(iris_df, H2OXGBoostEstimator(ntrees = 11, seed = 42), "XGBoostIris")
+	build_iris(iris_df, H2OGradientBoostingEstimator(ntrees = 11, seed = 42), "GBMIris")
+	build_iris(iris_df, H2OGeneralizedLinearEstimator(family = "multinomial", seed = 42), "GLMIris")
+	build_iris(iris_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 2, seed = 42), "DecisionTreeIris")
+	build_iris(iris_df, H2ORandomForestEstimator(ntrees = 11, seed = 42), "RandomForestIris")
+	build_iris(iris_df, make_stacked_ensemble(iris_df, 5), "StackedEnsembleIris")
+	build_iris(iris_df, H2OXGBoostEstimator(ntrees = 11, seed = 42), "XGBoostIris")
 
 #
 # Regression
@@ -99,22 +110,23 @@ def build_auto(df, regressor, name):
 	mpg.set_names(["mpg"])
 	store_csv(mpg, name + ".csv")
 
-auto_df = load_auto("Auto")
+if "Auto" in datasets:
+	auto_df = load_auto("Auto")
 
-build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17, seed = 42), "GBMAuto")
-build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", lambda_ = 0, seed = 42), "GLMAuto")
-build_auto(auto_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 4, seed = 42), "DecisionTreeAuto")
-build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, seed = 42), "RandomForestAuto")
-build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17, seed = 42), "XGBoostAuto")
+	build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17, seed = 42), "GBMAuto")
+	build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", lambda_ = 0, seed = 42), "GLMAuto")
+	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 4, seed = 42), "DecisionTreeAuto")
+	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, seed = 42), "RandomForestAuto")
+	build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17, seed = 42), "XGBoostAuto")
 
-auto_df = load_auto("AutoNA")
+	auto_df = load_auto("AutoNA")
 
-build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 1, sample_rate = 1, col_sample_rate = 1, max_depth = 4, seed = 42), "DecisionTreeAutoNA")
-build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17, seed = 42), "GBMAutoNA")
-build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", seed = 42), "GLMAutoNA")
-build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, seed = 42), "RandomForestAutoNA")
-build_auto(auto_df, H2OStackedEnsembleEstimator(base_models = train_stack(auto_df, 7), seed = 42), "StackedEnsembleAutoNA")
-build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17, seed = 42), "XGBoostAutoNA")
+	build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 1, sample_rate = 1, col_sample_rate = 1, max_depth = 4, seed = 42), "DecisionTreeAutoNA")
+	build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17, seed = 42), "GBMAutoNA")
+	build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", seed = 42), "GLMAutoNA")
+	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, seed = 42), "RandomForestAutoNA")
+	build_auto(auto_df, make_stacked_ensemble(auto_df, 7), "StackedEnsembleAutoNA")
+	build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17, seed = 42), "XGBoostAutoNA")
 
 def load_visit(name):
 	return load_csv(name + ".csv", ["edlevel", "outwork", "female", "married", "kids"])
@@ -126,15 +138,16 @@ def build_visit(df, regressor, name):
 	docvis.set_names(["docvis"])
 	store_csv(docvis, name + ".csv")
 
-visit_df = load_visit("Visit")
+if "Visit" in datasets:
+	visit_df = load_visit("Visit")
 
-build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "poisson", seed = 42), "GBMPoissonVisit")
-build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "tweedie", seed = 42), "GBMTweedieVisit")
+	build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "poisson", seed = 42), "GBMPoissonVisit")
+	build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "tweedie", seed = 42), "GBMTweedieVisit")
 
-visit_df = load_visit("VisitNA")
+	visit_df = load_visit("VisitNA")
 
-build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "poisson", seed = 42), "GBMPoissonVisitNA")
-build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "gamma", seed = 42), "GBMGammaVisitNA")
+	build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "poisson", seed = 42), "GBMPoissonVisitNA")
+	build_visit(visit_df, H2OGradientBoostingEstimator(ntrees = 31, distribution = "gamma", seed = 42), "GBMGammaVisitNA")
 
 #
 # Anomaly detection
@@ -150,6 +163,7 @@ def build_housing(df, estimator, name):
 	score.set_names(["anomalyScore", "meanPathLength"])
 	store_csv(score, name + ".csv")
 
-housing_df = load_housing("Housing")
+if "Housing" in datasets:
+	housing_df = load_housing("Housing")
 
-build_housing(housing_df, H2OIsolationForestEstimator(ntrees = 17, max_depth = 11, seed = 42), "IsolationForestHousing")
+	build_housing(housing_df, H2OIsolationForestEstimator(ntrees = 17, max_depth = 11, seed = 42), "IsolationForestHousing")
