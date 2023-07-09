@@ -1,3 +1,4 @@
+from h2o.automl import H2OAutoML
 from h2o.estimators.gbm import H2OGradientBoostingEstimator
 from h2o.estimators.glm import H2OGeneralizedLinearEstimator
 from h2o.estimators.isolation_forest import H2OIsolationForestEstimator
@@ -24,6 +25,9 @@ def store_mojo(model, name):
 	model.download_mojo(path = "mojo/" + name)
 
 h2o.init(nthreads = 1)
+
+def make_automl():
+	return H2OAutoML(exclude_algos = ["DeepLearning", "StackedEnsemble", "XGBoost"], max_runtime_secs = 10, seed = 42)
 
 def make_stacked_ensemble(df, ntrees):
 	gbm = H2OGradientBoostingEstimator(ntrees = ntrees, nfolds = 3, fold_assignment = "Modulo", keep_cross_validation_predictions = True, seed = 42)
@@ -57,6 +61,7 @@ def build_audit(df, classifier, name):
 if "Audit" in datasets:
 	audit_df = load_audit("Audit")
 
+	build_audit(audit_df, make_automl(), "AutoMLAudit")
 	build_audit(audit_df, H2OGradientBoostingEstimator(ntrees = 31, seed = 42), "GBMAudit")
 	build_audit(audit_df, H2OGeneralizedLinearEstimator(family = "binomial", lambda_ = 0, seed = 42), "GLMAudit")
 	build_audit(audit_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 6, seed = 42), "DecisionTreeAudit")
@@ -89,6 +94,7 @@ def build_iris(df, classifier, name):
 if "Iris" in datasets:
 	iris_df = load_iris("Iris")
 
+	build_iris(iris_df, make_automl(), "AutoMLIris")
 	build_iris(iris_df, H2OGradientBoostingEstimator(ntrees = 11, seed = 42), "GBMIris")
 	build_iris(iris_df, H2OGeneralizedLinearEstimator(family = "multinomial", seed = 42), "GLMIris")
 	build_iris(iris_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 2, seed = 42), "DecisionTreeIris")
@@ -113,6 +119,7 @@ def build_auto(df, regressor, name):
 if "Auto" in datasets:
 	auto_df = load_auto("Auto")
 
+	build_auto(auto_df, make_automl(), "AutoMLAuto")
 	build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17, seed = 42), "GBMAuto")
 	build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", lambda_ = 0, seed = 42), "GLMAuto")
 	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 4, seed = 42), "DecisionTreeAuto")
