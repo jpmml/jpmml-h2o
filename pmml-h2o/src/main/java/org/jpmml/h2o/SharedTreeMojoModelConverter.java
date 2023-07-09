@@ -77,7 +77,33 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 			byte[] compressedTree = compressedTrees[i];
 			byte[] compressedTreeAux = compressedTreesAux[i];
 
-			TreeModel treeModel = encodeTreeModel(compressedTree, compressedTreeAux, predicateManager, schema);
+			Map<Integer, SharedTreeMojoModel.AuxInfo> auxInfos = SharedTreeMojoModel.readAuxInfos(compressedTreeAux);
+
+			SharedTree sharedTree = new SharedTree(){
+
+				@Override
+				public byte[] getCompressedTree(){
+					return compressedTree;
+				}
+
+				@Override
+				public byte[] getCompressedTreeAux(){
+					return compressedTreeAux;
+				}
+
+				@Override
+				public SharedTreeMojoModel.AuxInfo getAuxInfo(int id){
+					return auxInfos.get(id);
+				}
+
+				@Override
+				public void encodeAuxInfo(Node node, double score, double recordCount){
+					ensureScore(node, score);
+					ensureRecordCount(node, recordCount);
+				}
+			};
+
+			TreeModel treeModel = encodeTreeModel(sharedTree, predicateManager, schema);
 
 			result.add(treeModel);
 		}
@@ -85,14 +111,34 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		return result;
 	}
 
-	public TreeModel encodeTreeModel(byte[] compressedTree, byte[] compressedTreeAux, PredicateManager predicateManager, Schema schema){
+	protected void ensureScore(Node node, double score){
+
+		if(node.hasScore()){
+
+			if(!Objects.equals(node.getScore(), score)){
+				throw new IllegalArgumentException();
+			}
+		} else
+
+		{
+			node.setScore(score);
+		}
+	}
+
+	protected void ensureRecordCount(Node node, double recordCount){
+
+		if(node.getRecordCount() != null){
+			throw new IllegalArgumentException();
+		}
+
+		node.setRecordCount(ValueUtil.narrow(recordCount));
+	}
+
+	static
+	public TreeModel encodeTreeModel(SharedTree sharedTree, PredicateManager predicateManager, Schema schema){
 		Label label = new ContinuousLabel(DataType.DOUBLE);
 
-		ByteBufferWrapper byteBuffer = new ByteBufferWrapper(compressedTree);
-
-		Map<Integer, SharedTreeMojoModel.AuxInfo> auxInfos = SharedTreeMojoModel.readAuxInfos(compressedTreeAux);
-
-		Node root = encodeNode(byteBuffer, 0, True.INSTANCE, compressedTree, auxInfos, new CategoryManager(), predicateManager, schema);
+		Node root = encodeNode(sharedTree, null, 0, True.INSTANCE, new CategoryManager(), predicateManager, schema);
 
 		TreeModel treeModel = new TreeModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(label), root)
 			.setMissingValueStrategy(TreeModel.MissingValueStrategy.DEFAULT_CHILD);
@@ -100,8 +146,15 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		return treeModel;
 	}
 
-	public Node encodeNode(ByteBufferWrapper byteBuffer, Integer id, Predicate predicate, byte[] compressedTree, Map<Integer, SharedTreeMojoModel.AuxInfo> auxInfos, CategoryManager categoryManager, PredicateManager predicateManager, Schema schema){
-		SharedTreeMojoModel.AuxInfo auxInfo = auxInfos.get(id);
+	static
+	public Node encodeNode(SharedTree sharedTree, ByteBufferWrapper byteBuffer, Integer id, Predicate predicate, CategoryManager categoryManager, PredicateManager predicateManager, Schema schema){
+		byte[] compressedTree = sharedTree.getCompressedTree();
+
+		if(byteBuffer == null){
+			byteBuffer = new ByteBufferWrapper(compressedTree);
+		}
+
+		SharedTreeMojoModel.AuxInfo auxInfo = sharedTree.getAuxInfo(id);
 		if(auxInfo == null){
 			throw new IllegalArgumentException();
 		}
@@ -219,7 +272,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} else
 
 		{
-			leftChild = encodeNode(leftByteBuffer, leftId, leftPredicate, compressedTree, auxInfos, leftCategoryManager, predicateManager, schema);
+			leftChild = encodeNode(sharedTree, leftByteBuffer, leftId, leftPredicate, leftCategoryManager, predicateManager, schema);
 		}
 
 		Node rightChild;
@@ -257,14 +310,11 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} else
 
 		{
-			rightChild = encodeNode(rightByteBuffer, rightId, rightPredicate, compressedTree, auxInfos, rightCategoryManager, predicateManager, schema);
+			rightChild = encodeNode(sharedTree, rightByteBuffer, rightId, rightPredicate, rightCategoryManager, predicateManager, schema);
 		}
 
-		ensureScore(leftChild, auxInfo.predL);
-		ensureScore(rightChild, auxInfo.predR);
-
-		ensureRecordCount(leftChild, auxInfo.weightL);
-		ensureRecordCount(rightChild, auxInfo.weightR);
+		sharedTree.encodeAuxInfo(leftChild, auxInfo.predL, auxInfo.weightL);
+		sharedTree.encodeAuxInfo(rightChild, auxInfo.predR, auxInfo.weightR);
 
 		Node result = new CountingBranchNode(null, predicate)
 			.setId(id)
@@ -274,34 +324,10 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		if(id == 0){
 			float weight = (auxInfo.weightL + auxInfo.weightR);
 
-			ensureScore(result, (auxInfo.predL * auxInfo.weightL + auxInfo.predR * auxInfo.weightR) / weight);
-			ensureRecordCount(result, weight);
+			sharedTree.encodeAuxInfo(result, (auxInfo.predL * auxInfo.weightL + auxInfo.predR * auxInfo.weightR) / weight, weight);
 		}
 
 		return result;
-	}
-
-	protected void ensureScore(Node node, double score){
-
-		if(node.hasScore()){
-
-			if(!Objects.equals(node.getScore(), score)){
-				throw new IllegalArgumentException();
-			}
-		} else
-
-		{
-			node.setScore(score);
-		}
-	}
-
-	protected void ensureRecordCount(Node node, double recordCount){
-
-		if(node.getRecordCount() != null){
-			throw new IllegalArgumentException();
-		}
-
-		node.setRecordCount(ValueUtil.narrow(recordCount));
 	}
 
 	static
