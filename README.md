@@ -78,7 +78,8 @@ java -jar pmml-h2o-example/target/pmml-h2o-example-executable-1.2-SNAPSHOT.jar -
 
 # Documentation #
 
-* [Training Scikit-Learn based H2O.ai pipelines](https://openscoring.io/blog/2022/11/11/sklearn_h2o_pipeline/)
+* [Converting Scikit-Learn H2O.ai pipelines to PMML](https://openscoring.io/blog/2023/07/17/converting_sklearn_h2o_pipeline_pmml/)
+* [Training Scikit-Learn H2O.ai pipelines](https://openscoring.io/blog/2022/11/11/sklearn_h2o_pipeline/)
 
 # License #
 
