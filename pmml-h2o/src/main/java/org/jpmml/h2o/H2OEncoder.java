@@ -26,12 +26,11 @@ import org.dmg.pmml.DataField;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.OpType;
 import org.jpmml.converter.CategoricalFeature;
-import org.jpmml.converter.CategoricalLabel;
 import org.jpmml.converter.ContinuousFeature;
-import org.jpmml.converter.ContinuousLabel;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelEncoder;
+import org.jpmml.converter.ScalarLabelUtil;
 import org.jpmml.converter.Schema;
 
 public class H2OEncoder extends ModelEncoder {
@@ -57,33 +56,25 @@ public class H2OEncoder extends ModelEncoder {
 	}
 
 	public void setLabel(DataField dataField){
-		OpType opType = dataField.requireOpType();
-
-		switch(opType){
-			case CONTINUOUS:
-				setLabel(new ContinuousLabel(dataField));
-				break;
-			case CATEGORICAL:
-				setLabel(new CategoricalLabel(dataField));
-				break;
-			default:
-				throw new IllegalArgumentException("Expected categorical or continuous operational type, got " + opType.value() + " operational type");
-		}
+		setLabel(ScalarLabelUtil.createScalarLabel(dataField));
 	}
 
 	public void addFeature(DataField dataField){
-		OpType opType = dataField.requireOpType();
+		Feature feature;
 
+		OpType opType = dataField.requireOpType();
 		switch(opType){
 			case CONTINUOUS:
-				addFeature(new ContinuousFeature(this, dataField));
+				feature = new ContinuousFeature(this, dataField);
 				break;
 			case CATEGORICAL:
-				addFeature(new CategoricalFeature(this, dataField));
+				feature = new CategoricalFeature(this, dataField);
 				break;
 			default:
-				throw new IllegalArgumentException("Expected categorical or continuous operational type, got " + opType.value() + " operational type");
+				throw new IllegalArgumentException("Expected continuous or categorical operational type, got " + opType.value() + " operational type");
 		}
+
+		addFeature(feature);
 	}
 
 	public Label getLabel(){

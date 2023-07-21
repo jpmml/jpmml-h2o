@@ -88,7 +88,7 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 
 				DerivedOutputField predictedField = encoder.createDerivedField(segmentModel, predictedOutputField, false);
 
-				features.add(new ContinuousFeature(encoder, predictedField));
+				features.add(predictedField.toFeature(encoder));
 			} else
 
 			{
