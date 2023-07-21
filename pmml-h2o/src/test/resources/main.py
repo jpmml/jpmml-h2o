@@ -1,3 +1,4 @@
+from h2o import H2OFrame
 from h2o.automl import H2OAutoML
 from h2o.estimators.gbm import H2OGradientBoostingEstimator
 from h2o.estimators.glm import H2OGeneralizedLinearEstimator
@@ -5,8 +6,10 @@ from h2o.estimators.isolation_forest import H2OIsolationForestEstimator
 from h2o.estimators.random_forest import H2ORandomForestEstimator
 from h2o.estimators.stackedensemble import H2OStackedEnsembleEstimator
 from h2o.estimators.xgboost import H2OXGBoostEstimator
+from sklearn.preprocessing import KBinsDiscretizer
 
 import h2o
+import numpy
 import sys
 
 def load_csv(name, factors = []):
@@ -116,6 +119,24 @@ def build_auto(df, regressor, name):
 	mpg.set_names(["mpg"])
 	store_csv(mpg, name + ".csv")
 
+def build_ordinal_auto(df, classifier, name):
+	classifier.train(*split_columns(df), training_frame = df)
+	store_mojo(classifier, name + ".zip")
+	mpg = classifier.predict(df)
+	mpg.set_names(["mpg", "probability(0)", "probability(1)", "probability(2)"])
+	store_csv(mpg, name + ".csv")
+
+def _transform_mpg(auto_df):
+	auto_y = auto_df["mpg"].as_data_frame()
+
+	discretizer = KBinsDiscretizer(n_bins = 3, strategy = "quantile", encode = "ordinal")
+
+	auto_y = discretizer.fit_transform(auto_y.values.reshape(-1, 1)).astype(int)
+
+	auto_df["mpg"] = H2OFrame(auto_y, column_types = ["categorical"])
+
+	return auto_df
+
 if "Auto" in datasets:
 	auto_df = load_auto("Auto")
 
@@ -125,6 +146,10 @@ if "Auto" in datasets:
 	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 4, seed = 42), "DecisionTreeAuto")
 	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, seed = 42), "RandomForestAuto")
 	build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17, seed = 42), "XGBoostAuto")
+
+	auto_df = _transform_mpg(auto_df)
+
+	build_ordinal_auto(auto_df, H2OGeneralizedLinearEstimator(family = "ordinal", seed = 42), "GLMOrdinalAuto")
 
 	auto_df = load_auto("AutoNA")
 

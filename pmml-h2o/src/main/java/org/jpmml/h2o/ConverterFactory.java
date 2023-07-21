@@ -24,6 +24,7 @@ import hex.genmodel.algos.ensemble.StackedEnsembleMojoModel;
 import hex.genmodel.algos.gbm.GbmMojoModel;
 import hex.genmodel.algos.glm.GlmMojoModel;
 import hex.genmodel.algos.glm.GlmMultinomialMojoModel;
+import hex.genmodel.algos.glm.GlmOrdinalMojoModel;
 import hex.genmodel.algos.isofor.IsolationForestMojoModel;
 
 public class ConverterFactory {
@@ -47,6 +48,10 @@ public class ConverterFactory {
 
 		if(model instanceof GlmMultinomialMojoModel){
 			return new GlmMultinomialMojoModelConverter((GlmMultinomialMojoModel)model);
+		} else
+
+		if(model instanceof GlmOrdinalMojoModel){
+			return new GlmOrdinalMojoModelConverter((GlmOrdinalMojoModel)model);
 		} else
 
 		if(model instanceof IsolationForestMojoModel){
