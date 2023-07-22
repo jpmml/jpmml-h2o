@@ -19,19 +19,18 @@
 package org.jpmml.h2o.testing;
 
 import org.jpmml.converter.testing.Datasets;
-import org.jpmml.converter.testing.Fields;
 import org.junit.Test;
 
-public class GbmMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, Fields {
+public class GbmMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("GBM", AUDIT, excludeFields(AUDIT_ADJUSTED));
+		evaluate("GBM", AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("GBM", AUDIT_NA, excludeFields(AUDIT_ADJUSTED));
+		evaluate("GBM", AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test

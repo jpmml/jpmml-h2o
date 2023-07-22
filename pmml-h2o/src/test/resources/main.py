@@ -58,7 +58,12 @@ def build_audit(df, classifier, name):
 	classifier.train(*split_columns(df), training_frame = df)
 	store_mojo(classifier, name + ".zip")
 	adjusted = classifier.predict(df)
-	adjusted.set_names(["Adjusted", "probability(0)", "probability(1)"])
+	adjusted.set_names(["defaultCalibration(Adjusted)", "probability(0)", "probability(1)"])
+
+	adjusted_pmml = numpy.argmax(adjusted[["probability(0)", "probability(1)"]].as_data_frame(use_pandas = True).values, axis = 1)
+	adjusted["Adjusted"] = H2OFrame(adjusted_pmml, column_types = ["categorical"])
+
+	adjusted = adjusted[["Adjusted", "defaultCalibration(Adjusted)", "probability(0)", "probability(1)"]]
 	store_csv(adjusted, name + ".csv")
 
 if "Audit" in datasets:
@@ -110,7 +115,7 @@ if "Iris" in datasets:
 #
 
 def load_auto(name):
-	return load_csv(name + ".csv", ["cylinders", "origin"])
+	return load_csv(name + ".csv", ["cylinders", "model_year", "origin"])
 
 def build_auto(df, regressor, name):
 	regressor.train(*split_columns(df), training_frame = df)

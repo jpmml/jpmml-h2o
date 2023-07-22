@@ -19,11 +19,10 @@
 package org.jpmml.h2o.testing;
 
 import org.jpmml.converter.testing.Datasets;
-import org.jpmml.converter.testing.Fields;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
-public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, Fields {
+public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
 
 	public XGBoostMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-6, 1e-6));
@@ -31,12 +30,12 @@ public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implement
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("XGBoost", AUDIT, excludeFields(AUDIT_ADJUSTED), new PMMLEquivalence(6e-6, 6e-6));
+		evaluate("XGBoost", AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED), new PMMLEquivalence(6e-6, 6e-6));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("XGBoost", AUDIT_NA, excludeFields(AUDIT_ADJUSTED), new PMMLEquivalence(3e-6, 3e-6));
+		evaluate("XGBoost", AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED), new PMMLEquivalence(3e-6, 3e-6));
 	}
 
 	@Test

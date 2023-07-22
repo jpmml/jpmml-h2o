@@ -19,11 +19,10 @@
 package org.jpmml.h2o.testing;
 
 import org.jpmml.converter.testing.Datasets;
-import org.jpmml.converter.testing.Fields;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.Test;
 
-public class AutoMLTest extends H2OEncoderBatchTest implements Datasets, Fields {
+public class AutoMLTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
 
 	public AutoMLTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));
@@ -31,7 +30,7 @@ public class AutoMLTest extends H2OEncoderBatchTest implements Datasets, Fields 
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("AutoML", AUDIT, excludeFields(AUDIT_ADJUSTED));
+		evaluate("AutoML", AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test

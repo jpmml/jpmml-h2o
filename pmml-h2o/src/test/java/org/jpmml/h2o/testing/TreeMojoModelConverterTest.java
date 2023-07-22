@@ -22,13 +22,12 @@ import java.util.function.Predicate;
 
 import com.google.common.base.Equivalence;
 import org.jpmml.converter.testing.Datasets;
-import org.jpmml.converter.testing.Fields;
 import org.jpmml.evaluator.ResultField;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.jpmml.model.visitors.VisitorBattery;
 import org.junit.Test;
 
-public class TreeMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, Fields {
+public class TreeMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
 
 	public TreeMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));
@@ -58,12 +57,12 @@ public class TreeMojoModelConverterTest extends H2OEncoderBatchTest implements D
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("DecisionTree", AUDIT);
+		evaluate("DecisionTree", AUDIT, excludeFields(AUDIT_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("DecisionTree", AUDIT_NA, excludeFields(AUDIT_ADJUSTED));
+		evaluate("DecisionTree", AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test

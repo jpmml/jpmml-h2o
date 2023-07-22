@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Villu Ruusmann
+ * Copyright (c) 2023 Villu Ruusmann
  *
  * This file is part of JPMML-H2O
  *
@@ -18,24 +18,10 @@
  */
 package org.jpmml.h2o.testing;
 
-import org.jpmml.converter.testing.Datasets;
-import org.jpmml.evaluator.testing.PMMLEquivalence;
-import org.junit.Test;
+import org.jpmml.converter.FieldNameUtil;
+import org.jpmml.converter.testing.Fields;
 
-public class StackedEnsembleMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
+public interface H2OFields extends Fields {
 
-	@Test
-	public void evaluateAuditNA() throws Exception {
-		evaluate("StackedEnsemble", AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
-	}
-
-	@Test
-	public void evaluateAutoNA() throws Exception {
-		evaluate("StackedEnsemble", AUTO_NA);
-	}
-
-	@Test
-	public void evaluateIris() throws Exception {
-		evaluate("StackedEnsemble", IRIS, new PMMLEquivalence(1e-13, 1e-13));
-	}
+	String AUDIT_DEFAULTCALIBRATION_ADJUSTED = FieldNameUtil.create("defaultCalibration", AUDIT_ADJUSTED);
 }
