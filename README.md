@@ -5,20 +5,30 @@ Java library and command-line application for converting [H2O.ai](https://www.h2
 
 # Features #
 
-* Supported MOJO types:
-  * [`DrfMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/drf/DrfMojoModel.html)
-  * [`GbmMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/gbm/GbmMojoModel.html)
-  * [`GlmMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMojoModel.html)
-  * [`GlmMultinomialMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMultinomialMojoModel.html)
-  * [`GlmOrdinalMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmOrdinalMojoModel.html)
-  * [`IsolationForestMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/isofor/IsolationForestMojoModel.html)
-  * [`StackedEnsembleMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/ensemble/StackedEnsembleMojoModel.html)
-  * `XGBoostJavaMojoModel`
-  * `XGBoostNativeMojoModel`
+### Supported MOJO types
+
+* Supervised algorithms:
+  * Automated Machine Learning (AutoML)
+  * Distributed Random Forest (DRF):
+    * [`DrfMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/drf/DrfMojoModel.html)
+  * Gradient Boosting Machine (GBM):
+    * [`GbmMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/gbm/GbmMojoModel.html)
+  * Generalized Linear Model (GLM):
+    * [`GlmMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMojoModel.html)
+    * [`GlmMultinomialMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMultinomialMojoModel.html)
+    * [`GlmOrdinalMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmOrdinalMojoModel.html)
+  * Stacked Ensembles:
+    * [`StackedEnsembleMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/ensemble/StackedEnsembleMojoModel.html)
+  * XGBoost:
+    * `XGBoostJavaMojoModel`
+    * `XGBoostNativeMojoModel`
+* Unsupervised algorithms:
+  * Isolation Forest:
+    * [`IsolationForestMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/isofor/IsolationForestMojoModel.html)
 
 # Prerequisites #
 
-* H2O 3.34(.0.1) or newer
+* H2O.ai 3.34(.0.1) or newer
 * Java 1.8 or newer
 
 # Installation #
@@ -34,11 +44,11 @@ The build produces a library JAR file `pmml-h2o/target/pmml-h2o-1.2-SNAPSHOT.jar
 
 A typical workflow can be summarized as follows:
 
-1. Use H2O to train a model.
+1. Use H2O.ai to train a model.
 2. Download the model in Model ObJect, Optimized (MOJO) data format to a file in a local filesystem.
 3. Use the JPMML-H2O command-line converter application to turn the MOJO file to a PMML file.
 
-### The H2O side of operations
+### The H2O.ai side of operations
 
 Using the [`h2o`](https://github.com/h2oai/h2o-3/tree/master/h2o-py) package to train a regression model for the example Boston housing dataset:
 
