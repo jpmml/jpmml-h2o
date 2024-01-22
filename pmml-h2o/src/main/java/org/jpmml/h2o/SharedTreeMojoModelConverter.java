@@ -201,22 +201,8 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} else
 
 		{
-			if(equal != 0){
+			if(feature instanceof CategoricalFeature){
 				CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
-
-				GenmodelBitSet bitSet = new GenmodelBitSet(0);
-
-				if(equal == 8){
-					bitSet.fill2(compressedTree, byteBuffer);
-				} else
-
-				if(equal == 12){
-					bitSet.fill3(compressedTree, byteBuffer);
-				} else
-
-				{
-					throw new IllegalArgumentException("Node type " + equal + " is not supported");
-				}
 
 				String name = categoricalFeature.getName();
 				List<?> values = categoricalFeature.getValues();
@@ -226,19 +212,46 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 				List<Object> leftValues = new ArrayList<>();
 				List<Object> rightValues = new ArrayList<>();
 
-				for(int i = 0; i < values.size(); i++){
-					Object value = values.get(i);
+				if (equal != 0) {
+					GenmodelBitSet bitSet = new GenmodelBitSet(0);
 
-					if(!valueFilter.test(value)){
-						continue;
-					} // End if
+					int bitsize = 0;
+					if (equal == 8) {
+						bitSet.fill2(compressedTree, byteBuffer);
+					} else if (equal == 12) {
+						bitSet.fill3(compressedTree, byteBuffer);
+					} else {
+						throw new IllegalArgumentException("Node type " + equal + " is not supported");
+					}
 
-					if(!bitSet.contains(i)){
-						leftValues.add(value);
-					} else
+					for (int i = 0; i < values.size() && i < bitSet.getNBits(); i++) {
+						Object value = values.get(i);
 
-					{
-						rightValues.add(value);
+						if (!valueFilter.test(value)) {
+							continue;
+						} // End if
+
+						if (!bitSet.contains(i)) {
+							leftValues.add(value);
+						} else {
+							rightValues.add(value);
+						}
+					}
+				} else {
+					Double splitVal = (double)byteBuffer.get4f();
+
+					for (int i = 0; i < values.size(); i++) {
+						Object value = values.get(i);
+
+						if (!valueFilter.test(value)) {
+							continue;
+						} // End if
+
+						if (i < splitVal) {
+							leftValues.add(value);
+						} else {
+							rightValues.add(value);
+						}
 					}
 				}
 
