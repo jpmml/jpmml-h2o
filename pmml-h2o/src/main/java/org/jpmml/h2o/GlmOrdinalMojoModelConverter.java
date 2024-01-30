@@ -25,7 +25,6 @@ import java.util.Objects;
 
 import com.google.common.primitives.Doubles;
 import hex.genmodel.algos.glm.GlmOrdinalMojoModel;
-import org.dmg.pmml.DataField;
 import org.dmg.pmml.DataType;
 import org.dmg.pmml.DerivedField;
 import org.dmg.pmml.OpType;
@@ -35,7 +34,6 @@ import org.dmg.pmml.mining.Segmentation;
 import org.dmg.pmml.regression.RegressionModel;
 import org.jpmml.converter.CategoricalLabel;
 import org.jpmml.converter.ContinuousFeature;
-import org.jpmml.converter.ContinuousLabel;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.ModelEncoder;
 import org.jpmml.converter.ModelUtil;
@@ -56,12 +54,10 @@ public class GlmOrdinalMojoModelConverter extends GlmMojoModelBaseConverter<GlmO
 		Schema schema = super.encodeSchema(encoder);
 
 		CategoricalLabel categoricalLabel = (CategoricalLabel)schema.getLabel();
-		List<? extends Feature> features = schema.getFeatures();
 
-		DataField dataField = encoder.getDataField(categoricalLabel.getName());
-		dataField.setOpType(OpType.ORDINAL);
+		encoder.toOrdinal(categoricalLabel.getName(), categoricalLabel.getValues());
 
-		return new Schema(encoder, new OrdinalLabel(dataField), features);
+		return schema.toRelabeledSchema(categoricalLabel.toOrdinalLabel());
 	}
 
 	@Override
@@ -126,8 +122,7 @@ public class GlmOrdinalMojoModelConverter extends GlmMojoModelBaseConverter<GlmO
 
 		Schema segmentSchema = schema.toAnonymousRegressorSchema(DataType.DOUBLE);
 
-		RegressionModel firstRegressionModel = RegressionModelUtil.createRegression(features, sharedCoefficients, 0d, RegressionModel.NormalizationMethod.NONE, segmentSchema)
-			.setTargets(ModelUtil.createRescaleTargets(-1d, null, (ContinuousLabel)segmentSchema.getLabel()));
+		RegressionModel firstRegressionModel = RegressionModelUtil.createRegression(features, sharedCoefficients, 0d, RegressionModel.NormalizationMethod.NONE, segmentSchema);
 
 		OutputField linpredOutputField = ModelUtil.createPredictedField("linpred", OpType.CONTINUOUS, DataType.DOUBLE);
 

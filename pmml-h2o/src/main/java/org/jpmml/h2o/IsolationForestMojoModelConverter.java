@@ -32,8 +32,8 @@ import org.dmg.pmml.mining.MiningModel;
 import org.dmg.pmml.mining.Segmentation;
 import org.dmg.pmml.tree.Node;
 import org.dmg.pmml.tree.TreeModel;
+import org.jpmml.converter.ExpressionUtil;
 import org.jpmml.converter.ModelUtil;
-import org.jpmml.converter.PMMLUtil;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.Transformation;
 import org.jpmml.converter.mining.MiningModelUtil;
@@ -72,7 +72,7 @@ public class IsolationForestMojoModelConverter extends SharedTreeMojoModelConver
 
 			@Override
 			public Expression createExpression(FieldRef fieldRef){
-				return PMMLUtil.createApply(PMMLFunctions.DIVIDE, PMMLUtil.createApply(PMMLFunctions.SUBTRACT, PMMLUtil.createConstant(maxPathLength / (double)treeModels.size()), fieldRef), PMMLUtil.createConstant((maxPathLength - minPathLength) / (double)treeModels.size()));
+				return ExpressionUtil.createApply(PMMLFunctions.DIVIDE, ExpressionUtil.createApply(PMMLFunctions.SUBTRACT, ExpressionUtil.createConstant(maxPathLength / (double)treeModels.size()), fieldRef), ExpressionUtil.createConstant((maxPathLength - minPathLength) / (double)treeModels.size()));
 			}
 		};
 
