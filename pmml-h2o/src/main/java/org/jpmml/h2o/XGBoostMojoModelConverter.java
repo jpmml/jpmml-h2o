@@ -99,12 +99,8 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 		options.put(HasXGBoostOptions.OPTION_COMPACT, Boolean.TRUE);
 		options.put(HasXGBoostOptions.OPTION_NUMERIC, Boolean.TRUE);
 
-		Schema xgbSchema = learner.configureSchema(options, schema);
+		Schema xgbSchema = learner.toXGBoostSchema(schema);
 
-		MiningModel miningModel = learner.encodeModel(options, xgbSchema);
-
-		miningModel = learner.configureModel(options, miningModel);
-
-		return miningModel;
+		return learner.encodeModel(options, xgbSchema);
 	}
 }
