@@ -1,5 +1,6 @@
 from h2o import H2OFrame
 from h2o.automl import H2OAutoML
+from h2o.estimators.extended_isolation_forest import H2OExtendedIsolationForestEstimator
 from h2o.estimators.gbm import H2OGradientBoostingEstimator
 from h2o.estimators.glm import H2OGeneralizedLinearEstimator
 from h2o.estimators.isolation_forest import H2OIsolationForestEstimator
@@ -203,4 +204,5 @@ def build_housing(df, estimator, name):
 if "Housing" in datasets:
 	housing_df = load_housing("Housing")
 
+	build_housing(housing_df, H2OExtendedIsolationForestEstimator(ntrees = 17, extension_level = 4, seed = 42), "ExtendedIsolationForestHousing")
 	build_housing(housing_df, H2OIsolationForestEstimator(ntrees = 17, max_depth = 11, seed = 42), "IsolationForestHousing")

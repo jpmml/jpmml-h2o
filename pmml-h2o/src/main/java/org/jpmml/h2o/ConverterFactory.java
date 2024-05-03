@@ -26,6 +26,7 @@ import hex.genmodel.algos.glm.GlmMojoModel;
 import hex.genmodel.algos.glm.GlmMultinomialMojoModel;
 import hex.genmodel.algos.glm.GlmOrdinalMojoModel;
 import hex.genmodel.algos.isofor.IsolationForestMojoModel;
+import hex.genmodel.algos.isoforextended.ExtendedIsolationForestMojoModel;
 
 public class ConverterFactory {
 
@@ -36,6 +37,10 @@ public class ConverterFactory {
 
 		if(model instanceof DrfMojoModel){
 			return new DrfMojoModelConverter((DrfMojoModel)model);
+		} else
+
+		if(model instanceof ExtendedIsolationForestMojoModel){
+			return new ExtendedIsolationForestMojoModelConverter((ExtendedIsolationForestMojoModel)model);
 		} else
 
 		if(model instanceof GbmMojoModel){
