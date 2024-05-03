@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.jpmml</groupId>
 		<artifactId>jpmml-h2o</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<version>1.2.12</version>
 	</parent>
 
 	<groupId>org.jpmml</groupId>
@@ -24,7 +24,7 @@
 	</licenses>
 
 	<properties>
-		<project.build.outputTimestamp>2024-04-26T18:00:00Z</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2024-05-03T20:07:01Z</project.build.outputTimestamp>
 	</properties>
 
 	<dependencies>
