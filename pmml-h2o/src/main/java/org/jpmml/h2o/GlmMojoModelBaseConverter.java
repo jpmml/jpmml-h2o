@@ -32,7 +32,7 @@ import org.jpmml.converter.CategoricalFeature;
 import org.jpmml.converter.ContinuousFeature;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
-import org.jpmml.converter.PMMLEncoder;
+import org.jpmml.converter.ModelEncoder;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.SchemaUtil;
 
@@ -54,7 +54,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 		boolean meanImputation = getMeanImputation(model);
 		boolean useAllFactorLevels = getUseAllFactorLevels(model);
 
-		PMMLEncoder encoder = schema.getEncoder();
+		ModelEncoder encoder = schema.getEncoder();
 		Label label = schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
 

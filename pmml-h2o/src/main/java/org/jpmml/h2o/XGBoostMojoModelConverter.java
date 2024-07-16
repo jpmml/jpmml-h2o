@@ -34,7 +34,7 @@ import org.jpmml.converter.CategoricalFeature;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.MissingValueFeature;
-import org.jpmml.converter.PMMLEncoder;
+import org.jpmml.converter.ModelEncoder;
 import org.jpmml.converter.Schema;
 import org.jpmml.xgboost.HasXGBoostOptions;
 import org.jpmml.xgboost.Learner;
@@ -48,7 +48,7 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 
 	@Override
 	public Schema toMojoModelSchema(Schema schema){
-		PMMLEncoder encoder = schema.getEncoder();
+		ModelEncoder encoder = schema.getEncoder();
 		Label label = schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
 

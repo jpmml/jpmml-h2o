@@ -64,8 +64,7 @@ public class GlmOrdinalMojoModelConverter extends GlmMojoModelBaseConverter<GlmO
 	public MiningModel encodeModel(Schema schema){
 		GlmOrdinalMojoModel model = getModel();
 
-		ModelEncoder encoder = (ModelEncoder)schema.getEncoder();
-
+		ModelEncoder encoder = schema.getEncoder();
 		OrdinalLabel ordinalLabel = (OrdinalLabel)schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
 

@@ -209,7 +209,7 @@ public class ExtendedIsolationForestMojoModelConverter extends Converter<Extende
 
 	static
 	private Feature loadFeature(String name, ByteBufferWrapper byteBuffer, double[] n, double[] p, Schema schema){
-		ModelEncoder encoder = (ModelEncoder)schema.getEncoder();
+		ModelEncoder encoder = schema.getEncoder();
 
 		for(int i = 0; i < n.length; i++){
 			n[i] = byteBuffer.get8d();
