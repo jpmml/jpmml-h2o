@@ -79,4 +79,12 @@ public class TreeMojoModelConverterTest extends H2OEncoderBatchTest implements D
 	public void evaluateIris() throws Exception {
 		evaluate("DecisionTree", IRIS);
 	}
+
+	private final static String SPLIT_CAT = "SplitCat";
+
+	@Test
+	public void evaluateSplitCat() throws Exception {
+		evaluate("DecisionTree", SPLIT_CAT);
+	}
+
 }

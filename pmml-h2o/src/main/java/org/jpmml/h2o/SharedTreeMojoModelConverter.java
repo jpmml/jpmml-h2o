@@ -215,7 +215,6 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 				if (equal != 0) {
 					GenmodelBitSet bitSet = new GenmodelBitSet(0);
 
-					int bitsize = 0;
 					if (equal == 8) {
 						bitSet.fill2(compressedTree, byteBuffer);
 					} else if (equal == 12) {
@@ -224,14 +223,14 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 						throw new IllegalArgumentException("Node type " + equal + " is not supported");
 					}
 
-					for (int i = 0; i < values.size() && i < bitSet.getNBits(); i++) {
+					for (int i = 0; i < values.size(); i++) {
 						Object value = values.get(i);
 
 						if (!valueFilter.test(value)) {
 							continue;
 						} // End if
 
-						if (!bitSet.contains(i)) {
+						if ((bitSet.isInRange(i) && !bitSet.contains(i) || (!bitSet.isInRange(i) && leftward))) {
 							leftValues.add(value);
 						} else {
 							rightValues.add(value);
