@@ -147,10 +147,10 @@ if "Auto" in datasets:
 	auto_df = load_auto("Auto")
 
 	build_auto(auto_df, make_automl(), "AutoMLAuto")
-	build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17, seed = 42), "GBMAuto")
+	build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17, nbins_cats = 5, seed = 42), "GBMAuto")
 	build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", lambda_ = 0, seed = 42), "GLMAuto")
 	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 4, seed = 42), "DecisionTreeAuto")
-	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, seed = 42), "RandomForestAuto")
+	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, nbins_cats = 3, seed = 42), "RandomForestAuto")
 	build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17, seed = 42), "XGBoostAuto")
 
 	auto_df = _transform_mpg(auto_df)
@@ -162,7 +162,7 @@ if "Auto" in datasets:
 	build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 1, sample_rate = 1, col_sample_rate = 1, max_depth = 4, seed = 42), "DecisionTreeAutoNA")
 	build_auto(auto_df, H2OGradientBoostingEstimator(ntrees = 17, seed = 42), "GBMAutoNA")
 	build_auto(auto_df, H2OGeneralizedLinearEstimator(family = "gaussian", seed = 42), "GLMAutoNA")
-	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, seed = 42), "RandomForestAutoNA")
+	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, nbins_cats = 3, seed = 42), "RandomForestAutoNA")
 	build_auto(auto_df, make_stacked_ensemble(auto_df, 7), "StackedEnsembleAutoNA")
 	build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17, seed = 42), "XGBoostAutoNA")
 
