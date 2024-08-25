@@ -49,6 +49,11 @@ public class DrfMojoModelConverterTest extends H2OEncoderBatchTest implements Da
 	}
 
 	@Test
+	public void evaluateBitSet() throws Exception {
+		evaluate("RandomForest", "BitSet");
+	}
+
+	@Test
 	public void evaluateIris() throws Exception {
 		evaluate("RandomForest", IRIS);
 	}

@@ -234,12 +234,25 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 							continue;
 						} // End if
 
-						if(!bitSet.contains(i)){
-							leftValues.add(value);
+						if(bitSet.isInRange(i)){
+
+							if(!bitSet.contains(i)){
+								leftValues.add(value);
+							} else
+
+							{
+								rightValues.add(value);
+							}
 						} else
 
 						{
-							rightValues.add(value);
+							if(leftward){
+								leftValues.add(value);
+							} else
+
+							{
+								rightValues.add(value);
+							}
 						}
 					}
 				} else

@@ -46,7 +46,7 @@ if __name__ == "__main__":
 	if len(sys.argv) > 1:
 		datasets = (sys.argv[1]).split(",")
 	else:
-		datasets = ["Audit", "Auto", "Housing", "Iris", "Visit"]
+		datasets = ["Audit", "Auto", "BitSet", "Housing", "Iris", "Visit"]
 
 #
 # Binary classification
@@ -206,3 +206,21 @@ if "Housing" in datasets:
 
 	build_housing(housing_df, H2OExtendedIsolationForestEstimator(ntrees = 17, extension_level = 4, seed = 42), "ExtendedIsolationForestHousing")
 	build_housing(housing_df, H2OIsolationForestEstimator(ntrees = 17, max_depth = 11, seed = 42), "IsolationForestHousing")
+
+#
+# GenmodelBitSet issue
+#
+
+def load_bitset(name):
+	return load_csv(name + ".csv", ["Code"])
+
+def build_bitset(df, regressor, name):
+	regressor.train(*split_columns(df), training_frame = df)
+	store_mojo(regressor, name + ".zip")
+	score = regressor.predict(df)
+	score.set_names(["Score"])
+	store_csv(score, name + ".csv")
+
+if "BitSet" in datasets:
+	df = load_bitset("BitSet")
+	build_bitset(df, H2ORandomForestEstimator(ntrees = 5, nbins_cats = 256, seed = 42), "RandomForestBitSet")
