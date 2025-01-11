@@ -39,7 +39,7 @@ Enter the project root directory and build using [Apache Maven](https://maven.ap
 mvn clean install
 ```
 
-The build produces a library JAR file `pmml-h2o/target/pmml-h2o-1.2-SNAPSHOT.jar`, and an executable uber-JAR file `pmml-h2o-example/target/pmml-h2o-example-executable-1.2-SNAPSHOT.jar`.
+The build produces a library JAR file `pmml-h2o/target/pmml-h2o-1.3-SNAPSHOT.jar`, and an executable uber-JAR file `pmml-h2o-example/target/pmml-h2o-example-executable-1.3-SNAPSHOT.jar`.
 
 # Usage #
 
@@ -80,12 +80,12 @@ glm.download_mojo(path = "mojo.zip")
 
 Converting the MOJO file `mojo.zip` to a PMML file `mojo.pmml`:
 ```
-java -jar pmml-h2o-example/target/pmml-h2o-example-executable-1.2-SNAPSHOT.jar --mojo-input mojo.zip --pmml-output mojo.pmml
+java -jar pmml-h2o-example/target/pmml-h2o-example-executable-1.3-SNAPSHOT.jar --mojo-input mojo.zip --pmml-output mojo.pmml
 ```
 
 Getting help:
 ```
-java -jar pmml-h2o-example/target/pmml-h2o-example-executable-1.2-SNAPSHOT.jar --help
+java -jar pmml-h2o-example/target/pmml-h2o-example-executable-1.3-SNAPSHOT.jar --help
 ```
 
 # Documentation #
