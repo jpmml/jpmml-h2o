@@ -30,7 +30,8 @@ import org.dmg.pmml.PMML;
 import org.jpmml.h2o.Converter;
 import org.jpmml.h2o.ConverterFactory;
 import org.jpmml.h2o.MojoModelUtil;
-import org.jpmml.model.metro.MetroJAXBUtil;
+import org.jpmml.model.JAXBSerializer;
+import org.jpmml.model.metro.MetroJAXBSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,8 +134,10 @@ public class Main {
 		try(OutputStream os = new FileOutputStream(this.output)){
 			logger.info("Marshalling PMML..");
 
+			JAXBSerializer jaxbSerializer = new MetroJAXBSerializer();
+
 			long begin = System.currentTimeMillis();
-			MetroJAXBUtil.marshalPMML(pmml, os);
+			jaxbSerializer.serializePretty(pmml, os);
 			long end = System.currentTimeMillis();
 
 			logger.info("Marshalled PMML in {} ms.", (end - begin));
