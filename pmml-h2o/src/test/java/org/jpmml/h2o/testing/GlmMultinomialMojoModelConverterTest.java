@@ -20,7 +20,7 @@ package org.jpmml.h2o.testing;
 
 import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class GlmMultinomialMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets {
 

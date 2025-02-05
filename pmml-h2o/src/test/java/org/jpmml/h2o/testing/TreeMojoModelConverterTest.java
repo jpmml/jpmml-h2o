@@ -25,7 +25,7 @@ import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.ResultField;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.jpmml.model.visitors.VisitorBattery;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TreeMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
 
