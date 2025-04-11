@@ -30,7 +30,7 @@ Java library and command-line application for converting [H2O.ai](https://www.h2
 # Prerequisites #
 
 * H2O.ai 3.34(.0.1) or newer
-* Java 1.8 or newer
+* Java 11 or newer
 
 # Installation #
 
