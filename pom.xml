@@ -49,8 +49,8 @@
 	</issueManagement>
 
 	<properties>
-		<jpmml-converter.version>1.6.0</jpmml-converter.version>
-		<jpmml-xgboost.version>1.9.0</jpmml-xgboost.version>
+		<jpmml-converter.version>1.6.2</jpmml-converter.version>
+		<jpmml-xgboost.version>1.9.1</jpmml-xgboost.version>
 		<jpmml-evaluator.version>1.7.1</jpmml-evaluator.version>
 		<h2o.ai.version>[3.34.0.1,)</h2o.ai.version>
 		<project.build.outputTimestamp>2025-02-05T20:46:28Z</project.build.outputTimestamp>
