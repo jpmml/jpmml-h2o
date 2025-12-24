@@ -53,7 +53,7 @@ public class GlmOrdinalMojoModelConverter extends GlmMojoModelBaseConverter<GlmO
 	public Schema encodeSchema(H2OEncoder encoder){
 		Schema schema = super.encodeSchema(encoder);
 
-		CategoricalLabel categoricalLabel = (CategoricalLabel)schema.getLabel();
+		CategoricalLabel categoricalLabel = schema.requireCategoricalLabel();
 
 		encoder.toOrdinal(categoricalLabel.getName(), categoricalLabel.getValues());
 
@@ -65,7 +65,7 @@ public class GlmOrdinalMojoModelConverter extends GlmMojoModelBaseConverter<GlmO
 		GlmOrdinalMojoModel model = getModel();
 
 		ModelEncoder encoder = schema.getEncoder();
-		OrdinalLabel ordinalLabel = (OrdinalLabel)schema.getLabel();
+		OrdinalLabel ordinalLabel = schema.requireOrdinalLabel();
 		List<? extends Feature> features = schema.getFeatures();
 
 		List<Double> beta = Doubles.asList(getBeta(model));

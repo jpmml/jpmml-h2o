@@ -67,7 +67,7 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 		for(int i = 0; i < cats; i++){
 			CategoricalFeature categoricalFeature = (CategoricalFeature)categoricalFeatures.get(i);
 
-			SchemaUtil.checkSize((catOffsets[i + 1] - catOffsets[i]) + (useAllFactorLevels ? 0 : 1), categoricalFeature);
+			SchemaUtil.checkCardinality((catOffsets[i + 1] - catOffsets[i]) + (useAllFactorLevels ? 0 : 1), categoricalFeature);
 		}
 
 		List<? extends Feature> continuousFeatures = features.stream()

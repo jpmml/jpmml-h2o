@@ -44,7 +44,7 @@ public class GlmMultinomialMojoModelConverter extends GlmMojoModelBaseConverter<
 	public RegressionModel encodeModel(Schema schema){
 		GlmMultinomialMojoModel model = getModel();
 
-		CategoricalLabel categoricalLabel = (CategoricalLabel)schema.getLabel();
+		CategoricalLabel categoricalLabel = schema.requireCategoricalLabel();
 		List<? extends Feature> features = schema.getFeatures();
 
 		List<Double> beta = Doubles.asList(getBeta(model));

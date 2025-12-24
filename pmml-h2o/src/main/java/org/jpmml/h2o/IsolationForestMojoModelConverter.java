@@ -33,6 +33,7 @@ import org.dmg.pmml.mining.Segmentation;
 import org.dmg.pmml.tree.Node;
 import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.ExpressionUtil;
+import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.Transformation;
@@ -76,7 +77,7 @@ public class IsolationForestMojoModelConverter extends SharedTreeMojoModelConver
 			}
 		};
 
-		MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(null))
+		MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema((Label)null))
 			.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.AVERAGE, Segmentation.MissingPredictionTreatment.RETURN_MISSING, treeModels))
 			.setOutput(ModelUtil.createPredictedOutput("meanPathLength", OpType.CONTINUOUS, DataType.DOUBLE, anomalyScore));
 

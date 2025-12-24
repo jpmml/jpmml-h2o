@@ -54,12 +54,10 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 		int ntreeGroups = getNTreeGroups(model);
 		int ntreesPerGroup = getNTreesPerGroup(model);
 
-		Label label = schema.getLabel();
-
 		List<TreeModel> treeModels = encodeTreeModels(schema);
 
 		if(model._nclasses == 1){
-			ContinuousLabel continuousLabel = (ContinuousLabel)label;
+			ContinuousLabel continuousLabel = schema.requireContinuousLabel();
 
 			return encodeTreeEnsemble(treeModels, (List<TreeModel> ensembleTreeModels) -> {
 				MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(continuousLabel))
@@ -85,13 +83,13 @@ public class DrfMojoModelConverter extends SharedTreeMojoModelConverter<DrfMojoM
 		} else
 
 		{
-			CategoricalLabel categoricalLabel = (CategoricalLabel)label;
+			CategoricalLabel categoricalLabel = schema.requireCategoricalLabel();
 
 			List<Model> models = new ArrayList<>();
 
 			for(int i = 0; i < categoricalLabel.size(); i++){
 				Model pmmlModel = encodeTreeEnsemble(CMatrixUtil.getRow(treeModels, ntreesPerGroup, ntreeGroups, i), (List<TreeModel> ensembleTreeModels) -> {
-					MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(null))
+					MiningModel miningModel = new MiningModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema((Label)null))
 						.setSegmentation(MiningModelUtil.createSegmentation(Segmentation.MultipleModelMethod.SUM, Segmentation.MissingPredictionTreatment.RETURN_MISSING, ensembleTreeModels));
 
 					return miningModel;

@@ -81,7 +81,7 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 			Model segmentModel = converter.encodeModel(baseModelSchema);
 
 			if(model._nclasses == 1){
-				ContinuousLabel continuousLabel = (ContinuousLabel)label;
+				ContinuousLabel continuousLabel = schema.requireContinuousLabel();
 
 				OutputField predictedOutputField = ModelUtil.createPredictedField(FieldNameUtil.create("stack", i), OpType.CONTINUOUS, DataType.DOUBLE)
 					.setFinalResult(false);
@@ -92,9 +92,9 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 			} else
 
 			{
-				CategoricalLabel categoricalLabel = (CategoricalLabel)label;
+				CategoricalLabel categoricalLabel = schema.requireCategoricalLabel();
 
-				SchemaUtil.checkSize(model._nclasses, categoricalLabel);
+				SchemaUtil.checkCardinality(model._nclasses, categoricalLabel);
 
 				List<?> values = categoricalLabel.getValues();
 

@@ -25,7 +25,6 @@ import com.google.common.primitives.Doubles;
 import hex.genmodel.algos.glm.GlmMojoModel;
 import org.dmg.pmml.regression.RegressionModel;
 import org.jpmml.converter.Feature;
-import org.jpmml.converter.Label;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.SchemaUtil;
 import org.jpmml.converter.regression.RegressionModelUtil;
@@ -40,7 +39,6 @@ public class GlmMojoModelConverter extends GlmMojoModelBaseConverter<GlmMojoMode
 	public RegressionModel encodeModel(Schema schema){
 		GlmMojoModel model = getModel();
 
-		Label label = schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
 
 		List<Double> beta = Doubles.asList(getBeta(model));
