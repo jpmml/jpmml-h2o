@@ -51,7 +51,7 @@
 	<properties>
 		<jpmml-converter.version>1.6.7</jpmml-converter.version>
 		<jpmml-xgboost.version>1.9.4</jpmml-xgboost.version>
-		<jpmml-evaluator.version>1.7.5</jpmml-evaluator.version>
+		<jpmml-evaluator.version>1.7.6</jpmml-evaluator.version>
 		<h2o.ai.version>[3.34.0.1,)</h2o.ai.version>
 		<project.build.outputTimestamp>2025-10-23T11:31:02Z</project.build.outputTimestamp>
 	</properties>
