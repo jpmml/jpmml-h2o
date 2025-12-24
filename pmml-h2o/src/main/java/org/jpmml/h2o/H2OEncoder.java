@@ -72,7 +72,7 @@ public class H2OEncoder extends ModelEncoder {
 				feature = new CategoricalFeature(this, dataField);
 				break;
 			default:
-				throw new SchemaException("Expected continuous or categorical operational type, got " + opType.value() + " operational type");
+				throw new SchemaException("Expected continuous or categorical operational type for field \'" + dataField.requireName() + "\', got " + opType.value());
 		}
 
 		addFeature(feature);
