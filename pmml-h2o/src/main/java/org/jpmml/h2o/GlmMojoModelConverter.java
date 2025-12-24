@@ -59,7 +59,7 @@ public class GlmMojoModelConverter extends GlmMojoModelBaseConverter<GlmMojoMode
 				normalizationMethod = RegressionModel.NormalizationMethod.LOGIT;
 				break;
 			default:
-				throw new IllegalArgumentException(link);
+				throw new H2OException("Link function \'" + link + "\' is not supported");
 		}
 
 		RegressionModel regressionModel;
@@ -73,7 +73,7 @@ public class GlmMojoModelConverter extends GlmMojoModelBaseConverter<GlmMojoMode
 				regressionModel = RegressionModelUtil.createRegression(features, coefficients, intercept, normalizationMethod, schema);
 				break;
 			default:
-				throw new IllegalArgumentException(family);
+				throw new H2OException("Distribution family \'" + family + "\' is not supported");
 		}
 
 		return regressionModel;

@@ -67,11 +67,11 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 			int[] mapping = getMapping(baseModel);
 
 			if(!(mojoModel instanceof SharedTreeMojoModel)){
-				throw new IllegalArgumentException("Stacking of models other than decision tree models is not supported");
+				throw new H2OException("Stacking of models other than decision tree models is not supported");
 			} // End if
 
 			if(mapping != null && !isSequential(mapping)){
-				throw new IllegalArgumentException("Feature re-indexing is not supported");
+				throw new H2OException("Feature re-indexing is not supported");
 			}
 
 			Converter<?> converter = converterFactory.newConverter(mojoModel);

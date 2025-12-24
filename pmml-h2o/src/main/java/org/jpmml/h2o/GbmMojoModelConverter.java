@@ -127,7 +127,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 		} else
 
 		{
-			throw new IllegalArgumentException("Distribution family " + model._family + " is not supported");
+			throw new H2OException("Distribution family \'" + model._family + "\' is not supported");
 		}
 	}
 

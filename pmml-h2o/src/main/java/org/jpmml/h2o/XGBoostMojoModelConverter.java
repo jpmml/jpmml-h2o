@@ -92,7 +92,7 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 		try(InputStream is = new ByteArrayInputStream(boosterBytes)){
 			learner = XGBoostUtil.loadLearner(is);
 		} catch(IOException ioe){
-			throw new IllegalArgumentException(ioe);
+			throw new H2OException("Failed to load XGBoost booster object", ioe);
 		}
 
 		Map<String, Object> options = new LinkedHashMap<>();

@@ -90,7 +90,7 @@ public class GlmOrdinalMojoModelConverter extends GlmMojoModelBaseConverter<GlmO
 
 				{
 					if(!Objects.equals(sharedCoefficients, coefficients)){
-						throw new IllegalArgumentException();
+						throw new H2OException("Expected the same coefficient values, got " + sharedCoefficients + " and " + coefficients);
 					}
 				}
 
@@ -106,12 +106,12 @@ public class GlmOrdinalMojoModelConverter extends GlmMojoModelBaseConverter<GlmO
 					for(Number coefficient : coefficients){
 
 						if(coefficient.doubleValue() != 0d){
-							throw new IllegalArgumentException();
+							throw new H2OException("Expected a zero coefficient value, got " + coefficient);
 						}
 					}
 
 					if(intercept.doubleValue() != 0d){
-						throw new IllegalArgumentException();
+						throw new H2OException("Expected a zero intercept value, got " + intercept);
 					}
 				}
 			}

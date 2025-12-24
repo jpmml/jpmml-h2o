@@ -64,7 +64,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		SharedTreeMojoModel model = getModel();
 
 		if(model._mojo_version < 1.2d){
-			throw new IllegalArgumentException("Version " + model._mojo_version + " is not supported");
+			throw new H2OException("Version \'" + model._mojo_version + "\' is not supported");
 		}
 
 		byte[][] compressedTrees = getCompressedTrees(model);
@@ -224,7 +224,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 					} else
 
 					{
-						throw new IllegalArgumentException("Node type " + equal + " is not supported");
+						throw new H2OException("Node type " + equal + " is not supported");
 					}
 
 					for(int i = 0; i < values.size(); i++){
@@ -340,7 +340,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 				rightByteBuffer.skip(4);
 				break;
 			default:
-				throw new IllegalArgumentException("Node type " + lmask + " is not supported");
+				throw new H2OException("Node type " + lmask + " is not supported");
 		}
 
 		if((lmask2 & 16) != 0){

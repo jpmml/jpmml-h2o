@@ -71,7 +71,7 @@ public class ConverterFactory {
 			return new XGBoostMojoModelConverter((XGBoostMojoModel)model);
 		}
 
-		throw new IllegalArgumentException("No converter for MOJO model " + model);
+		throw new H2OException("MOJO model \'" + (model.getClass()).getTypeName() + "\' is not supported");
 	}
 
 	static

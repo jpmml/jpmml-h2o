@@ -157,7 +157,7 @@ public class ExtendedIsolationForestMojoModelConverter extends Converter<Extende
 
 					break;
 				default:
-					throw new IllegalArgumentException();
+					throw new H2OException("Node type \'" + Character.valueOf((char)nodeType) +"\' is not supported");
 			}
 
 			nodeMap.put(nodeNumber, node);
@@ -252,7 +252,7 @@ public class ExtendedIsolationForestMojoModelConverter extends Converter<Extende
 
 			(apply.getExpressions()).addAll(expressions);
 
-			expression  =apply;
+			expression = apply;
 		} else
 
 		{

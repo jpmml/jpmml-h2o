@@ -88,11 +88,11 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 			double[] numMeans = getNumMeans(model);
 
 			if(catModes.length != cats){
-				throw new IllegalArgumentException("Expected " + cats + " mode values, got " + catModes.length + " mode values");
+				throw new H2OException("Expected " + cats + " mode values, got " + catModes.length + " mode values");
 			} // End if
 
 			if(numMeans.length != nums){
-				throw new IllegalArgumentException("Expected " + nums + " mean values, got " + numMeans.length + " mean values");
+				throw new H2OException("Expected " + nums + " mean values, got " + numMeans.length + " mean values");
 			}
 
 			for(int i = 0; i < cats; i++){
