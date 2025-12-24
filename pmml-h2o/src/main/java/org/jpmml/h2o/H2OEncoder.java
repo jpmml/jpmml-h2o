@@ -32,6 +32,7 @@ import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelEncoder;
 import org.jpmml.converter.ScalarLabelUtil;
 import org.jpmml.converter.Schema;
+import org.jpmml.converter.SchemaException;
 
 public class H2OEncoder extends ModelEncoder {
 
@@ -71,7 +72,7 @@ public class H2OEncoder extends ModelEncoder {
 				feature = new CategoricalFeature(this, dataField);
 				break;
 			default:
-				throw new IllegalArgumentException("Expected continuous or categorical operational type, got " + opType.value() + " operational type");
+				throw new SchemaException("Expected continuous or categorical operational type, got " + opType.value() + " operational type");
 		}
 
 		addFeature(feature);

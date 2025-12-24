@@ -24,6 +24,7 @@ import org.dmg.pmml.MissingValueTreatmentMethod;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.MissingValueDecorator;
 import org.jpmml.converter.ModelEncoder;
+import org.jpmml.converter.SchemaException;
 
 public class ImputerUtil {
 
@@ -43,7 +44,7 @@ public class ImputerUtil {
 		} else
 
 		{
-			throw new IllegalArgumentException();
+			throw new SchemaException("Field \'" + field.requireName() + "\' is not decorable");
 		}
 	}
 }
