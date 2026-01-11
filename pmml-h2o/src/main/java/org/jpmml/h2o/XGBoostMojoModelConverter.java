@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 
 import org.dmg.pmml.mining.MiningModel;
 import org.jpmml.converter.BinaryFeature;
-import org.jpmml.converter.CategoricalFeature;
+import org.jpmml.converter.DiscreteFeature;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.MissingValueFeature;
@@ -57,15 +57,15 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 			@Override
 			public Stream<Feature> apply(Feature feature){
 
-				if(feature instanceof CategoricalFeature){
-					CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
+				if(feature instanceof DiscreteFeature){
+					DiscreteFeature discreteFeature = (DiscreteFeature)feature;
 
-					List<?> values = categoricalFeature.getValues();
+					List<?> values = discreteFeature.getValues();
 
 					Stream<Feature> binaryFeaturesStream = values.stream()
-						.map(value -> new BinaryFeature(encoder, categoricalFeature, value));
+						.map(value -> new BinaryFeature(encoder, discreteFeature, value));
 
-					Stream<Feature> missingValueFeatureStream = Stream.of(new MissingValueFeature(encoder, categoricalFeature));
+					Stream<Feature> missingValueFeatureStream = Stream.of(new MissingValueFeature(encoder, discreteFeature));
 
 					return Stream.concat(binaryFeaturesStream, missingValueFeatureStream);
 				}

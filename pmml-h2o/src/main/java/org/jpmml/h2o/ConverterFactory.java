@@ -27,6 +27,7 @@ import hex.genmodel.algos.glm.GlmMultinomialMojoModel;
 import hex.genmodel.algos.glm.GlmOrdinalMojoModel;
 import hex.genmodel.algos.isofor.IsolationForestMojoModel;
 import hex.genmodel.algos.isoforextended.ExtendedIsolationForestMojoModel;
+import org.jpmml.converter.ExceptionUtil;
 
 public class ConverterFactory {
 
@@ -71,7 +72,7 @@ public class ConverterFactory {
 			return new XGBoostMojoModelConverter((XGBoostMojoModel)model);
 		}
 
-		throw new H2OException("MOJO model \'" + (model.getClass()).getTypeName() + "\' is not supported");
+		throw new H2OException("MOJO model " + ExceptionUtil.formatClass(model.getClass()) + " is not supported");
 	}
 
 	static

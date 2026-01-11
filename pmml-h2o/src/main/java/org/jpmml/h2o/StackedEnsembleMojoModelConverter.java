@@ -38,7 +38,6 @@ import org.jpmml.converter.FieldNameUtil;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.Schema;
-import org.jpmml.converter.SchemaUtil;
 
 public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsembleMojoModel> {
 
@@ -92,9 +91,8 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 			} else
 
 			{
-				CategoricalLabel categoricalLabel = schema.requireCategoricalLabel();
-
-				SchemaUtil.checkCardinality(model._nclasses, categoricalLabel);
+				CategoricalLabel categoricalLabel = schema.requireCategoricalLabel()
+					.expectCardinality(model._nclasses);
 
 				List<?> values = categoricalLabel.getValues();
 

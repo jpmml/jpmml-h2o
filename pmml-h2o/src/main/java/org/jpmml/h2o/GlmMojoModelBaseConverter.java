@@ -28,8 +28,9 @@ import java.util.stream.Stream;
 import hex.genmodel.MojoModel;
 import org.dmg.pmml.MissingValueTreatmentMethod;
 import org.jpmml.converter.BinaryFeature;
-import org.jpmml.converter.CategoricalFeature;
 import org.jpmml.converter.ContinuousFeature;
+import org.jpmml.converter.DiscreteFeature;
+import org.jpmml.converter.ExceptionUtil;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelEncoder;
@@ -58,27 +59,27 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 		Label label = schema.getLabel();
 		List<? extends Feature> features = schema.getFeatures();
 
-		List<? extends Feature> categoricalFeatures = features.stream()
-			.filter(feature -> (feature instanceof CategoricalFeature))
+		List<DiscreteFeature> discreteFeatures = features.stream()
+			.filter(feature -> (feature instanceof DiscreteFeature))
+			.map(DiscreteFeature.class::cast)
 			.collect(Collectors.toList());
 
-		SchemaUtil.checkSize(cats, categoricalFeatures);
+		SchemaUtil.checkSize(cats, discreteFeatures);
 
 		for(int i = 0; i < cats; i++){
-			CategoricalFeature categoricalFeature = (CategoricalFeature)categoricalFeatures.get(i);
-
-			SchemaUtil.checkCardinality((catOffsets[i + 1] - catOffsets[i]) + (useAllFactorLevels ? 0 : 1), categoricalFeature);
+			DiscreteFeature discreteFeature = discreteFeatures.get(i)
+				.expectCardinality((catOffsets[i + 1] - catOffsets[i]) + (useAllFactorLevels ? 0 : 1));
 		}
 
-		List<? extends Feature> continuousFeatures = features.stream()
-			.filter(feature -> !(feature instanceof CategoricalFeature))
+		List<ContinuousFeature> continuousFeatures = features.stream()
+			.filter(feature -> !(feature instanceof DiscreteFeature))
 			.map(feature -> feature.toContinuousFeature())
 			.collect(Collectors.toList());
 
 		SchemaUtil.checkSize(nums, continuousFeatures);
 
 		List<Feature> reorderedFeatures = new ArrayList<>();
-		reorderedFeatures.addAll(categoricalFeatures);
+		reorderedFeatures.addAll(discreteFeatures);
 		reorderedFeatures.addAll(continuousFeatures);
 
 		features = reorderedFeatures;
@@ -88,23 +89,23 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 			double[] numMeans = getNumMeans(model);
 
 			if(catModes.length != cats){
-				throw new H2OException("Expected " + cats + " mode values, got " + catModes.length);
+				throw new H2OException("Expected " + ExceptionUtil.formatCount(cats, "mode value") + ", got " + catModes.length);
 			} // End if
 
 			if(numMeans.length != nums){
-				throw new H2OException("Expected " + nums + " mean values, got " + numMeans.length);
+				throw new H2OException("Expected " + ExceptionUtil.formatCount(nums, "mean value") + ", got " + numMeans.length);
 			}
 
 			for(int i = 0; i < cats; i++){
-				CategoricalFeature categoricalFeature = (CategoricalFeature)categoricalFeatures.get(i);
+				DiscreteFeature discreteFeature = discreteFeatures.get(i);
 
-				List<?> values = categoricalFeature.getValues();
+				List<?> values = discreteFeature.getValues();
 
-				ImputerUtil.encodeFeature(categoricalFeature, values.get(catModes[i]), MissingValueTreatmentMethod.AS_MODE);
+				ImputerUtil.encodeFeature(discreteFeature, values.get(catModes[i]), MissingValueTreatmentMethod.AS_MODE);
 			} // End for
 
 			for(int i = 0; i < nums; i++){
-				ContinuousFeature continuousFeature = (ContinuousFeature)continuousFeatures.get(i);
+				ContinuousFeature continuousFeature = continuousFeatures.get(i);
 
 				ImputerUtil.encodeFeature(continuousFeature, numMeans[i], MissingValueTreatmentMethod.AS_MEAN);
 			}
@@ -115,16 +116,16 @@ public class GlmMojoModelBaseConverter<M extends MojoModel> extends Converter<M>
 			@Override
 			public Stream<Feature> apply(Feature feature){
 
-				if(feature instanceof CategoricalFeature){
-					CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
+				if(feature instanceof DiscreteFeature){
+					DiscreteFeature discreteFeature = (DiscreteFeature)feature;
 
-					List<?> values = categoricalFeature.getValues();
+					List<?> values = discreteFeature.getValues();
 					if(!useAllFactorLevels){
 						values = values.subList(1, values.size());
 					}
 
 					return values.stream()
-						.map(value -> new BinaryFeature(encoder, categoricalFeature, value));
+						.map(value -> new BinaryFeature(encoder, discreteFeature, value));
 				}
 
 				return Stream.of(feature);

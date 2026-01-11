@@ -24,6 +24,7 @@ import java.util.List;
 import com.google.common.primitives.Doubles;
 import hex.genmodel.algos.glm.GlmMojoModel;
 import org.dmg.pmml.regression.RegressionModel;
+import org.jpmml.converter.ExceptionUtil;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.SchemaUtil;
@@ -59,7 +60,7 @@ public class GlmMojoModelConverter extends GlmMojoModelBaseConverter<GlmMojoMode
 				normalizationMethod = RegressionModel.NormalizationMethod.LOGIT;
 				break;
 			default:
-				throw new H2OException("Link function \'" + link + "\' is not supported");
+				throw new H2OException("Link function " + ExceptionUtil.formatParameter(link) + " is not supported");
 		}
 
 		RegressionModel regressionModel;
@@ -73,7 +74,7 @@ public class GlmMojoModelConverter extends GlmMojoModelBaseConverter<GlmMojoMode
 				regressionModel = RegressionModelUtil.createRegression(features, coefficients, intercept, normalizationMethod, schema);
 				break;
 			default:
-				throw new H2OException("Distribution family \'" + family + "\' is not supported");
+				throw new H2OException("Distribution family " + ExceptionUtil.formatParameter(family) + " is not supported");
 		}
 
 		return regressionModel;

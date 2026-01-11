@@ -47,6 +47,7 @@ import org.dmg.pmml.tree.Node;
 import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.ContinuousFeature;
 import org.jpmml.converter.ContinuousLabel;
+import org.jpmml.converter.ExceptionUtil;
 import org.jpmml.converter.ExpressionUtil;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.FieldNameUtil;
@@ -157,7 +158,7 @@ public class ExtendedIsolationForestMojoModelConverter extends Converter<Extende
 
 					break;
 				default:
-					throw new H2OException("Node type \'" + Character.valueOf((char)nodeType) +"\' is not supported");
+					throw new H2OException("Node type " + ExceptionUtil.formatLiteral(String.valueOf((char)nodeType)) + " is not supported");
 			}
 
 			nodeMap.put(nodeNumber, node);

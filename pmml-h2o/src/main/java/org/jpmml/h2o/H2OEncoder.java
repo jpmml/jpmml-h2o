@@ -27,12 +27,13 @@ import org.dmg.pmml.DataType;
 import org.dmg.pmml.OpType;
 import org.jpmml.converter.CategoricalFeature;
 import org.jpmml.converter.ContinuousFeature;
+import org.jpmml.converter.ExceptionUtil;
 import org.jpmml.converter.Feature;
+import org.jpmml.converter.InvalidFeatureException;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelEncoder;
 import org.jpmml.converter.ScalarLabelUtil;
 import org.jpmml.converter.Schema;
-import org.jpmml.converter.SchemaException;
 
 public class H2OEncoder extends ModelEncoder {
 
@@ -72,7 +73,7 @@ public class H2OEncoder extends ModelEncoder {
 				feature = new CategoricalFeature(this, dataField);
 				break;
 			default:
-				throw new SchemaException("Expected continuous or categorical operational type for field \'" + dataField.requireName() + "\', got " + opType.value());
+				throw new InvalidFeatureException("Expected continuous or categorical operational type, got " + ExceptionUtil.formatValue(opType));
 		}
 
 		addFeature(feature);

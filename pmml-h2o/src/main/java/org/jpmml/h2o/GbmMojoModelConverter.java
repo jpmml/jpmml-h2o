@@ -35,6 +35,7 @@ import org.dmg.pmml.tree.TreeModel;
 import org.jpmml.converter.CMatrixUtil;
 import org.jpmml.converter.CategoricalLabel;
 import org.jpmml.converter.ContinuousLabel;
+import org.jpmml.converter.ExceptionUtil;
 import org.jpmml.converter.FieldNameUtil;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
@@ -127,7 +128,7 @@ public class GbmMojoModelConverter extends SharedTreeMojoModelConverter<GbmMojoM
 		} else
 
 		{
-			throw new H2OException("Distribution family \'" + model._family + "\' is not supported");
+			throw new H2OException("Distribution family " + ExceptionUtil.formatParameter(model._family.name()) + " is not supported");
 		}
 	}
 

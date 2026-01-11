@@ -42,10 +42,11 @@ import org.dmg.pmml.tree.CountingBranchNode;
 import org.dmg.pmml.tree.CountingLeafNode;
 import org.dmg.pmml.tree.Node;
 import org.dmg.pmml.tree.TreeModel;
-import org.jpmml.converter.CategoricalFeature;
 import org.jpmml.converter.CategoryManager;
 import org.jpmml.converter.ContinuousFeature;
 import org.jpmml.converter.ContinuousLabel;
+import org.jpmml.converter.DiscreteFeature;
+import org.jpmml.converter.ExceptionUtil;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
 import org.jpmml.converter.ModelUtil;
@@ -64,7 +65,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		SharedTreeMojoModel model = getModel();
 
 		if(model._mojo_version < 1.2d){
-			throw new H2OException("Version \'" + model._mojo_version + "\' is not supported");
+			throw new H2OException("Version " + ExceptionUtil.formatVersion(String.valueOf(model._mojo_version)) + " is not supported");
 		}
 
 		byte[][] compressedTrees = getCompressedTrees(model);
@@ -201,11 +202,11 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} else
 
 		{
-			if(feature instanceof CategoricalFeature){
-				CategoricalFeature categoricalFeature = (CategoricalFeature)feature;
+			if(feature instanceof DiscreteFeature){
+				DiscreteFeature discreteValue = (DiscreteFeature)feature;
 
-				String name = categoricalFeature.getName();
-				List<?> values = categoricalFeature.getValues();
+				String name = discreteValue.getName();
+				List<?> values = discreteValue.getValues();
 
 				java.util.function.Predicate<Object> valueFilter = categoryManager.getValueFilter(name);
 
@@ -280,8 +281,8 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 				leftCategoryManager = leftCategoryManager.fork(name, leftValues);
 				rightCategoryManager = rightCategoryManager.fork(name, rightValues);
 
-				leftPredicate = predicateManager.createPredicate(categoricalFeature, leftValues);
-				rightPredicate = predicateManager.createPredicate(categoricalFeature, rightValues);
+				leftPredicate = predicateManager.createPredicate(discreteValue, leftValues);
+				rightPredicate = predicateManager.createPredicate(discreteValue, rightValues);
 			} else
 
 			{

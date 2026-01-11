@@ -21,10 +21,10 @@ package org.jpmml.h2o;
 import org.dmg.pmml.Decorable;
 import org.dmg.pmml.Field;
 import org.dmg.pmml.MissingValueTreatmentMethod;
+import org.jpmml.converter.ExceptionUtil;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.MissingValueDecorator;
 import org.jpmml.converter.ModelEncoder;
-import org.jpmml.converter.SchemaException;
 
 public class ImputerUtil {
 
@@ -44,7 +44,7 @@ public class ImputerUtil {
 		} else
 
 		{
-			throw new SchemaException("Field \'" + field.requireName() + "\' is not decorable");
+			throw new H2OException("Field " + ExceptionUtil.formatName(field.requireName()) + " is not decorable");
 		}
 	}
 }
