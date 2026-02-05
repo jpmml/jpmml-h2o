@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 
-import com.google.common.io.ByteStreams;
 import hex.genmodel.ModelMojoReader;
 import hex.genmodel.MojoModel;
 import hex.genmodel.TmpMojoReaderBackend;
@@ -40,7 +39,7 @@ public class MojoModelUtil {
 		File tmpZipFile = File.createTempFile("mojo", ".zip");
 
 		try(OutputStream os = new FileOutputStream(tmpZipFile)){
-			ByteStreams.copy(is, os);
+			is.transferTo(os);
 		}
 
 		return readFrom(tmpZipFile, true);
