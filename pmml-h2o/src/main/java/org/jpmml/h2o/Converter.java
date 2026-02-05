@@ -114,7 +114,7 @@ public class Converter<M extends MojoModel> {
 		Class<?>[] declaredClazzes = clazz.getDeclaredClasses();
 		for(Class<?> declaredClazz : declaredClazzes){
 
-			if((subclassName).equals(declaredClazz.getName())){
+			if(Objects.equals(subclassName, declaredClazz.getName())){
 				return declaredClazz;
 			}
 		}
@@ -131,7 +131,7 @@ public class Converter<M extends MojoModel> {
 	protected Object getFieldValue(Field field, Object object){
 
 		try {
-			if(!field.isAccessible()){
+			if(!field.canAccess(object)){
 				field.setAccessible(true);
 			}
 

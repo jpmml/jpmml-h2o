@@ -57,7 +57,7 @@ public class MojoModelUtil {
 					try {
 						Field field = TmpMojoReaderBackend.class.getDeclaredField("_tempZipFile");
 
-						if(!field.isAccessible()){
+						if(!field.canAccess(this)){
 							field.setAccessible(true);
 						}
 
