@@ -28,7 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.dmg.pmml.mining.MiningModel;
+import org.dmg.pmml.Model;
 import org.jpmml.converter.BinaryFeature;
 import org.jpmml.converter.DiscreteFeature;
 import org.jpmml.converter.Feature;
@@ -82,7 +82,7 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 	}
 
 	@Override
-	public MiningModel encodeModel(Schema schema){
+	public Model encodeModel(Schema schema){
 		XGBoostMojoModel model = getModel();
 
 		byte[] boosterBytes = model.getBoosterBytes();
