@@ -29,6 +29,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import hex.genmodel.MojoModel;
 import org.dmg.pmml.PMML;
+import org.jpmml.converter.Parameters;
 import org.jpmml.h2o.Converter;
 import org.jpmml.h2o.ConverterFactory;
 import org.jpmml.h2o.MojoModelUtil;
@@ -43,21 +44,21 @@ public class Main {
 		names = {"--mojo-input"},
 		description = "MOJO input file",
 		required = true,
-		order = 1
+		order = Parameters.BLOCK_IO + 1
 	)
 	private File input = null;
 
 	@Parameter (
-		names = {"--pmml-output"},
-		description = "PMML output file",
+		names = {Parameters.NAME_PMML_OUTPUT},
+		description = Parameters.DESCRIPTION_PMML_OUTPUT,
 		required = true,
-		order = 2
+		order = Parameters.BLOCK_IO + 2
 	)
 	private File output = null;
 
 	@Parameter (
-		names = "--help",
-		description = "Show the list of configuration options and exit",
+		names = {Parameters.NAME_HELP},
+		description = Parameters.DESCRIPTION_HELP,
 		help = true,
 		order = Integer.MAX_VALUE
 	)
