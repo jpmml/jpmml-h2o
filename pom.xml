@@ -4,8 +4,8 @@
 
 	<parent>
 		<groupId>org.jpmml</groupId>
-		<artifactId>jpmml-parent</artifactId>
-		<version>1.0.22</version>
+		<artifactId>jpmml-converter-parent</artifactId>
+		<version>1.0.0</version>
 	</parent>
 
 	<artifactId>jpmml-h2o</artifactId>
@@ -15,13 +15,6 @@
 	<name>JPMML-H2O</name>
 	<description>Java library and command-line application for converting H2O.ai models to PMML</description>
 	<url>https://github.com/jpmml/jpmml-h2o</url>
-
-	<licenses>
-		<license>
-			<name>GNU Affero General Public License (AGPL) version 3.0</name>
-			<url>http://www.gnu.org/licenses/agpl-3.0.html</url>
-		</license>
-	</licenses>
 
 	<modules>
 		<module>pmml-h2o</module>
@@ -84,12 +77,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.jcommander</groupId>
-				<artifactId>jcommander</artifactId>
-				<version>1.85</version>
-			</dependency>
-
-			<dependency>
 				<groupId>ai.h2o</groupId>
 				<artifactId>h2o-genmodel</artifactId>
 				<version>${h2o.ai.version}</version>
@@ -137,19 +124,6 @@
 			<plugin>
 				<groupId>de.jutzig</groupId>
 				<artifactId>github-release-plugin</artifactId>
-				<version>1.2.0</version>
-				<executions>
-					<execution>
-						<id>default-cli</id>
-						<configuration>
-							<artifact>${project.build.directory}/${project.artifactId}-executable-${project.version}.${project.packaging}</artifact>
-							<description>https://github.com/jpmml/jpmml-h2o</description>
-							<releaseName>${project.version}</releaseName>
-							<repositoryId>jpmml/jpmml-h2o</repositoryId>
-							<tag>${project.version}</tag>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
