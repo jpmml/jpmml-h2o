@@ -233,7 +233,7 @@ public class ExtendedIsolationForestMojoModelConverter extends Converter<Extende
 
 			Expression expression = continuousFeature.ref();
 
-			if(!ValueUtil.isOne(p[i])){
+			if(!ValueUtil.isZero(p[i])){
 				expression = ExpressionUtil.createApply(PMMLFunctions.SUBTRACT, expression, ExpressionUtil.createConstant(p[i]));
 			}
 
