@@ -42,6 +42,9 @@ import org.jpmml.xgboost.XGBoostUtil;
 
 public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 
+	private Learner learner = null;
+
+
 	public XGBoostMojoModelConverter(XGBoostMojoModel model){
 		super(model);
 	}
@@ -82,25 +85,58 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 	}
 
 	@Override
+	public Schema configureSchema(Map<String, ?> options, Schema schema){
+		Learner learner = getLearner();
+
+		Map<String, ?> xgbOptions = getXGBoostOptions(options);
+
+		Schema xgbSchema = learner.toXGBoostSchema(schema);
+
+		return learner.configureSchema(xgbOptions, xgbSchema);
+	}
+
+	@Override
 	public Model encodeModel(Schema schema){
+		Learner learner = getLearner();
+
+		return learner.encodeModel((Integer)null, schema);
+	}
+
+	@Override
+	public Model configureModel(Map<String, ?> options, Model model){
+		Learner learner = getLearner();
+
+		Map<String, ?> xgbOptions = getXGBoostOptions(options);
+
+		return learner.configureModel(xgbOptions, model);
+	}
+
+	public Learner getLearner(){
+
+		if(this.learner == null){
+			this.learner = loadLearner();
+		}
+
+		return this.learner;
+	}
+
+	private Learner loadLearner(){
 		XGBoostMojoModel model = getModel();
 
 		byte[] boosterBytes = model.getBoosterBytes();
 
-		Learner learner;
-
 		try(InputStream is = new ByteArrayInputStream(boosterBytes)){
-			learner = XGBoostUtil.loadLearner(is);
+			return XGBoostUtil.loadLearner(is);
 		} catch(IOException ioe){
 			throw new H2OException("Failed to load XGBoost booster object", ioe);
 		}
+	}
 
-		Map<String, Object> options = new LinkedHashMap<>();
-		options.put(HasXGBoostOptions.OPTION_COMPACT, Boolean.TRUE);
-		options.put(HasXGBoostOptions.OPTION_NUMERIC, Boolean.TRUE);
+	static
+	private Map<String, ?> getXGBoostOptions(Map<String, ?> options){
+		Map<String, Object> result = new LinkedHashMap<>(options);
+		result.put(HasXGBoostOptions.OPTION_NUMERIC, Boolean.TRUE);
 
-		Schema xgbSchema = learner.toXGBoostSchema(schema);
-
-		return learner.encodeModel(options, xgbSchema);
+		return result;
 	}
 }
