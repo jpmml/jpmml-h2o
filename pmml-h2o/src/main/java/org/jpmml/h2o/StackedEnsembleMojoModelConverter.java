@@ -21,6 +21,7 @@ package org.jpmml.h2o;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import hex.genmodel.MojoModel;
 import hex.genmodel.algos.ensemble.StackedEnsembleMojoModel;
@@ -36,6 +37,7 @@ import org.jpmml.converter.DerivedOutputField;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.FieldNameUtil;
 import org.jpmml.converter.Label;
+import org.jpmml.converter.ModelEncoder;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.Schema;
 
@@ -46,12 +48,12 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 	}
 
 	@Override
-	public Schema encodeSchema(H2OEncoder encoder){
+	public Schema configureSchema(Map<String, ?> options, Schema schema){
 		StackedEnsembleMojoModel model = getModel();
 
-		ConverterFactory converterFactory = ConverterFactory.newConverterFactory();
+		ModelEncoder encoder = schema.getEncoder();
 
-		Schema schema = super.encodeSchema(encoder);
+		ConverterFactory converterFactory = ConverterFactory.newConverterFactory();
 
 		Label label = schema.getLabel();
 		List<Feature> features = new ArrayList<>();
@@ -77,7 +79,7 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 
 			Schema baseModelSchema = converter.toMojoModelSchema(segmentSchema);
 
-			Model segmentModel = converter.encodeModel(baseModelSchema);
+			Model segmentModel = converter.encodeModel(options, baseModelSchema);
 
 			if(model._nclasses == 1){
 				ContinuousLabel continuousLabel = schema.requireContinuousLabel();

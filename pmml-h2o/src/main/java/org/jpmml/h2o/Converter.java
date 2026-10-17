@@ -19,6 +19,7 @@
 package org.jpmml.h2o;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.Objects;
 
 import hex.genmodel.MojoModel;
@@ -73,7 +74,7 @@ public class Converter<M extends MojoModel> {
 		return schema;
 	}
 
-	public PMML encodePMML(){
+	public PMML encodePMML(Map<String, ?> options){
 		M model = getModel();
 
 		ModelDescriptor modelDescriptor = model._modelDescriptor;
@@ -84,7 +85,7 @@ public class Converter<M extends MojoModel> {
 
 		schema = toMojoModelSchema(schema);
 
-		Model pmmlModel = encodeModel(schema);
+		Model pmmlModel = encodeModel(options, schema);
 
 		if(modelDescriptor != null){
 			String algorithmName = pmmlModel.getAlgorithmName();
@@ -97,6 +98,24 @@ public class Converter<M extends MojoModel> {
 		}
 
 		return encoder.encodePMML(pmmlModel);
+	}
+
+	public Model encodeModel(Map<String, ?> options, Schema schema){
+		schema = configureSchema(options, schema);
+
+		Model model = encodeModel(schema);
+
+		model = configureModel(options, model);
+
+		return model;
+	}
+
+	public Schema configureSchema(Map<String, ?> options, Schema schema){
+		return schema;
+	}
+
+	public Model configureModel(Map<String, ?> options, Model model){
+		return model;
 	}
 
 	public M getModel(){

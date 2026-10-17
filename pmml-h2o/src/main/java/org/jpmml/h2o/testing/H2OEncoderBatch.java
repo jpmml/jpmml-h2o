@@ -19,6 +19,7 @@
 package org.jpmml.h2o.testing;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.util.function.Predicate;
 
 import com.google.common.base.Equivalence;
@@ -57,7 +58,9 @@ public class H2OEncoderBatch extends ModelEncoderBatch {
 
 		Converter<?> converter = converterFactory.newConverter(mojoModel);
 
-		PMML pmml = converter.encodePMML();
+		Map<String, Object> options = getOptions();
+
+		PMML pmml = converter.encodePMML(options);
 
 		validatePMML(pmml);
 

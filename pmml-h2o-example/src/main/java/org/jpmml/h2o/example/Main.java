@@ -21,6 +21,7 @@ package org.jpmml.h2o.example;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 
 import com.beust.jcommander.DefaultUsageFormatter;
 import com.beust.jcommander.IUsageFormatter;
@@ -129,7 +130,7 @@ public class Main {
 			Converter<?> converter = converterFactory.newConverter(mojoModel);
 
 			long begin = System.currentTimeMillis();
-			pmml = converter.encodePMML();
+			pmml = converter.encodePMML(Collections.emptyMap());
 			long end = System.currentTimeMillis();
 
 			logger.info("Converted MOJO to PMML in {} ms.", (end - begin));
