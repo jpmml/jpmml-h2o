@@ -18,11 +18,10 @@
  */
 package org.jpmml.h2o.testing;
 
-import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.jupiter.api.Test;
 
-public class GlmMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
+public class GlmMojoModelConverterTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2ODatasets, H2OFields {
 
 	public GlmMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));
@@ -30,21 +29,21 @@ public class GlmMojoModelConverterTest extends H2OEncoderBatchTest implements Da
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("GLM", AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(GLM, AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("GLM", AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(GLM, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuto() throws Exception {
-		evaluate("GLM", AUTO);
+		evaluate(GLM, AUTO);
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("GLM", AUTO_NA);
+		evaluate(GLM, AUTO_NA);
 	}
 }

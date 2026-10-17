@@ -18,11 +18,10 @@
  */
 package org.jpmml.h2o.testing;
 
-import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.jupiter.api.Test;
 
-public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
+public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2ODatasets, H2OFields {
 
 	public XGBoostMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-6, 1e-6));
@@ -30,26 +29,26 @@ public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implement
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("XGBoost", AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED), new PMMLEquivalence(6e-6, 6e-6));
+		evaluate(XGBOOST, AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED), new PMMLEquivalence(6e-6, 6e-6));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("XGBoost", AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED), new PMMLEquivalence(3e-6, 3e-6));
+		evaluate(XGBOOST, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED), new PMMLEquivalence(3e-6, 3e-6));
 	}
 
 	@Test
 	public void evaluateAuto() throws Exception {
-		evaluate("XGBoost", AUTO);
+		evaluate(XGBOOST, AUTO);
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("XGBoost", AUTO_NA);
+		evaluate(XGBOOST, AUTO_NA);
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("XGBoost", IRIS);
+		evaluate(XGBOOST, IRIS);
 	}
 }

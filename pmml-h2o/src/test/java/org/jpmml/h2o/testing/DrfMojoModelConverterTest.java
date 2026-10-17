@@ -18,11 +18,10 @@
  */
 package org.jpmml.h2o.testing;
 
-import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.jupiter.api.Test;
 
-public class DrfMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
+public class DrfMojoModelConverterTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2ODatasets, H2OFields {
 
 	public DrfMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));
@@ -30,31 +29,31 @@ public class DrfMojoModelConverterTest extends H2OEncoderBatchTest implements Da
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("RandomForest", AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(RANDOM_FOREST, AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("RandomForest", AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(RANDOM_FOREST, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuto() throws Exception {
-		evaluate("RandomForest", AUTO);
+		evaluate(RANDOM_FOREST, AUTO);
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("RandomForest", AUTO_NA);
+		evaluate(RANDOM_FOREST, AUTO_NA);
 	}
 
 	@Test
 	public void evaluateBitSet() throws Exception {
-		evaluate("RandomForest", "BitSet");
+		evaluate(RANDOM_FOREST, BITSET);
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("RandomForest", IRIS);
+		evaluate(RANDOM_FOREST, IRIS);
 	}
 }

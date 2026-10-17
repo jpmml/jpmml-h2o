@@ -18,53 +18,52 @@
  */
 package org.jpmml.h2o.testing;
 
-import org.jpmml.converter.testing.Datasets;
 import org.junit.jupiter.api.Test;
 
-public class GbmMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
+public class GbmMojoModelConverterTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2ODatasets, H2OFields {
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("GBM", AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(GBM, AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("GBM", AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(GBM, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuto() throws Exception {
-		evaluate("GBM", AUTO);
+		evaluate(GBM, AUTO);
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("GBM", AUTO_NA);
+		evaluate(GBM, AUTO_NA);
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("GBM", IRIS);
+		evaluate(GBM, IRIS);
 	}
 
 	@Test
 	public void evaluatePoissonVisit() throws Exception {
-		evaluate("GBMPoisson", VISIT);
+		evaluate(GBM_POISSON, VISIT);
 	}
 
 	@Test
 	public void evaluateTweedieVisit() throws Exception {
-		evaluate("GBMTweedie", VISIT);
+		evaluate(GBM_TWEEDIE, VISIT);
 	}
 
 	@Test
 	public void evaluatePoissonVisitNA() throws Exception {
-		evaluate("GBMPoisson", VISIT_NA);
+		evaluate(GBM_POISSON, VISIT_NA);
 	}
 
 	@Test
 	public void evaluateGammaVisitNA() throws Exception {
-		evaluate("GBMGamma", "VisitNA");
+		evaluate(GBM_GAMMA, VISIT_NA);
 	}
 }

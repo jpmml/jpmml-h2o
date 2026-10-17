@@ -18,11 +18,10 @@
  */
 package org.jpmml.h2o.testing;
 
-import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.jupiter.api.Test;
 
-public class AutoMLTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
+public class AutoMLTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2ODatasets, H2OFields {
 
 	public AutoMLTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));
@@ -30,16 +29,16 @@ public class AutoMLTest extends H2OEncoderBatchTest implements Datasets, H2OFiel
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("AutoML", AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(AUTOML, AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuto() throws Exception {
-		evaluate("AutoML", AUTO);
+		evaluate(AUTOML, AUTO);
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("AutoML", IRIS);
+		evaluate(AUTOML, IRIS);
 	}
 }

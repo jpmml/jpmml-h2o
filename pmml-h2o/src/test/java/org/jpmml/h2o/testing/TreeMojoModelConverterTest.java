@@ -21,13 +21,12 @@ package org.jpmml.h2o.testing;
 import java.util.function.Predicate;
 
 import com.google.common.base.Equivalence;
-import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.ResultField;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.jpmml.model.visitors.VisitorBattery;
 import org.junit.jupiter.api.Test;
 
-public class TreeMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
+public class TreeMojoModelConverterTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2ODatasets, H2OFields {
 
 	public TreeMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));
@@ -57,26 +56,26 @@ public class TreeMojoModelConverterTest extends H2OEncoderBatchTest implements D
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate("DecisionTree", AUDIT, excludeFields(AUDIT_ADJUSTED));
+		evaluate(DECISION_TREE, AUDIT, excludeFields(AUDIT_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("DecisionTree", AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(DECISION_TREE, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAuto() throws Exception {
-		evaluate("DecisionTree", AUTO);
+		evaluate(DECISION_TREE, AUTO);
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("DecisionTree", AUTO_NA);
+		evaluate(DECISION_TREE, AUTO_NA);
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("DecisionTree", IRIS);
+		evaluate(DECISION_TREE, IRIS);
 	}
 }

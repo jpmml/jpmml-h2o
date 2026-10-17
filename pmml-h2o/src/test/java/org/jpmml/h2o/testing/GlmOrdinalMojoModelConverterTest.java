@@ -18,11 +18,10 @@
  */
 package org.jpmml.h2o.testing;
 
-import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.jupiter.api.Test;
 
-public class GlmOrdinalMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets {
+public class GlmOrdinalMojoModelConverterTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2ODatasets {
 
 	public GlmOrdinalMojoModelConverterTest(){
 		super(new PMMLEquivalence(1e-13, 1e-13));
@@ -30,6 +29,6 @@ public class GlmOrdinalMojoModelConverterTest extends H2OEncoderBatchTest implem
 
 	@Test
 	public void evaluateOrdinalAuto() throws Exception {
-		evaluate("GLMOrdinal", AUTO);
+		evaluate(GLM_ORDINAL, AUTO);
 	}
 }

@@ -18,13 +18,12 @@
  */
 package org.jpmml.h2o.testing;
 
-import org.jpmml.converter.testing.Datasets;
 import org.junit.jupiter.api.Test;
 
-public class ExtendedIsolationForestMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets {
+public class ExtendedIsolationForestMojoModelConverterTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2ODatasets {
 
 	@Test
 	public void evaluateHousing() throws Exception {
-		evaluate("ExtendedIsolationForest", HOUSING, excludeFields("meanPathLength"));
+		evaluate(EXTENDED_ISOLATION_FOREST, HOUSING, excludeFields("meanPathLength"));
 	}
 }

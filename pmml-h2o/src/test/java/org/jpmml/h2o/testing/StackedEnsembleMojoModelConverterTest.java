@@ -18,24 +18,23 @@
  */
 package org.jpmml.h2o.testing;
 
-import org.jpmml.converter.testing.Datasets;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.jupiter.api.Test;
 
-public class StackedEnsembleMojoModelConverterTest extends H2OEncoderBatchTest implements Datasets, H2OFields {
+public class StackedEnsembleMojoModelConverterTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2ODatasets, H2OFields {
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate("StackedEnsemble", AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(STACKED_ENSEMBLE, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
 	}
 
 	@Test
 	public void evaluateAutoNA() throws Exception {
-		evaluate("StackedEnsemble", AUTO_NA);
+		evaluate(STACKED_ENSEMBLE, AUTO_NA);
 	}
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate("StackedEnsemble", IRIS, new PMMLEquivalence(1e-13, 1e-13));
+		evaluate(STACKED_ENSEMBLE, IRIS, new PMMLEquivalence(1e-13, 1e-13));
 	}
 }
