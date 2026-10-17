@@ -20,6 +20,7 @@ package org.jpmml.h2o;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,13 +50,16 @@ import org.jpmml.converter.DiscreteFeature;
 import org.jpmml.converter.ExceptionUtil;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Label;
+import org.jpmml.converter.ModelTransformer;
 import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.PredicateManager;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.ValueUtil;
+import org.jpmml.converter.tree.HasTreeModelOptions;
+import org.jpmml.converter.tree.TreeModelTransformerBuilder;
 
 abstract
-public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends Converter<M> {
+public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends Converter<M> implements HasSharedTreeOptions {
 
 	public SharedTreeMojoModelConverter(M model){
 		super(model);
@@ -142,6 +146,23 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		}
 
 		node.setRecordCount(ValueUtil.narrow(recordCount));
+	}
+
+	@Override
+	public Model configureModel(Map<String, ?> options, Model model){
+		ModelTransformer modelTransformer = new TreeModelTransformerBuilder(MiningFunction.REGRESSION){
+
+			@Override
+			protected Map<String, ?> getDefaults(){
+				return Collections.singletonMap(HasTreeModelOptions.OPTION_COMPACT, Boolean.TRUE);
+			}
+		}
+			.putOptions(options)
+			.build();
+
+		modelTransformer.applyTo(model);
+
+		return model;
 	}
 
 	static

@@ -19,6 +19,8 @@
 package org.jpmml.h2o.testing;
 
 import java.io.InputStream;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -26,9 +28,11 @@ import com.google.common.base.Equivalence;
 import hex.genmodel.MojoModel;
 import org.dmg.pmml.PMML;
 import org.jpmml.converter.testing.ModelEncoderBatch;
+import org.jpmml.converter.testing.OptionsUtil;
 import org.jpmml.evaluator.ResultField;
 import org.jpmml.h2o.Converter;
 import org.jpmml.h2o.ConverterFactory;
+import org.jpmml.h2o.HasSharedTreeOptions;
 import org.jpmml.h2o.MojoModelUtil;
 
 abstract
@@ -41,6 +45,14 @@ public class H2OEncoderBatch extends ModelEncoderBatch {
 	@Override
 	abstract
 	public H2OEncoderBatchTest getArchiveBatchTest();
+
+	@Override
+	public List<Map<String, Object>> getOptionsMatrix(){
+		Map<String, Object> options = new LinkedHashMap<>();
+		options.put(HasSharedTreeOptions.OPTION_COMPACT, new Boolean[]{false, true});
+
+		return OptionsUtil.generateOptionsMatrix(options);
+	}
 
 	public String getMojoPath(){
 		return "/mojo/" + (getAlgorithm() + getDataset()) + ".zip";
