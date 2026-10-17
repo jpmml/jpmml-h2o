@@ -21,7 +21,9 @@ package org.jpmml.h2o.example;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import com.beust.jcommander.DefaultUsageFormatter;
 import com.beust.jcommander.IUsageFormatter;
@@ -31,8 +33,10 @@ import com.beust.jcommander.ParameterException;
 import hex.genmodel.MojoModel;
 import org.dmg.pmml.PMML;
 import org.jpmml.converter.Parameters;
+import org.jpmml.converter.tree.TreeModelParameters;
 import org.jpmml.h2o.Converter;
 import org.jpmml.h2o.ConverterFactory;
+import org.jpmml.h2o.HasSharedTreeOptions;
 import org.jpmml.h2o.MojoModelUtil;
 import org.jpmml.model.JAXBSerializer;
 import org.jpmml.model.metro.MetroJAXBSerializer;
@@ -56,6 +60,46 @@ public class Main {
 		order = Parameters.BLOCK_IO + 2
 	)
 	private File output = null;
+
+	@Parameter (
+		names = {TreeModelParameters.NAME_COMPACT},
+		description = TreeModelParameters.DESCRIPTION_COMPACT,
+		arity = 1,
+		order = Parameters.BLOCK_MODEL_OPTIONS + 1
+	)
+	private Boolean compact = null;
+
+	@Parameter (
+		names = {TreeModelParameters.NAME_FLAT},
+		description = TreeModelParameters.DESCRIPTION_FLAT,
+		arity = 1,
+		order = Parameters.BLOCK_MODEL_OPTIONS + 2
+	)
+	private Boolean flat = null;
+
+	@Parameter (
+		names = {TreeModelParameters.NAME_NODE_ID},
+		description = TreeModelParameters.DESCRIPTION_NODE_ID,
+		arity = 1,
+		order = Parameters.BLOCK_MODEL_OPTIONS + 3
+	)
+	private Boolean nodeId = null;
+
+	@Parameter (
+		names = {TreeModelParameters.NAME_NODE_RECORDCOUNT},
+		description = TreeModelParameters.DESCRIPTION_NODE_RECORDCOUNT,
+		arity = 1,
+		order = Parameters.BLOCK_MODEL_OPTIONS + 4
+	)
+	private Boolean nodeRecordCount = null;
+
+	@Parameter (
+		names = {TreeModelParameters.NAME_PRUNE},
+		description = TreeModelParameters.DESCRIPTION_PRUNE,
+		arity = 1,
+		order = Parameters.BLOCK_MODEL_OPTIONS + 5
+	)
+	private Boolean prune = null;
 
 	@Parameter (
 		names = {Parameters.NAME_HELP},
@@ -120,6 +164,15 @@ public class Main {
 			throw e;
 		}
 
+		Map<String, Object> options = new LinkedHashMap<>();
+		options.put(HasSharedTreeOptions.OPTION_COMPACT, this.compact);
+		options.put(HasSharedTreeOptions.OPTION_FLAT, this.flat);
+		options.put(HasSharedTreeOptions.OPTION_NODE_ID, this.nodeId);
+		options.put(HasSharedTreeOptions.OPTION_NODE_RECORDCOUNT, this.nodeRecordCount);
+		options.put(HasSharedTreeOptions.OPTION_PRUNE, this.prune);
+
+		options.values().removeIf(Objects::isNull);
+
 		PMML pmml;
 
 		try {
@@ -130,7 +183,7 @@ public class Main {
 			Converter<?> converter = converterFactory.newConverter(mojoModel);
 
 			long begin = System.currentTimeMillis();
-			pmml = converter.encodePMML(Collections.emptyMap());
+			pmml = converter.encodePMML(options);
 			long end = System.currentTimeMillis();
 
 			logger.info("Converted MOJO to PMML in {} ms.", (end - begin));
