@@ -168,7 +168,8 @@ public class ExtendedIsolationForestMojoModelConverter extends Converter<Extende
 
 		Node root = encodeNode(0, True.INSTANCE, 0, nodeMap, featureMap, countMap);
 
-		TreeModel treeModel = new TreeModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(label), root);
+		TreeModel treeModel = new TreeModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(label), root)
+			.setSplitCharacteristic(TreeModel.SplitCharacteristic.BINARY_SPLIT);
 
 		return treeModel;
 	}

@@ -151,6 +151,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		Node root = encodeNode(sharedTree, null, sharedTree.nextId(), True.INSTANCE, new CategoryManager(), predicateManager, schema);
 
 		TreeModel treeModel = new TreeModel(MiningFunction.REGRESSION, ModelUtil.createMiningSchema(label), root)
+			.setSplitCharacteristic(TreeModel.SplitCharacteristic.BINARY_SPLIT)
 			.setMissingValueStrategy(TreeModel.MissingValueStrategy.DEFAULT_CHILD);
 
 		return treeModel;
