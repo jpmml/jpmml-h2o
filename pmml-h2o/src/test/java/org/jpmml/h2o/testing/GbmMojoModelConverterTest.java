@@ -24,12 +24,12 @@ public class GbmMojoModelConverterTest extends H2OEncoderBatchTest implements H2
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate(GBM, AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(GBM, AUDIT);
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate(GBM, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(GBM, AUDIT_NA);
 	}
 
 	@Test

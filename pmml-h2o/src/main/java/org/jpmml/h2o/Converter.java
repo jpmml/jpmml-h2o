@@ -19,15 +19,30 @@
 package org.jpmml.h2o;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import hex.ModelCategory;
 import hex.genmodel.MojoModel;
 import hex.genmodel.descriptor.ModelDescriptor;
 import org.dmg.pmml.DataField;
+import org.dmg.pmml.Decision;
+import org.dmg.pmml.Decisions;
+import org.dmg.pmml.Expression;
+import org.dmg.pmml.FieldRef;
 import org.dmg.pmml.Model;
+import org.dmg.pmml.Output;
+import org.dmg.pmml.OutputField;
 import org.dmg.pmml.PMML;
+import org.dmg.pmml.PMMLFunctions;
+import org.dmg.pmml.ResultFeature;
+import org.jpmml.converter.CategoricalLabel;
+import org.jpmml.converter.ExpressionUtil;
+import org.jpmml.converter.FieldNameUtil;
+import org.jpmml.converter.FieldNames;
 import org.jpmml.converter.Schema;
+import org.jpmml.converter.mining.MiningModelUtil;
 
 abstract
 public class Converter<M extends MojoModel> {
@@ -87,6 +102,15 @@ public class Converter<M extends MojoModel> {
 
 		Model pmmlModel = encodeModel(options, schema);
 
+		ModelCategory modelCategory = model.getModelCategory();
+		if(modelCategory == ModelCategory.Binomial){
+			Number defaultThreshold = getDefaultThreshold();
+
+			if(defaultThreshold != null){
+				encodeDefaultThreshold(pmmlModel, defaultThreshold, schema);
+			}
+		}
+
 		if(modelDescriptor != null){
 			String algorithmName = pmmlModel.getAlgorithmName();
 
@@ -118,12 +142,53 @@ public class Converter<M extends MojoModel> {
 		return model;
 	}
 
+	public Number getDefaultThreshold(){
+		M model = getModel();
+
+		return model._defaultThreshold;
+	}
+
 	public M getModel(){
 		return this.model;
 	}
 
 	private void setModel(M model){
 		this.model = Objects.requireNonNull(model);
+	}
+
+	static
+	public void encodeDefaultThreshold(Model pmmlModel, Number defaultThreshold, Schema schema){
+		CategoricalLabel categoricalLabel = schema.requireCategoricalLabel()
+			.expectCardinality(2);
+
+		Model finalModel = MiningModelUtil.getFinalModel(pmmlModel);
+
+		Output output = finalModel.getOutput();
+		if(output == null){
+			throw new IllegalArgumentException();
+		}
+
+		String name = FieldNameUtil.create(FieldNames.PROBABILITY, categoricalLabel.getValue(1));
+
+		Expression expression = ExpressionUtil.createApply(PMMLFunctions.IF,
+			ExpressionUtil.createApply(PMMLFunctions.GREATEROREQUAL, new FieldRef(name), ExpressionUtil.createConstant(defaultThreshold)),
+			ExpressionUtil.createConstant(categoricalLabel.getDataType(), categoricalLabel.getValue(1)),
+			ExpressionUtil.createConstant(categoricalLabel.getDataType(), categoricalLabel.getValue(0))
+		);
+
+		Decisions decisions = new Decisions();
+
+		List<?> values = categoricalLabel.getValues();
+		for(Object value : values){
+			decisions.addDecisions(new Decision(value));
+		}
+
+		OutputField defaultThresholdOutputField = new OutputField(FieldNameUtil.create("defaultThreshold", categoricalLabel), categoricalLabel.getOpType(), categoricalLabel.getDataType())
+			.setResultFeature(ResultFeature.DECISION)
+			.setDecisions(decisions)
+			.setExpression(expression);
+
+		output.addOutputFields(defaultThresholdOutputField);
 	}
 
 	static

@@ -29,7 +29,7 @@ public class AutoMLTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate(AUTOML, AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(AUTOML, AUDIT);
 	}
 
 	@Test

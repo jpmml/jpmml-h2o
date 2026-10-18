@@ -125,15 +125,21 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 		ConverterFactory converterFactory = ConverterFactory.newConverterFactory();
 
 		MojoModel metaLearner = getMetaLearner(model);
-		if(metaLearner == null){
-			throw new IllegalArgumentException();
-		}
 
 		Converter<?> converter = converterFactory.newConverter(metaLearner);
 
 		Schema metaLearnerSchema = converter.toMojoModelSchema(schema);
 
 		return converter.encodeModel(metaLearnerSchema);
+	}
+
+	@Override
+	public Number getDefaultThreshold(){
+		StackedEnsembleMojoModel model = getModel();
+
+		MojoModel metaLearner = getMetaLearner(model);
+
+		return metaLearner._defaultThreshold;
 	}
 
 	static
@@ -143,7 +149,12 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 
 	static
 	public MojoModel getMetaLearner(StackedEnsembleMojoModel model){
-		return (MojoModel)getFieldValue(StackedEnsembleMojoModelConverter.FIELD_METALEARNER, model);
+		MojoModel metaLearner = (MojoModel)getFieldValue(StackedEnsembleMojoModelConverter.FIELD_METALEARNER, model);
+		if(metaLearner == null){
+			throw new IllegalArgumentException();
+		}
+
+		return metaLearner;
 	}
 
 	static

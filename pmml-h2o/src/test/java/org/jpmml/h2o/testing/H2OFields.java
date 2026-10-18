@@ -23,5 +23,5 @@ import org.jpmml.converter.testing.Fields;
 
 public interface H2OFields extends Fields {
 
-	String AUDIT_DEFAULTCALIBRATION_ADJUSTED = FieldNameUtil.create("defaultCalibration", AUDIT_ADJUSTED);
+	String AUDIT_DEFAULTTHRESHOLD_ADJUSTED = FieldNameUtil.create("defaultThreshold", AUDIT_ADJUSTED);
 }

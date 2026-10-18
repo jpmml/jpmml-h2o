@@ -25,7 +25,7 @@ public class StackedEnsembleMojoModelConverterTest extends H2OEncoderBatchTest i
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate(STACKED_ENSEMBLE, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(STACKED_ENSEMBLE, AUDIT_NA);
 	}
 
 	@Test

@@ -61,7 +61,7 @@ public class TreeMojoModelConverterTest extends H2OEncoderBatchTest implements H
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate(DECISION_TREE, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(DECISION_TREE, AUDIT_NA);
 	}
 
 	@Test

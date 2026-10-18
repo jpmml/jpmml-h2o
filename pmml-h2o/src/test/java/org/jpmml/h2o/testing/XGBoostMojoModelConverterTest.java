@@ -29,12 +29,12 @@ public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implement
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate(XGBOOST, AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED), new PMMLEquivalence(6e-6, 6e-6));
+		evaluate(XGBOOST, AUDIT, new PMMLEquivalence(6e-6, 6e-6));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate(XGBOOST, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED), new PMMLEquivalence(3e-6, 3e-6));
+		evaluate(XGBOOST, AUDIT_NA, new PMMLEquivalence(3e-6, 3e-6));
 	}
 
 	@Test

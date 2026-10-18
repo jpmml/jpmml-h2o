@@ -59,12 +59,12 @@ def build_audit(df, classifier, name):
 	classifier.train(*split_columns(df), training_frame = df)
 	store_mojo(classifier, name + ".zip")
 	adjusted = classifier.predict(df)
-	adjusted.set_names(["defaultCalibration(Adjusted)", "probability(0)", "probability(1)"])
+	adjusted.set_names(["defaultThreshold(Adjusted)", "probability(0)", "probability(1)"])
 
 	adjusted_pmml = numpy.argmax(adjusted[["probability(0)", "probability(1)"]].as_data_frame(use_pandas = True).values, axis = 1)
 	adjusted["Adjusted"] = H2OFrame(adjusted_pmml, column_types = ["categorical"])
 
-	adjusted = adjusted[["Adjusted", "defaultCalibration(Adjusted)", "probability(0)", "probability(1)"]]
+	adjusted = adjusted[["Adjusted", "defaultThreshold(Adjusted)", "probability(0)", "probability(1)"]]
 	store_csv(adjusted, name + ".csv")
 
 if "Audit" in datasets:

@@ -29,12 +29,12 @@ public class GlmMojoModelConverterTest extends H2OEncoderBatchTest implements H2
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate(GLM, AUDIT, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(GLM, AUDIT);
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate(GLM, AUDIT_NA, excludeFields(AUDIT_DEFAULTCALIBRATION_ADJUSTED));
+		evaluate(GLM, AUDIT_NA, excludeFields(AUDIT_DEFAULTTHRESHOLD_ADJUSTED));
 	}
 
 	@Test
