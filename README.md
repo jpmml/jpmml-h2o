@@ -17,6 +17,8 @@ Java library and command-line application for converting [H2O.ai](https://www.h2
     * [`GlmMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMojoModel.html)
     * [`GlmMultinomialMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmMultinomialMojoModel.html)
     * [`GlmOrdinalMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/glm/GlmOrdinalMojoModel.html)
+  * Isotonic Regression:
+    * [`IsotonicRegressionMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/isotonic/IsotonicRegressionMojoModel.html)
   * Stacked Ensembles:
     * [`StackedEnsembleMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/ensemble/StackedEnsembleMojoModel.html)
   * XGBoost:

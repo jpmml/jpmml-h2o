@@ -27,6 +27,7 @@ import hex.genmodel.algos.glm.GlmMultinomialMojoModel;
 import hex.genmodel.algos.glm.GlmOrdinalMojoModel;
 import hex.genmodel.algos.isofor.IsolationForestMojoModel;
 import hex.genmodel.algos.isoforextended.ExtendedIsolationForestMojoModel;
+import hex.genmodel.algos.isotonic.IsotonicRegressionMojoModel;
 import org.jpmml.converter.ExceptionUtil;
 
 public class ConverterFactory {
@@ -72,6 +73,11 @@ public class ConverterFactory {
 		// H2O.ai 3.36.1+
 		if(model instanceof ExtendedIsolationForestMojoModel){
 			return new ExtendedIsolationForestMojoModelConverter((ExtendedIsolationForestMojoModel)model);
+		} // End if
+
+		// H2O.ai 3.38+
+		if(model instanceof IsotonicRegressionMojoModel){
+			return new IsotonicRegressionMojoModelConverter((IsotonicRegressionMojoModel)model);
 		}
 
 		throw new H2OException("MOJO model " + ExceptionUtil.formatClass(model.getClass()) + " is not supported");

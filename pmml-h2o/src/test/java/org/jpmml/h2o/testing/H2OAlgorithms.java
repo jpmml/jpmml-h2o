@@ -30,6 +30,7 @@ public interface H2OAlgorithms {
 	String GLM = "GLM";
 	String GLM_ORDINAL = GLM + "Ordinal";
 	String ISOLATION_FOREST = "IsolationForest";
+	String ISOTONIC_REGRESSION = "IsotonicRegression";
 	String RANDOM_FOREST = "RandomForest";
 	String STACKED_ENSEMBLE = "StackedEnsemble";
 	String XGBOOST = "XGBoost";

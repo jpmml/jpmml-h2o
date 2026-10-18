@@ -4,6 +4,7 @@ from h2o.estimators.extended_isolation_forest import H2OExtendedIsolationForestE
 from h2o.estimators.gbm import H2OGradientBoostingEstimator
 from h2o.estimators.glm import H2OGeneralizedLinearEstimator
 from h2o.estimators.isolation_forest import H2OIsolationForestEstimator
+from h2o.estimators.isotonicregression import H2OIsotonicRegressionEstimator
 from h2o.estimators.random_forest import H2ORandomForestEstimator
 from h2o.estimators.stackedensemble import H2OStackedEnsembleEstimator
 from h2o.estimators.xgboost import H2OXGBoostEstimator
@@ -152,6 +153,8 @@ if "Auto" in datasets:
 	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 4, seed = 42), "DecisionTreeAuto")
 	build_auto(auto_df, H2ORandomForestEstimator(ntrees = 17, nbins_cats = 3, seed = 42), "RandomForestAuto")
 	build_auto(auto_df, H2OXGBoostEstimator(ntrees = 17, seed = 42), "XGBoostAuto")
+
+	build_auto(auto_df[["acceleration", "mpg"]], H2OIsotonicRegressionEstimator(out_of_bounds = "clip"), "IsotonicRegressionAuto")
 
 	auto_df = _transform_mpg(auto_df)
 
