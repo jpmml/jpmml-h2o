@@ -36,12 +36,9 @@ public class ConverterFactory {
 
 	public Converter<? extends MojoModel> newConverter(MojoModel model){
 
+		// H2O.ai 3.34+
 		if(model instanceof DrfMojoModel){
 			return new DrfMojoModelConverter((DrfMojoModel)model);
-		} else
-
-		if(model instanceof ExtendedIsolationForestMojoModel){
-			return new ExtendedIsolationForestMojoModelConverter((ExtendedIsolationForestMojoModel)model);
 		} else
 
 		if(model instanceof GbmMojoModel){
@@ -70,6 +67,11 @@ public class ConverterFactory {
 
 		if(model instanceof XGBoostMojoModel){
 			return new XGBoostMojoModelConverter((XGBoostMojoModel)model);
+		} // End if
+
+		// H2O.ai 3.36.1+
+		if(model instanceof ExtendedIsolationForestMojoModel){
+			return new ExtendedIsolationForestMojoModelConverter((ExtendedIsolationForestMojoModel)model);
 		}
 
 		throw new H2OException("MOJO model " + ExceptionUtil.formatClass(model.getClass()) + " is not supported");
