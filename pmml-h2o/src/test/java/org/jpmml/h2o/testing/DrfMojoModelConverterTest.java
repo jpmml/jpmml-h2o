@@ -38,6 +38,16 @@ public class DrfMojoModelConverterTest extends H2OEncoderBatchTest implements H2
 	}
 
 	@Test
+	public void evaluateIsotonicAudit() throws Exception {
+		evaluate(RANDOM_FOREST_ISOTONIC, AUDIT, excludeFields(AUDIT_ADJUSTED));
+	}
+
+	@Test
+	public void evaluateSigmoidAudit() throws Exception {
+		evaluate(RANDOM_FOREST_SIGMOID, AUDIT, excludeFields(AUDIT_ADJUSTED));
+	}
+
+	@Test
 	public void evaluateAuto() throws Exception {
 		evaluate(RANDOM_FOREST, AUTO);
 	}

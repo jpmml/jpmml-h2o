@@ -19,6 +19,9 @@
 package org.jpmml.h2o;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,22 +30,33 @@ import hex.ModelCategory;
 import hex.genmodel.MojoModel;
 import hex.genmodel.descriptor.ModelDescriptor;
 import org.dmg.pmml.DataField;
+import org.dmg.pmml.DataType;
 import org.dmg.pmml.Decision;
 import org.dmg.pmml.Decisions;
 import org.dmg.pmml.Expression;
 import org.dmg.pmml.FieldRef;
 import org.dmg.pmml.Model;
+import org.dmg.pmml.OpType;
 import org.dmg.pmml.Output;
 import org.dmg.pmml.OutputField;
 import org.dmg.pmml.PMML;
 import org.dmg.pmml.PMMLFunctions;
 import org.dmg.pmml.ResultFeature;
+import org.dmg.pmml.mining.MiningModel;
+import org.dmg.pmml.mining.Segmentation;
+import org.dmg.pmml.regression.RegressionModel;
 import org.jpmml.converter.CategoricalLabel;
+import org.jpmml.converter.ContinuousFeature;
+import org.jpmml.converter.DerivedOutputField;
 import org.jpmml.converter.ExpressionUtil;
+import org.jpmml.converter.Feature;
 import org.jpmml.converter.FieldNameUtil;
 import org.jpmml.converter.FieldNames;
+import org.jpmml.converter.ModelEncoder;
+import org.jpmml.converter.ModelUtil;
 import org.jpmml.converter.Schema;
 import org.jpmml.converter.mining.MiningModelUtil;
+import org.jpmml.converter.regression.RegressionModelUtil;
 
 abstract
 public class Converter<M extends MojoModel> {
@@ -92,7 +106,16 @@ public class Converter<M extends MojoModel> {
 	public PMML encodePMML(Map<String, ?> options){
 		M model = getModel();
 
+		ModelCategory modelCategory = model.getModelCategory();
 		ModelDescriptor modelDescriptor = model._modelDescriptor;
+
+		Calibration calibration = null;
+		Number defaultThreshold = null;
+
+		if(modelCategory == ModelCategory.Binomial){
+			calibration = getCalibration();
+			defaultThreshold = getDefaultThreshold();
+		}
 
 		H2OEncoder encoder = new H2OEncoder();
 
@@ -100,16 +123,23 @@ public class Converter<M extends MojoModel> {
 
 		schema = toMojoModelSchema(schema);
 
-		Model pmmlModel = encodeModel(options, schema);
+		Model pmmlModel;
 
-		ModelCategory modelCategory = model.getModelCategory();
-		if(modelCategory == ModelCategory.Binomial){
-			Number defaultThreshold = getDefaultThreshold();
+		if(calibration != null){
+			Schema segmentSchema = schema.toSegmentSchema();
 
-			if(defaultThreshold != null){
-				encodeDefaultThreshold(pmmlModel, defaultThreshold, schema);
-			}
-		}
+			pmmlModel = encodeModel(options, segmentSchema);
+
+			pmmlModel = encodeCalibration(pmmlModel, calibration, schema);
+		} else
+
+		{
+			pmmlModel = encodeModel(options, schema);
+		} // End if
+
+		if(defaultThreshold != null){
+			encodeDefaultThreshold(pmmlModel, defaultThreshold, schema);
+		} // End if
 
 		if(modelDescriptor != null){
 			String algorithmName = pmmlModel.getAlgorithmName();
@@ -148,12 +178,48 @@ public class Converter<M extends MojoModel> {
 		return model._defaultThreshold;
 	}
 
+	public Calibration getCalibration(){
+		return null;
+	}
+
 	public M getModel(){
 		return this.model;
 	}
 
 	private void setModel(M model){
 		this.model = Objects.requireNonNull(model);
+	}
+
+	static
+	public MiningModel encodeCalibration(Model model, Calibration calibration, Schema schema){
+		ModelEncoder encoder = schema.getEncoder();
+		CategoricalLabel categoricalLabel = schema.requireCategoricalLabel()
+			.expectCardinality(2);
+
+		Schema segmentSchema = schema.toSegmentSchema();
+
+		List<Feature> probabilityFeatures = encodeProbabilityFeatures(model, "rawProbability", encoder, categoricalLabel);
+
+		RegressionModel calibratorModel = calibration.encodeModel(probabilityFeatures, segmentSchema);
+
+		List<Feature> calibratedProbabilityFeatures = encodeProbabilityFeatures(calibratorModel, calibration.getName(), encoder, categoricalLabel);
+
+		RegressionModel classifierModel = RegressionModelUtil.createBinaryLogisticClassification(Collections.singletonList(probabilityFeatures.get(1)), Collections.singletonList(1d), null, RegressionModel.NormalizationMethod.NONE, true, schema);
+
+		Output output = classifierModel.getOutput();
+
+		for(int i = 0; i < categoricalLabel.size(); i++){
+			Object value = categoricalLabel.getValue(i);
+			Feature calibratedProbabilityFeature = calibratedProbabilityFeatures.get(i);
+
+			OutputField calibratedProbabilityOutputField = new OutputField(FieldNameUtil.create("calibratedProbability", value), OpType.CONTINUOUS, DataType.DOUBLE)
+				.setResultFeature(ResultFeature.TRANSFORMED_VALUE)
+				.setExpression(calibratedProbabilityFeature.ref());
+
+			output.addOutputFields(calibratedProbabilityOutputField);
+		}
+
+		return MiningModelUtil.createModelChain(Arrays.asList(model, calibratorModel, classifierModel), Segmentation.MissingPredictionTreatment.RETURN_MISSING);
 	}
 
 	static
@@ -168,7 +234,11 @@ public class Converter<M extends MojoModel> {
 			throw new IllegalArgumentException();
 		}
 
+		List<OutputField> outputFields = output.getOutputFields();
+
 		String name = FieldNameUtil.create(FieldNames.PROBABILITY, categoricalLabel.getValue(1));
+
+		int index = indexOf(outputFields, name);
 
 		Expression expression = ExpressionUtil.createApply(PMMLFunctions.IF,
 			ExpressionUtil.createApply(PMMLFunctions.GREATEROREQUAL, new FieldRef(name), ExpressionUtil.createConstant(defaultThreshold)),
@@ -188,7 +258,39 @@ public class Converter<M extends MojoModel> {
 			.setDecisions(decisions)
 			.setExpression(expression);
 
-		output.addOutputFields(defaultThresholdOutputField);
+		outputFields.add(index + 1, defaultThresholdOutputField);
+	}
+
+	static
+	private List<Feature> encodeProbabilityFeatures(Model model, String function, ModelEncoder encoder, CategoricalLabel categoricalLabel){
+		List<Feature> result = new ArrayList<>();
+
+		for(int i = 0; i < categoricalLabel.size(); i++){
+			Object value = categoricalLabel.getValue(i);
+
+			OutputField probabilityOutputField = ModelUtil.createProbabilityField(FieldNameUtil.create(function, value), DataType.DOUBLE, value)
+				.setFinalResult(false);
+
+			DerivedOutputField probabilityField = encoder.createDerivedField(model, probabilityOutputField, true);
+
+			result.add(new ContinuousFeature(encoder, probabilityField));
+		}
+
+		return result;
+	}
+
+	static
+	private int indexOf(List<OutputField> outputFields, String name){
+
+		for(int i = 0; i < outputFields.size(); i++){
+			OutputField outputField = outputFields.get(i);
+
+			if(Objects.equals(outputField.requireName(), name)){
+				return i;
+			}
+		}
+
+		throw new IllegalArgumentException();
 	}
 
 	static

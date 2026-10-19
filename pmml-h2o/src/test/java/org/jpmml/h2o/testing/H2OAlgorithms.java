@@ -25,13 +25,17 @@ public interface H2OAlgorithms {
 	String EXTENDED_ISOLATION_FOREST = "ExtendedIsolationForest";
 	String GBM = "GBM";
 	String GBM_GAMMA = GBM + "Gamma";
+	String GBM_ISOTONIC = GBM + "Isotonic";
 	String GBM_POISSON = GBM + "Poisson";
+	String GBM_SIGMOID = GBM + "Sigmoid";
 	String GBM_TWEEDIE = GBM + "Tweedie";
 	String GLM = "GLM";
 	String GLM_ORDINAL = GLM + "Ordinal";
 	String ISOLATION_FOREST = "IsolationForest";
 	String ISOTONIC_REGRESSION = "IsotonicRegression";
 	String RANDOM_FOREST = "RandomForest";
+	String RANDOM_FOREST_ISOTONIC = RANDOM_FOREST + "Isotonic";
+	String RANDOM_FOREST_SIGMOID = RANDOM_FOREST + "Sigmoid";
 	String STACKED_ENSEMBLE = "StackedEnsemble";
 	String XGBOOST = "XGBoost";
 }

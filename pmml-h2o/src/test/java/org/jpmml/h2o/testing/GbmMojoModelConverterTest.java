@@ -33,6 +33,16 @@ public class GbmMojoModelConverterTest extends H2OEncoderBatchTest implements H2
 	}
 
 	@Test
+	public void evaluateIsotonicAudit() throws Exception {
+		evaluate(GBM_ISOTONIC, AUDIT);
+	}
+
+	@Test
+	public void evaluateSigmoidAudit() throws Exception {
+		evaluate(GBM_SIGMOID, AUDIT);
+	}
+
+	@Test
 	public void evaluateAuto() throws Exception {
 		evaluate(GBM, AUTO);
 	}

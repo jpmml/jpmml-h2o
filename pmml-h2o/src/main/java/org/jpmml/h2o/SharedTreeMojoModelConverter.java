@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import com.google.common.collect.Iterables;
+import hex.genmodel.algos.isotonic.IsotonicCalibrator;
 import hex.genmodel.algos.tree.NaSplitDir;
 import hex.genmodel.algos.tree.SharedTreeMojoModel;
 import hex.genmodel.utils.ByteBufferWrapper;
@@ -163,6 +164,23 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		modelTransformer.applyTo(model);
 
 		return model;
+	}
+
+	@Override
+	public Calibration getCalibration(){
+		M model = getModel();
+
+		double[] calibGlmBeta = model.getCalibGlmBeta();
+		if(calibGlmBeta != null){
+			return new SigmoidCalibration(calibGlmBeta);
+		}
+
+		IsotonicCalibrator isotonicCalibrator = getIsotonicCalibrator(model);
+		if(isotonicCalibrator != null){
+			return new IsotonicCalibration(isotonicCalibrator);
+		}
+
+		return null;
 	}
 
 	static
@@ -430,6 +448,16 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	}
 
 	static
+	public IsotonicCalibrator getIsotonicCalibrator(SharedTreeMojoModel model){
+
+		if(FIELD_ISOTONIC_CALIBRATOR == null){
+			return null;
+		}
+
+		return (IsotonicCalibrator)getFieldValue(FIELD_ISOTONIC_CALIBRATOR, model);
+	}
+
+	static
 	private Integer toNodeId(boolean hasAux, Integer id){
 		return (hasAux ? id : id + 1);
 	}
@@ -449,5 +477,20 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 		} catch(ReflectiveOperationException roe){
 			throw new RuntimeException(roe);
 		}
+	}
+
+	private static final Field FIELD_ISOTONIC_CALIBRATOR;
+
+	static {
+		Field field;
+
+		// H2O.ai 3.38+
+		try {
+			field = SharedTreeMojoModel.class.getDeclaredField("_isotonic_calibrator");
+		} catch(NoSuchFieldException nsfe){
+			field = null;
+		}
+
+		FIELD_ISOTONIC_CALIBRATOR = field;
 	}
 }

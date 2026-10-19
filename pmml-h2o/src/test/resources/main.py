@@ -68,6 +68,18 @@ def build_audit(df, classifier, name):
 	adjusted = adjusted[["Adjusted", "defaultThreshold(Adjusted)", "probability(0)", "probability(1)"]]
 	store_csv(adjusted, name + ".csv")
 
+def build_calibrated_audit(df, train_df, classifier, name):
+	classifier.train(*split_columns(train_df), training_frame = train_df)
+	store_mojo(classifier, name + ".zip")
+	adjusted = classifier.predict(df)
+	adjusted.set_names(["defaultThreshold(Adjusted)", "probability(0)", "probability(1)", "calibratedProbability(0)", "calibratedProbability(1)"])
+
+	adjusted_pmml = numpy.argmax(adjusted[["probability(0)", "probability(1)"]].as_data_frame(use_pandas = True).values, axis = 1)
+	adjusted["Adjusted"] = H2OFrame(adjusted_pmml, column_types = ["categorical"])
+
+	adjusted = adjusted[["Adjusted", "defaultThreshold(Adjusted)", "probability(0)", "probability(1)", "calibratedProbability(0)", "calibratedProbability(1)"]]
+	store_csv(adjusted, name + ".csv")
+
 if "Audit" in datasets:
 	audit_df = load_audit("Audit")
 
@@ -77,6 +89,13 @@ if "Audit" in datasets:
 	build_audit(audit_df, H2ORandomForestEstimator(ntrees = 1, sample_rate = 1, mtries = -2, max_depth = 6, seed = 42), "DecisionTreeAudit")
 	build_audit(audit_df, H2ORandomForestEstimator(ntrees = 31, binomial_double_trees = True, seed = 42), "RandomForestAudit")
 	build_audit(audit_df, H2OXGBoostEstimator(ntrees = 31, seed = 42), "XGBoostAudit")
+
+	audit_train_df, audit_calibration_df = audit_df.split_frame(ratios = [0.7], seed = 42)
+
+	build_calibrated_audit(audit_df, audit_train_df, H2OGradientBoostingEstimator(ntrees = 31, calibrate_model = True, calibration_frame = audit_calibration_df, calibration_method = "IsotonicRegression", seed = 42), "GBMIsotonicAudit")
+	build_calibrated_audit(audit_df, audit_train_df, H2OGradientBoostingEstimator(ntrees = 31, calibrate_model = True, calibration_frame = audit_calibration_df, calibration_method = "PlattScaling", seed = 42), "GBMSigmoidAudit")
+	build_calibrated_audit(audit_df, audit_train_df, H2ORandomForestEstimator(ntrees = 31, calibrate_model = True, calibration_frame = audit_calibration_df, calibration_method = "IsotonicRegression", seed = 42), "RandomForestIsotonicAudit")
+	build_calibrated_audit(audit_df, audit_train_df, H2ORandomForestEstimator(ntrees = 31, calibrate_model = True, calibration_frame = audit_calibration_df, calibration_method = "PlattScaling", seed = 42), "RandomForestSigmoidAudit")
 
 	audit_df = load_audit("AuditNA")
 
