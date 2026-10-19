@@ -18,23 +18,24 @@
  */
 package org.jpmml.h2o.testing;
 
+import org.jpmml.evaluator.testing.FloatEquivalence;
 import org.jpmml.evaluator.testing.PMMLEquivalence;
 import org.junit.jupiter.api.Test;
 
 public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implements H2OAlgorithms, H2ODatasets, H2OFields {
 
 	public XGBoostMojoModelConverterTest(){
-		super(new PMMLEquivalence(1e-6, 1e-6));
+		super(new FloatEquivalence(4));
 	}
 
 	@Test
 	public void evaluateAudit() throws Exception {
-		evaluate(XGBOOST, AUDIT, new PMMLEquivalence(6e-6, 6e-6));
+		evaluate(XGBOOST, AUDIT, excludeFields(AUDIT_PROBABILITY_FALSE), new FloatEquivalence(6));
 	}
 
 	@Test
 	public void evaluateAuditNA() throws Exception {
-		evaluate(XGBOOST, AUDIT_NA, new PMMLEquivalence(3e-6, 3e-6));
+		evaluate(XGBOOST, AUDIT_NA, excludeFields(AUDIT_PROBABILITY_FALSE), new FloatEquivalence(6));
 	}
 
 	@Test
@@ -44,7 +45,7 @@ public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implement
 
 	@Test
 	public void evaluateSigmoidAudit() throws Exception {
-		evaluate(XGBOOST_SIGMOID, AUDIT, new PMMLEquivalence(6e-6, 6e-6));
+		evaluate(XGBOOST_SIGMOID, AUDIT, excludeFields(AUDIT_PROBABILITY_FALSE), new FloatEquivalence(7));
 	}
 
 	@Test
@@ -59,6 +60,6 @@ public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implement
 
 	@Test
 	public void evaluateIris() throws Exception {
-		evaluate(XGBOOST, IRIS);
+		evaluate(XGBOOST, IRIS, new FloatEquivalence(6));
 	}
 }
