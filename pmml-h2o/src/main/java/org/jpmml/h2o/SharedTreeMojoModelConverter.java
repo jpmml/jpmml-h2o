@@ -170,17 +170,7 @@ public class SharedTreeMojoModelConverter<M extends SharedTreeMojoModel> extends
 	public Calibration getCalibration(){
 		M model = getModel();
 
-		double[] calibGlmBeta = model.getCalibGlmBeta();
-		if(calibGlmBeta != null){
-			return new SigmoidCalibration(calibGlmBeta);
-		}
-
-		IsotonicCalibrator isotonicCalibrator = getIsotonicCalibrator(model);
-		if(isotonicCalibrator != null){
-			return new IsotonicCalibration(isotonicCalibrator);
-		}
-
-		return null;
+		return Calibration.newInstance(model.getCalibGlmBeta(), getIsotonicCalibrator(model));
 	}
 
 	static

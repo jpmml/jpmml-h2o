@@ -38,6 +38,16 @@ public class XGBoostMojoModelConverterTest extends H2OEncoderBatchTest implement
 	}
 
 	@Test
+	public void evaluateIsotonicAudit() throws Exception {
+		evaluate(XGBOOST_ISOTONIC, AUDIT, new PMMLEquivalence(2e-4, 2e-4));
+	}
+
+	@Test
+	public void evaluateSigmoidAudit() throws Exception {
+		evaluate(XGBOOST_SIGMOID, AUDIT, new PMMLEquivalence(6e-6, 6e-6));
+	}
+
+	@Test
 	public void evaluateAuto() throws Exception {
 		evaluate(XGBOOST, AUTO);
 	}

@@ -20,6 +20,7 @@ package org.jpmml.h2o;
 
 import java.util.List;
 
+import hex.genmodel.algos.isotonic.IsotonicCalibrator;
 import org.dmg.pmml.regression.RegressionModel;
 import org.jpmml.converter.Feature;
 import org.jpmml.converter.Schema;
@@ -32,4 +33,18 @@ public class Calibration {
 
 	abstract
 	public RegressionModel encodeModel(List<Feature> probabilityFeatures, Schema schema);
+
+	static
+	public Calibration newInstance(double[] calibGlmBeta, IsotonicCalibrator isotonicCalibrator){
+
+		if(calibGlmBeta != null){
+			return new SigmoidCalibration(calibGlmBeta);
+		} // End if
+
+		if(isotonicCalibrator != null){
+			return new IsotonicCalibration(isotonicCalibrator);
+		}
+
+		return null;
+	}
 }

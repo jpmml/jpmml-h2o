@@ -111,6 +111,13 @@ public class XGBoostMojoModelConverter extends Converter<XGBoostMojoModel> {
 		return learner.configureModel(xgbOptions, model);
 	}
 
+	@Override
+	public Calibration getCalibration(){
+		XGBoostMojoModel model = getModel();
+
+		return Calibration.newInstance(model.getCalibGlmBeta(), model.getIsotonicCalibrator());
+	}
+
 	public Learner getLearner(){
 
 		if(this.learner == null){

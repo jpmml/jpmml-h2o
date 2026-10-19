@@ -21,10 +21,15 @@ package org.jpmml.h2o;
 import java.io.Closeable;
 
 import hex.genmodel.MojoModel;
+import hex.genmodel.algos.isotonic.IsotonicCalibrator;
 
 public class XGBoostMojoModel extends MojoModel implements Closeable {
 
 	private byte[] boosterBytes = null;
+
+	private double[] calibGlmBeta = null;
+
+	private IsotonicCalibrator isotonicCalibrator = null;
 
 
 	public XGBoostMojoModel(String[] columns, String[][] domains, String responseColumn, byte[] boosterBytes){
@@ -49,5 +54,21 @@ public class XGBoostMojoModel extends MojoModel implements Closeable {
 
 	private void setBoosterBytes(byte[] boosterBytes){
 		this.boosterBytes = boosterBytes;
+	}
+
+	public double[] getCalibGlmBeta(){
+		return this.calibGlmBeta;
+	}
+
+	void setCalibGlmBeta(double[] calibGlmBeta){
+		this.calibGlmBeta = calibGlmBeta;
+	}
+
+	public IsotonicCalibrator getIsotonicCalibrator(){
+		return this.isotonicCalibrator;
+	}
+
+	void setIsotonicCalibrator(IsotonicCalibrator isotonicCalibrator){
+		this.isotonicCalibrator = isotonicCalibrator;
 	}
 }

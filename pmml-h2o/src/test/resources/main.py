@@ -96,6 +96,8 @@ if "Audit" in datasets:
 	build_calibrated_audit(audit_df, audit_train_df, H2OGradientBoostingEstimator(ntrees = 31, calibrate_model = True, calibration_frame = audit_calibration_df, calibration_method = "PlattScaling", seed = 42), "GBMSigmoidAudit")
 	build_calibrated_audit(audit_df, audit_train_df, H2ORandomForestEstimator(ntrees = 31, calibrate_model = True, calibration_frame = audit_calibration_df, calibration_method = "IsotonicRegression", seed = 42), "RandomForestIsotonicAudit")
 	build_calibrated_audit(audit_df, audit_train_df, H2ORandomForestEstimator(ntrees = 31, calibrate_model = True, calibration_frame = audit_calibration_df, calibration_method = "PlattScaling", seed = 42), "RandomForestSigmoidAudit")
+	build_calibrated_audit(audit_df, audit_train_df, H2OXGBoostEstimator(ntrees = 31, calibrate_model = True, calibration_frame = audit_calibration_df, calibration_method = "IsotonicRegression", seed = 42), "XGBoostIsotonicAudit")
+	build_calibrated_audit(audit_df, audit_train_df, H2OXGBoostEstimator(ntrees = 31, calibrate_model = True, calibration_frame = audit_calibration_df, calibration_method = "PlattScaling", seed = 42), "XGBoostSigmoidAudit")
 
 	audit_df = load_audit("AuditNA")
 

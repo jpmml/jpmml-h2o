@@ -38,4 +38,6 @@ public interface H2OAlgorithms {
 	String RANDOM_FOREST_SIGMOID = RANDOM_FOREST + "Sigmoid";
 	String STACKED_ENSEMBLE = "StackedEnsemble";
 	String XGBOOST = "XGBoost";
+	String XGBOOST_ISOTONIC = XGBOOST + "Isotonic";
+	String XGBOOST_SIGMOID = XGBOOST + "Sigmoid";
 }

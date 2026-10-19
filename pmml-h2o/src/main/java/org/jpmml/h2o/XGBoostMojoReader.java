@@ -31,6 +31,21 @@ public class XGBoostMojoReader extends ModelMojoReader<XGBoostMojoModel> {
 
 	@Override
 	protected void readModelData() throws IOException {
+		String calibMethod = readkv("calib_method");
+
+		if(calibMethod != null){
+
+			switch(calibMethod){
+				case "platt":
+					this._model.setCalibGlmBeta(readkv("calib_glm_beta", new double[0]));
+					break;
+				case "isotonic":
+					this._model.setIsotonicCalibrator(readIsotonicCalibrator());
+					break;
+				default:
+					throw new IllegalArgumentException(calibMethod);
+			}
+		}
 	}
 
 	@Override
