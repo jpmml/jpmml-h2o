@@ -106,16 +106,7 @@ public class Converter<M extends MojoModel> {
 	public PMML encodePMML(Map<String, ?> options){
 		M model = getModel();
 
-		ModelCategory modelCategory = model.getModelCategory();
 		ModelDescriptor modelDescriptor = model._modelDescriptor;
-
-		Calibration calibration = null;
-		Number defaultThreshold = null;
-
-		if(modelCategory == ModelCategory.Binomial){
-			calibration = getCalibration();
-			defaultThreshold = getDefaultThreshold();
-		}
 
 		H2OEncoder encoder = new H2OEncoder();
 
@@ -123,23 +114,7 @@ public class Converter<M extends MojoModel> {
 
 		schema = toMojoModelSchema(schema);
 
-		Model pmmlModel;
-
-		if(calibration != null){
-			Schema segmentSchema = schema.toSegmentSchema();
-
-			pmmlModel = encodeModel(options, segmentSchema);
-
-			pmmlModel = encodeCalibration(pmmlModel, calibration, schema);
-		} else
-
-		{
-			pmmlModel = encodeModel(options, schema);
-		} // End if
-
-		if(defaultThreshold != null){
-			encodeDefaultThreshold(pmmlModel, defaultThreshold, schema);
-		} // End if
+		Model pmmlModel = encodeModel(options, schema);
 
 		if(modelDescriptor != null){
 			String algorithmName = pmmlModel.getAlgorithmName();
@@ -155,6 +130,40 @@ public class Converter<M extends MojoModel> {
 	}
 
 	public Model encodeModel(Map<String, ?> options, Schema schema){
+		M model = getModel();
+
+		ModelCategory modelCategory = model.getModelCategory();
+
+		Calibration calibration = null;
+		Number defaultThreshold = null;
+
+		if(modelCategory == ModelCategory.Binomial){
+			calibration = getCalibration();
+			defaultThreshold = getDefaultThreshold();
+		}
+
+		Model pmmlModel;
+
+		if(calibration != null){
+			Schema segmentSchema = schema.toSegmentSchema();
+
+			pmmlModel = encodeModelInternal(options, segmentSchema);
+
+			pmmlModel = encodeCalibration(pmmlModel, calibration, schema);
+		} else
+
+		{
+			pmmlModel = encodeModelInternal(options, schema);
+		} // End if
+
+		if(defaultThreshold != null){
+			encodeDefaultThreshold(pmmlModel, defaultThreshold, schema);
+		}
+
+		return pmmlModel;
+	}
+
+	Model encodeModelInternal(Map<String, ?> options, Schema schema){
 		schema = configureSchema(options, schema);
 
 		Model model = encodeModel(schema);

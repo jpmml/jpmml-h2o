@@ -79,7 +79,7 @@ public class StackedEnsembleMojoModelConverter extends Converter<StackedEnsemble
 
 			Schema baseModelSchema = converter.toMojoModelSchema(segmentSchema);
 
-			Model segmentModel = converter.encodeModel(options, baseModelSchema);
+			Model segmentModel = converter.encodeModelInternal(options, baseModelSchema);
 
 			if(model._nclasses == 1){
 				ContinuousLabel continuousLabel = schema.requireContinuousLabel();
