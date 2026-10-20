@@ -28,11 +28,18 @@ Java library and command-line application for converting [H2O.ai](https://www.h2
   * Isolation Forest:
     * [`IsolationForestMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/isofor/IsolationForestMojoModel.html)
     * [`ExtendedIsolationForestMojoModel`](https://docs.h2o.ai/h2o/latest-stable/h2o-genmodel/javadoc/hex/genmodel/algos/isoforextended/ExtendedIsolationForestMojoModel.html)
+* Post-processing of binary classification results:
+  * Probability thresholding.
+  * Probability calibration using Platt scaling or isotonic regression.
 
 # Prerequisites #
 
 * H2O.ai 3.34(.0.1) or newer
 * Java 11 or newer
+
+**Note**: H2O.ai 3.46.0.12 and newer have disabled MOJO export in the open source edition.
+Keep using the 3.46.0.11 open source edition, or upgrade to the secure edition to keep MOJO downloads available.
+See [Changes coming to H2O-3 open source](https://h2o.ai/blog/2026/changes-coming-to-h2o-3-open-source/) for more information.
 
 # Installation #
 
@@ -53,27 +60,23 @@ A typical workflow can be summarized as follows:
 
 ### The H2O.ai side of operations
 
-Using the [`h2o`](https://github.com/h2oai/h2o-3/tree/master/h2o-py) package to train a regression model for the example Boston housing dataset:
+Using the [`h2o`](https://github.com/h2oai/h2o-3/tree/master/h2o-py) package to train a regression model for the example diabetes dataset:
 
 ```python
 from h2o import H2OFrame
 from h2o.estimators.glm import H2OGeneralizedLinearEstimator
-from pandas import DataFrame, Series
-from sklearn.datasets import load_boston
+from sklearn.datasets import load_diabetes
 
 import h2o
-import pandas
 
-boston = load_boston()
+diabetes = load_diabetes(as_frame = True)
 
-df = pandas.concat((DataFrame(data = boston.data, columns = boston.feature_names), Series(boston.target, name = "MEDV")), axis = 1)
+h2o.init()
 
-h2o.connect()
-
-df = H2OFrame(df)
+df = H2OFrame(diabetes.frame)
 
 glm = H2OGeneralizedLinearEstimator(family = "gaussian")
-glm.train(boston.feature_names.tolist(), "MEDV", df)
+glm.train(diabetes.feature_names, "target", df)
 
 glm.download_mojo(path = "mojo.zip")
 ```
